@@ -1,0 +1,14 @@
+{
+  "name": "therepsheet",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "node src/build.mjs",
+    "data": "node scripts/prepare.mjs",
+    "images": "node scripts/images.mjs"
+  },
+  "type": "module",
+  "devDependencies": {
+    "sharp": "^0.34.5"
+  },
+  "private": true
+}

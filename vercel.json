@@ -1,0 +1,15 @@
+{
+  "buildCommand": "node src/build.mjs",
+  "outputDirectory": "dist",
+  "installCommand": "echo skip",
+  "cleanUrls": true,
+  "trailingSlash": true,
+  "headers": [
+    { "source": "/img/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }] },
+    { "source": "/assets/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800" }] },
+    { "source": "/search.json", "headers": [{ "key": "Cache-Control", "value": "public, max-age=3600" }] }
+  ],
+  "redirects": [
+    { "source": "/:path*", "has": [{ "type": "host", "value": "www.therepsheet.com" }], "destination": "https://therepsheet.com/:path*", "permanent": true }
+  ]
+}

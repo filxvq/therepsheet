@@ -1,0 +1,4 @@
+node_modules/
+dist/
+data/img-src/
+.vercel
