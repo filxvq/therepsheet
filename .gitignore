@@ -5,3 +5,4 @@ data/img-src/
 .env
 .env.local
 data/describe-ai.log
+data/qc-cache/

@@ -19,6 +19,16 @@ const { CATEGORIES } = await import('../src/config.mjs');
 const catName = Object.fromEntries(CATEGORIES.map((c) => [c.id, c.name]));
 const outFile = new URL('data/descriptions.json', root);
 const out = fs.existsSync(outFile) ? JSON.parse(fs.readFileSync(outFile, 'utf8')) : {};
+// A description naming a material or detail the item's name does not give was made up by the model
+// (it never sees the photo). These are rejected on write and, with --clean, dropped from the file
+// so the run writes them again.
+const DETAIL = /\b(plain|box logo|chest logo|embossed|embossing|reflective|silicone|crew[- ‑]?neck|v[- ‑]?neck|heavyweight|lightweight|cotton|leather|suede|nylon|polyester|wool|cashmere|denim|canvas|mesh|fleece|velvet|satin|silk|linen|gold|silver|stainless|long[- ‑]?sleeves?|short[- ‑]?sleeves?|sleeveless|cropped)\b/gi;
+const madeUp = (p, t) => (t.match(DETAIL) || []).some((w) => !p.name.toLowerCase().includes(w.toLowerCase().replace(/[‑ ]/g, '-')) && !p.name.toLowerCase().includes(w.toLowerCase()));
+if (process.argv.includes('--clean')) {
+  let dropped = 0;
+  for (const p of products) if (out[p.id] && madeUp(p, out[p.id])) { delete out[p.id]; dropped++; }
+  console.log('dropped', dropped, 'descriptions with made-up details');
+}
 const todo = products.filter((p) => !out[p.id]);
 console.log(`${todo.length} to write, ${Object.keys(out).length} already done, model ${MODEL}`);
 
@@ -29,7 +39,7 @@ Write 55-90 words per item, in plain natural English, as one paragraph.
 - Add one concrete, item-specific thing to check in the agent's quality-check photos (e.g. stitching on a collar, sole shape on a sneaker, hardware on a bag, print edges on a tee, dial details on a watch). Make it fit THIS item, not a generic list.
 - Vary the structure between items. At most 2 of every 10 descriptions may begin with the item's name; open others with the use, the style, the brand's look, an outfit, or a question. Put the quality-check tip in a different place and phrase it differently each time (not always the last sentence, not always "when checking the photos").
 - Only state facts implied by the name, brand and category, or true of every item of that type (a hoodie has a hood, sneakers have a sole). Do not invent colours, materials, fabric weight, pocket or zip placement, cuffs, collar type, sizes, editions or release years unless they are in the name. When unsure, describe the style and how it is worn instead of construction. You cannot see the item: never mention a specific logo type or placement (box logo, chest logo, embossing), reflective or grip details, a crew neck on a hoodie, or any feature the name does not give. A quality-check tip can name a part every such item has (seams, hem, sole, zipper, strap, print) without claiming what it looks like.
-- Never use the words: rep, reps, replica, fake, counterfeit, knockoff, dupe, copy, authentic, original, retail, legit.
+- Never name a material, fabric, metal or finish (cotton, leather, nylon, fleece, gold…) or a neckline, and never call an item plain, unless that word is in its name. Never use the words: rep, reps, replica, fake, counterfeit, knockoff, dupe, copy, authentic, original, retail, legit.
 - No prices, no sizing advice for items that are not worn, no first-person claims ("I", "we tested"), no exclamation marks, no emojis, no marketing clichés like "elevate", "must-have", "game-changer".
 - Trust the item name over the category if they disagree.
 
@@ -70,7 +80,7 @@ for (let i = 0; i < todo.length; i += BATCH) {
     const p = batch.find((x) => String(x.id) === String(it.id));
     const t = String(it.text || '').replace(/\s+/g, ' ').trim();
     const words = t.split(' ').length;
-    if (!p || words < 35 || words > 130 || BANNED.test(t)) { bad++; continue; }   // left for the next run
+    if (!p || words < 35 || words > 130 || BANNED.test(t) || madeUp(p, t)) { bad++; continue; }   // left for the next run
     out[p.id] = t; n++;
   }
   fs.writeFileSync(outFile, JSON.stringify(out, null, 1));

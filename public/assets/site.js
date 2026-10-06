@@ -161,6 +161,35 @@
     if (!e.target.closest('.others')) $$('.others.open').forEach(function (o) { o.classList.remove('open'); $('.others-btn', o).setAttribute('aria-expanded', 'false'); });
   });
 
+  // ── QC photo viewer: any [data-full] opens full screen, arrows and keys move through the set ──
+  var lb = null, lbList = [], lbAt = 0;
+  function lbShow(k) {
+    lbAt = (k + lbList.length) % lbList.length;
+    var im = $('img', lb); im.style.opacity = '0';
+    var pre = new Image(); pre.onload = pre.onerror = function () { im.src = lbList[lbAt]; im.style.opacity = '1'; }; pre.src = lbList[lbAt];
+    $('.lb-count', lb).textContent = (lbAt + 1) + ' / ' + lbList.length;
+  }
+  function lbClose() { if (!lb) return; lb.classList.remove('open'); var el = lb; lb = null; setTimeout(function () { el.remove(); }, 200); }
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest('[data-full]');
+    if (t) {
+      lbList = $$('[data-full]').map(function (x) { return x.getAttribute('data-full'); });
+      lb = document.createElement('div'); lb.className = 'lightbox';
+      lb.innerHTML = '<img alt=""><button type="button" class="lb-btn lb-prev" aria-label="Previous">‹</button><button type="button" class="lb-btn lb-next" aria-label="Next">›</button><button type="button" class="lb-close" aria-label="Close">×</button><span class="lb-count"></span>';
+      document.body.appendChild(lb); void lb.offsetWidth; lb.classList.add('open');
+      lbShow(lbList.indexOf(t.getAttribute('data-full')));
+      return;
+    }
+    if (!lb) return;
+    if (e.target.closest('.lb-prev')) lbShow(lbAt - 1);
+    else if (e.target.closest('.lb-next')) lbShow(lbAt + 1);
+    else if (e.target.closest('.lb-close') || e.target === lb) lbClose();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (!lb) return;
+    if (e.key === 'ArrowLeft') lbShow(lbAt - 1); else if (e.key === 'ArrowRight') lbShow(lbAt + 1); else if (e.key === 'Escape') lbClose();
+  });
+
   // ── search data, shared by the search box and the favorites page ──
   var data = null, loading = null;
   function load() {

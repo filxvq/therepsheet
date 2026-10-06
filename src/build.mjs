@@ -24,6 +24,9 @@ const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = path.join(ROOT, 'dist');
 const products = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/products.json'), 'utf8'));
 // Unique per-product text from scripts/describe-ai.mjs; products without one fall back to describe().
+// QC photos per product from scripts/qc.mjs
+const QC = fs.existsSync(path.join(ROOT, 'data/qc.json')) ? JSON.parse(fs.readFileSync(path.join(ROOT, 'data/qc.json'), 'utf8')) : {};
+const qcOf = (p) => (QC[p.id] || []).filter((f) => fs.existsSync(path.join(ROOT, 'public', f)));
 const AI = fs.existsSync(path.join(ROOT, 'data/descriptions.json')) ? JSON.parse(fs.readFileSync(path.join(ROOT, 'data/descriptions.json'), 'utf8')) : {};
 const BUILT = new Date().toISOString().slice(0, 10);
 const YEAR = BUILT.slice(0, 4);
@@ -149,7 +152,7 @@ ${body}
 function card(p, eager = false) {
   const cat = catById.get(p.category);
   return `<article class="card">
-  <a class="card-img" href="${urlOf(p)}" tabindex="-1"><img src="${thumbOf(p)}" alt="${esc(p.name)} rep" width="300" height="300" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></a>
+  <a class="card-img" href="${urlOf(p)}" tabindex="-1">${qcOf(p).length ? '<span class="qc-badge">QC</span>' : ''}<img src="${thumbOf(p)}" alt="${esc(p.name)} rep" width="300" height="300" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></a>
   <button type="button" class="fav" data-fav="${p.id}" aria-pressed="false" aria-label="Add ${esc(p.name)} to favorites">${ICON.heart}</button>
   <div class="card-body"><p class="card-cat">${esc(short(cat))}</p><a class="card-name" href="${urlOf(p)}">${esc(p.name)}</a><p class="price" data-cny="${p.cny}">${price(p.cny)}</p>
   <div class="card-actions"><a class="btn-ghost" href="${urlOf(p)}">View details</a><a class="btn-buy" data-wd="${p.id}" href="${buyUrl(p.id)}" rel="nofollow sponsored noopener" target="_blank">View on <span class="agent-name">${esc(defAgent.name)}</span> →</a></div></div>
@@ -259,7 +262,7 @@ for (const p of products) {
 <div class="product">
   <div class="gallery">
     <div class="shot"><img id="mainShot" src="${imgOf(p)}" alt="${esc(p.name)} rep" width="480" height="480" fetchpriority="high"><button type="button" class="fav fav-lg" data-fav="${p.id}" aria-pressed="false" aria-label="Add to favorites">${ICON.heart}</button></div>
-    <div class="thumbs"><button type="button" class="thumb on" data-shot="${imgOf(p)}" aria-label="Main photo"><img src="${thumbOf(p)}" alt="" width="56" height="56"></button></div>
+    <div class="thumbs"><button type="button" class="thumb on" data-shot="${imgOf(p)}" aria-label="Main photo"><img src="${thumbOf(p)}" alt="" width="56" height="56"></button>${qcOf(p).slice(0, 5).map((f, i) => `<button type="button" class="thumb" data-shot="${f}" aria-label="QC photo ${i + 1}"><img src="${f}" alt="" width="56" height="56" loading="lazy"></button>`).join('')}</div>
   </div>
   <div class="info">
     <p class="kicker">${p.brand ? (bp ? `<a href="/brands/${bp.slug}/">${esc(p.brand)} reps</a>` : `${esc(p.brand)} reps`) + ' · ' : ''}<a href="/${cat.id}/">${esc(cat.reps)}</a></p>
@@ -275,6 +278,7 @@ for (const p of products) {
     <dl class="facts"><dt>Category</dt><dd><a href="/${cat.id}/">${esc(cat.reps)}</a></dd>${p.brand ? `<dt>Brand</dt><dd>${bp ? `<a href="/brands/${bp.slug}/">${esc(p.brand)}</a>` : esc(p.brand)}</dd>` : ''}<dt>Marketplace</dt><dd><a href="${weidian(p.id)}" rel="nofollow noopener" target="_blank">Weidian ↗</a></dd><dt>Listing ID</dt><dd>${p.id}</dd></dl>
   </div>
 </div>
+${qcOf(p).length ? `<section class="qc-sec"><div class="sec-head"><h2>QC photos of this rep <small>${qcOf(p).length}</small></h2></div><p class="intro">Warehouse photos from real orders of this listing, taken by shopping agents before shipping.</p><div class="qc-grid">${qcOf(p).map((f, i) => `<button type="button" class="qc-shot" data-full="${f}" aria-label="Open QC photo ${i + 1}"><img src="${f}" alt="${esc(p.name)} rep QC photo ${i + 1}" width="240" height="240" loading="lazy"></button>`).join('')}</div></section>` : ''}
 <section class="about-item"><h2>About this ${esc(p.name)} rep</h2>${text.map((t) => `<p>${esc(t)}</p>`).join('')}</section>
 ${sameBrand.length ? `<section><div class="sec-head"><h2>More ${esc(p.brand)} reps</h2>${bp ? `<a class="sec-link" href="/brands/${bp.slug}/">All ${bp.n} →</a>` : ''}</div>${row(sameBrand)}</section>` : ''}
 ${similar.length ? `<section><div class="sec-head"><h2>More ${esc(cat.reps.toLowerCase())}</h2><a class="sec-link" href="/${cat.id}/">All ${byCat.get(cat.id).length} →</a></div>${row(similar)}</section>` : ''}`;

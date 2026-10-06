@@ -163,6 +163,21 @@ main>section{margin:48px 0}
 .card-actions a{flex:1;min-height:44px;padding:10px 8px;font-size:12.8px;font-weight:600;border-radius:8px}
 .card-actions .btn-ghost{flex:0 0 38%}
 
+.card-img{position:relative}
+.qc-badge{position:absolute;top:10px;left:10px;z-index:1;background:var(--red);color:#fff;font-size:11px;font-weight:800;letter-spacing:.06em;border-radius:6px;padding:4px 7px}
+.qc-sec{margin-top:36px}
+.qc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.qc-shot{padding:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;cursor:zoom-in;aspect-ratio:1;transition:transform .2s var(--ease),border-color .2s}
+.qc-shot:hover{transform:translateY(-2px);border-color:var(--red)}
+.qc-shot img{width:100%;height:100%;object-fit:cover}
+.lightbox{position:fixed;inset:0;z-index:100;background:rgba(6,6,9,.92);display:grid;place-items:center;opacity:0;transition:opacity .2s ease}
+.lightbox.open{opacity:1}
+.lightbox img{max-width:92vw;max-height:86vh;border-radius:10px;box-shadow:0 30px 80px rgba(0,0,0,.6);transition:opacity .2s ease}
+.lb-btn{position:absolute;top:50%;transform:translateY(-50%);width:48px;height:48px;border-radius:50%;border:1px solid var(--line);background:rgba(22,22,29,.85);color:#fff;font-size:22px;cursor:pointer}
+.lb-prev{left:18px}.lb-next{right:18px}
+.lb-close{position:absolute;top:16px;right:18px;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:rgba(22,22,29,.85);color:#fff;font-size:20px;cursor:pointer}
+.lb-count{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);color:var(--muted);font-size:13px}
+
 /* ── pager ── */
 .pager{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:32px 0 8px}
 .pager a,.pager span{min-width:40px;height:40px;display:grid;place-items:center;padding:0 12px;border-radius:10px;text-decoration:none;font-size:14px}
