@@ -293,8 +293,8 @@ for (const p of products) {
   const at = byCat.get(p.category).indexOf(p);
   const similar = [...near.slice(Math.max(0, at - 4), at), ...near.slice(at, at + 8)].slice(0, 8);
   const [bc, bcld] = crumbs([['Rep Spreadsheet', '/'], [cat.reps, `/${cat.id}/`], [p.name, url]]);
-  const facts = describe(p, { cat, catList: byCat.get(p.category), brandList: p.brand ? products.filter((x) => x.brand === p.brand) : [], usd: usd(p.cny) });
-  const text = AI[p.id] ? [AI[p.id], facts[0]] : facts;
+  const d = describe(p, { cat, catList: byCat.get(p.category), brandList: p.brand ? products.filter((x) => x.brand === p.brand) : [], usd: usd(p.cny), variants: VARIANTS[p.id] || [], qc: qcOf(p).length });
+  const text = [AI[p.id] || d.text, d.facts];
   const bp = p.brand && brandPage.get(p.brand);
   const body = `${bc}
 <div class="product">
