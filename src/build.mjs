@@ -31,6 +31,11 @@ fs.rmSync(DIST, { recursive: true, force: true });
 // keeps serving the old one under its week-long cache (a date stamp failed at two deploys a day).
 const hashOf = (f) => crypto.createHash('sha1').update(fs.readFileSync(path.join(ROOT, 'public/assets', f))).digest('hex').slice(0, 10);
 const V = { css: hashOf('site.css'), js: hashOf('site.js') };
+// search.json and its version are built once, on first use (the helpers they need are declared
+// below). The version goes into the page so a changed catalog is a new URL, never a stale cache.
+let SEARCH = null, SV = null;
+const searchJson = () => SEARCH || (SEARCH = JSON.stringify(products.map((p) => [p.name, urlOf(p), thumbOf(p), p.cny, p.brand || '', p.id, p.category])));
+const searchVersion = () => SV || (SV = crypto.createHash('sha1').update(searchJson()).digest('hex').slice(0, 10));
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -104,7 +109,7 @@ ${jsonld.map((j) => `<script type="application/ld+json">${JSON.stringify(j).repl
   <div class="wrap top-row">
     <a class="logo" href="/" aria-label="${NAME} home"><b>TheRep</b>Sheet<span>.com</span></a>
     <div class="search" role="search">
-      ${ICON.search}<input id="q" type="search" placeholder="Search products…" autocomplete="off" aria-label="Search products"><kbd>⌘K</kbd>
+      ${ICON.search}<input id="q" type="search" placeholder="Search products…" autocomplete="off" aria-label="Search products">
       <div id="results" class="results" hidden></div>
     </div>
     <a class="icon-btn" href="/favorites/" aria-label="Favorites">${ICON.heart}<span class="fav-count" hidden></span></a>
@@ -132,7 +137,7 @@ ${body}
   </div>
   <p class="wrap fine">${NAME} sells nothing and holds no stock: every order is placed by you with a shopping agent. Brand names only identify what an item is. Some agent links carry a referral code. © ${YEAR} therepsheet.com</p>
 </footer>
-<script>window.TRS=${JSON.stringify({ agents: AGENTS.map(({ id, name, code, rate, signup, perk, logo }) => ({ id, name, code, rate, signup, perk, logo })), cny: CNY_FALLBACK, def: DEFAULT_AGENT, cats: Object.fromEntries(CATEGORIES.map((c) => [c.id, short(c)])) })}</script>
+<script>window.TRS=${JSON.stringify({ agents: AGENTS.map(({ id, name, code, rate, signup, perk, logo }) => ({ id, name, code, rate, signup, perk, logo })), cny: CNY_FALLBACK, def: DEFAULT_AGENT, sv: searchVersion(), cats: Object.fromEntries(CATEGORIES.map((c) => [c.id, short(c)])) })}</script>
 <script src="/assets/site.js?v=${V.js}" defer></script>
 </body>
 </html>`;
@@ -327,7 +332,7 @@ write('/404.html', page({ title: `Page not found | ${NAME}`, desc: 'This page do
   body: `<header class="head"><h1>This rep is gone</h1><p class="intro">The seller may have taken the listing down. Search above or <a href="/finds/">browse the rep spreadsheet</a>.</p></header>${rail()}${grid(products.slice(0, 12))}` }), { sitemap: false });
 
 // ── machine files ────────────────────────────────────────────────────────────
-fs.writeFileSync(path.join(DIST, 'search.json'), JSON.stringify(products.map((p) => [p.name, urlOf(p), thumbOf(p), p.cny, p.brand || '', p.id, p.category])));
+fs.writeFileSync(path.join(DIST, 'search.json'), searchJson());
 fs.writeFileSync(path.join(DIST, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${written.map((u) => `<url><loc>${SITE}${u}</loc><lastmod>${BUILT}</lastmod></url>`).join('\n')}

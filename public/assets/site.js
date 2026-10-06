@@ -93,7 +93,7 @@
   // ── search data, shared by the search box and the favorites page ──
   var data = null, loading = null;
   function load() {
-    return loading || (loading = fetch('/search.json').then(function (r) { return r.json(); }).then(function (d) {
+    return loading || (loading = fetch('/search.json?v=' + (T.sv || '')).then(function (r) { return r.json(); }).then(function (d) {
       data = d.map(function (x) { return { n: x[0], u: x[1], i: x[2], c: x[3], b: x[4], id: String(x[5]), cat: x[6], k: (x[0] + ' ' + x[4]).toLowerCase() }; });
     }));
   }
