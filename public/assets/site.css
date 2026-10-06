@@ -95,6 +95,7 @@ main>section{margin:48px 0}
 .sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:18px}
 .sec-link,.more a{color:var(--muted);font-weight:600;text-decoration:none;font-size:14px;white-space:nowrap;transition:color .18s}
 .sec-link:hover,.more a:hover{color:var(--red2)}
+.sec-link{padding:10px 0}
 .more{margin:16px 0 0}
 .crumbs{font-size:13px;color:var(--muted);margin:22px 0 4px;display:flex;flex-wrap:wrap;gap:6px}
 .crumbs a{text-decoration:none}.crumbs a:hover{color:var(--ink)}
@@ -169,7 +170,7 @@ main>section{margin:48px 0}
 .fav.pulse svg{animation:beat .4s var(--ease)}
 @keyframes beat{0%{transform:scale(1)}40%{transform:scale(1.35)}100%{transform:scale(1)}}
 .card-body{padding:13px 14px 14px;flex:1;display:flex;flex-direction:column}
-.card-cat{margin:0 0 4px;font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.card-cat{margin:0 0 4px;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600}
 .card-name{text-decoration:none;font-weight:500;font-size:14.4px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .card-name:hover{color:var(--red2)}
 .price{font-weight:700;font-variant-numeric:tabular-nums}
@@ -223,8 +224,8 @@ main>section{margin:48px 0}
 .others-btn:hover{color:var(--ink)}
 .others-btn svg{transition:transform .2s var(--ease)}
 .others-btn[aria-expanded=true] svg{transform:rotate(180deg)}
-.others-pop{position:absolute;left:0;top:42px;z-index:10;min-width:200px;background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:0 20px 50px rgba(0,0,0,.5);padding:6px;opacity:0;transform:translateY(-6px) scale(.98);transform-origin:top left;pointer-events:none;transition:opacity .18s var(--ease),transform .18s var(--ease)}
-.others.open .others-pop{opacity:1;transform:none;pointer-events:auto}
+.others-pop{position:absolute;right:0;top:42px;max-width:calc(100vw - 28px);z-index:10;min-width:200px;background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:0 20px 50px rgba(0,0,0,.5);padding:6px;opacity:0;transform:translateY(-6px) scale(.98);transform-origin:top right;pointer-events:none;visibility:hidden;transition:opacity .18s var(--ease),transform .18s var(--ease),visibility 0s .18s}
+.others.open .others-pop{opacity:1;transform:none;pointer-events:auto;visibility:visible;transition-delay:0s}
 .others-opt{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600;transition:background-color .15s}
 .others-opt:hover{background:var(--panel2)}
 .others-opt img{width:22px;height:22px;border-radius:5px}
@@ -449,6 +450,7 @@ a,button{-webkit-tap-highlight-color:transparent}
 }
 .kupon-baner{margin-top:0}
 .hero .kupon-baner{min-height:250px}
+@media(max-width:640px){.hero .kupon-baner{min-height:0}}
 .hero .kupon-baner .kb-tytul{max-width:9.3em}
 .info .kupon-baner{margin:18px 0 6px;min-height:200px}
 .info .kupon-baner.kako .kb-tytul{max-width:9.3em;font-size:26px}
