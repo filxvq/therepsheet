@@ -234,7 +234,7 @@ function variantsHtml(p) {
     const opts = g.options.map((o, i) => {
       const im = o.img && vImg(o.img);
       const hide = i >= cap ? ' hidden-opt' : '';
-      return im ? `<button type="button" class="swatch${hide}" data-shot="${im}" title="${esc(o.t)}"><img src="${im}" alt="${esc(p.name)} option ${esc(o.t)}" width="56" height="56" loading="lazy"><span>${esc(o.t)}</span></button>`
+      return im ? `<button type="button" class="swatch${hide}" data-shot="${im}" title="${esc(o.t)}"><img src="${im}" alt="${esc(p.name)} option ${esc(o.t)}" width="56" height="56" loading="lazy"></button>`
         : `<button type="button" class="chip-opt${hide}">${esc(o.t)}</button>`;
     }).join('');
     const more = g.options.length > cap ? `<button type="button" class="${withImg ? 'swatch more-opt' : 'chip-opt more-opt'}">+${g.options.length - cap}</button>` : '';
