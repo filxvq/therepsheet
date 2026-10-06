@@ -114,10 +114,7 @@ ${jsonld.map((j) => `<script type="application/ld+json">${JSON.stringify(j).repl
 <header class="top">
   <div class="wrap top-row">
     <a class="logo" href="/" aria-label="${NAME} home"><b>TheRep</b>Sheet<span>.com</span></a>
-    <div class="search" role="search">
-      ${ICON.search}<input id="q" type="search" placeholder="Search products…" autocomplete="off" aria-label="Search products">
-      <div id="results" class="results" hidden></div>
-    </div>
+    <button type="button" class="search" data-search-open aria-label="Search products">${ICON.search}<span>Search products…</span></button>
     <a class="icon-btn" href="/favorites/" aria-label="Favorites">${ICON.heart}<span class="fav-count" hidden></span></a>
     <div class="prefs">
       <button type="button" class="prefs-btn" id="prefsBtn" aria-expanded="false" aria-haspopup="dialog" aria-label="Shopping agent and currency"><img class="agent-logo" src="${defAgent.logo}" alt="" width="20" height="20"><span class="agent-name">${esc(defAgent.name)}</span><span class="cur-name">USD</span>${ICON.chevron}</button>
@@ -360,6 +357,12 @@ ${rail()}
     desc: `Browse the rep spreadsheet by category: ${CATEGORIES.map((c) => short(c).toLowerCase()).slice(0, 6).join(', ')} and more, plus the most popular reps this week.`,
     url: '/finds/', body, jsonld: [bcld], active: 'finds' }));
 }
+// ── search results (drawn by site.js from search.json, not indexed) ──
+write('/search/', page({ title: `Search Reps | ${NAME}`, desc: 'Search the rep spreadsheet by name or brand.', url: '/search/', noindex: true,
+  body: `<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Rep Spreadsheet</a><i>/</i><span id="searchCrumb">Search</span></nav>
+<header class="head"><h1 id="searchTitle">Search reps</h1><p class="count" id="searchCount"></p></header>
+<div class="grid" id="searchGrid"></div>
+<div class="empty" id="searchEmpty" hidden><p>No reps match that search. Try a brand or a shorter word.</p><button type="button" class="btn-buy" id="searchAgain">Search again</button></div>` }), { sitemap: false });
 // ── favorites (client-side, not indexed) ─────────────────────────────────────
 write('/favorites/', page({ title: `Your Favorite Reps | ${NAME}`, desc: 'The reps you saved on this device.', url: '/favorites/', noindex: true, active: 'favorites',
   body: `<header class="head"><h1>Your Favorite Reps</h1><p class="count" id="favNote">Saved on this device.</p></header>
@@ -395,7 +398,7 @@ ${withQc.length ? `<section><div class="sec-head"><h2>Reps With QC Photos</h2></
 <section><h2>Buying Reps, Step by Step</h2><ol class="steps">${GUIDE.steps.map((s) => `<li><h3>${esc(s.t)}</h3><p>${esc(s.d)}</p></li>`).join('')}</ol><p class="more"><a href="/how-to-buy/">The full guide to buying reps →</a></p></section>
 <section class="faq"><h2>Rep FAQ</h2>${FAQ.map((f) => `<details><summary>${esc(f.q)}</summary><div><p>${esc(f.a)}</p></div></details>`).join('')}</section>`;
   const ld = [{ '@context': 'https://schema.org', '@type': 'WebSite', name: NAME, url: SITE + '/',
-      potentialAction: { '@type': 'SearchAction', target: SITE + '/finds/?q={search_term_string}', 'query-input': 'required name=search_term_string' } },
+      potentialAction: { '@type': 'SearchAction', target: SITE + '/search/?q={search_term_string}', 'query-input': 'required name=search_term_string' } },
     { '@context': 'https://schema.org', '@type': 'Organization', name: NAME, url: SITE + '/', logo: SITE + '/assets/icon.svg' },
     { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: FAQ.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) }];
   write('/', page({ title: `Rep Spreadsheet ${YEAR}: ${ROUND}+ Rep Links & QC Photos | TheRepSheet`,

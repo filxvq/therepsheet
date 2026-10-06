@@ -250,7 +250,7 @@
   var HEART = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7z"/></svg>';
   function cardHtml(x) {
     return '<article class="card"><a class="card-img" href="' + x.u + '" tabindex="-1"><img src="' + x.i + '" alt="' + esc(x.n) + ' rep" width="300" height="300" loading="lazy"></a>'
-      + '<button type="button" class="fav" data-fav="' + x.id + '" aria-pressed="true" aria-label="Remove from favorites">' + HEART + '</button>'
+      + '<button type="button" class="fav" data-fav="' + x.id + '" aria-pressed="false" aria-label="Favorite">' + HEART + '</button>'
       + '<div class="card-body"><p class="card-cat">' + esc((T.cats || {})[x.cat] || '') + '</p><a class="card-name" href="' + x.u + '">' + esc(x.n) + '</a><p class="price" data-cny="' + x.c + '"></p>'
       + '<div class="card-actions"><a class="btn-ghost" href="' + x.u + '">View details</a><a class="btn-buy" data-wd="' + x.id + '" href="#" rel="nofollow sponsored noopener" target="_blank"><span>View on <span class="agent-name"></span> →</span></a></div></div></article>';
   }
@@ -268,41 +268,79 @@
 
   apply(); syncFavs(); drawFavs(); watch(document);
 
-  // ── search box ──
-  var q = $('#q'), box = $('#results');
-  if (!q || !box) return;
-  var pick = -1;
-  function render() {
-    var s = q.value.trim().toLowerCase();
-    if (!s) { box.hidden = true; return; }
-    var words = s.split(/\s+/);
-    var hits = data.filter(function (x) { return words.every(function (w) { return x.k.indexOf(w) >= 0; }); }).slice(0, 12);
-    pick = -1;
-    box.innerHTML = hits.length ? hits.map(function (x) {
-      return '<a href="' + x.u + '"><img src="' + x.i + '" alt="" loading="lazy"><span class="r-name"><span class="r-cat">' + esc((T.cats || {})[x.cat] || '') + '</span>' + esc(x.n) + '</span><span class="r-price">' + fmt(x.c) + '</span></a>';
-    }).join('') : '<div class="none">No reps match “' + esc(q.value) + '”.</div>';
-    box.hidden = false;
-    watch(box);
+  // ── search: a window over the page (header button, Ctrl/⌘ K), and /search/?q= for all results ──
+  var SHOW = 5, overlay = null, pick = -1;
+  function matches(q) {
+    var words = q.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    if (!words.length) return [];
+    return data.filter(function (x) { return words.every(function (w) { return x.k.indexOf(w) >= 0; }); });
   }
-  q.addEventListener('focus', function () { load().then(function () { if (q.value) render(); }); });
-  q.addEventListener('input', function () { load().then(render); });
-  q.addEventListener('keydown', function (e) {
-    var items = $$('a', box);
-    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-      e.preventDefault(); if (!items.length) return;
-      pick = (pick + (e.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length;
-      items.forEach(function (a, i) { a.classList.toggle('sel', i === pick); });
-      items[pick].scrollIntoView({ block: 'nearest' });
-    } else if (e.key === 'Enter') {
-      var a = items[pick >= 0 ? pick : 0]; if (a) location.href = a.href;
-    } else if (e.key === 'Escape') { box.hidden = true; q.blur(); }
-  });
+  function searchUrl(q) { return '/search/?q=' + encodeURIComponent(q.trim()); }
+  function openSearch(initial) {
+    if (overlay) return;
+    overlay = document.createElement('div'); overlay.className = 'sx';
+    overlay.innerHTML = '<div class="sx-panel" role="dialog" aria-label="Search products">'
+      + '<div class="sx-top">' + '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>'
+      + '<input class="sx-input" type="search" placeholder="Search products…" autocomplete="off" aria-label="Search products"></div>'
+      + '<div class="sx-list"></div>'
+      + '<div class="sx-keys"><span><kbd>↑↓</kbd> Browse reps</span><span><kbd>Enter</kbd> Open rep</span><span><kbd>Esc</kbd> Close</span></div></div>';
+    document.body.appendChild(overlay);
+    document.documentElement.classList.add('sx-lock');
+    void overlay.offsetWidth; overlay.classList.add('open');
+    var input = $('.sx-input', overlay), list = $('.sx-list', overlay);
+    input.value = initial || '';
+    function draw() {
+      var q = input.value, hits = matches(q);
+      pick = -1;
+      if (!q.trim()) { list.innerHTML = '<div class="sx-hint">Type a brand, an item or a colour: “nike”, “hoodie”, “jordan 4”.</div>'; return; }
+      if (!hits.length) { list.innerHTML = '<div class="sx-hint">No reps match “' + esc(q) + '”.</div>'; return; }
+      list.innerHTML = hits.slice(0, SHOW).map(function (x) {
+        return '<a class="sx-item" href="' + x.u + '"><img src="' + x.i + '" alt="" width="44" height="44"><span class="sx-name">' + esc(x.n) + '</span><span class="sx-price">' + fmt(x.c) + '</span></a>';
+      }).join('') + (hits.length > SHOW ? '<a class="sx-all" href="' + searchUrl(q) + '"><b>See all ' + hits.length + ' results</b><span>+' + (hits.length - SHOW) + ' more</span></a>' : '');
+    }
+    load().then(draw);
+    input.addEventListener('input', function () { load().then(draw); });
+    input.addEventListener('keydown', function (e) {
+      var items = $$('.sx-item, .sx-all', list);
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault(); if (!items.length) return;
+        pick = (pick + (e.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length;
+        items.forEach(function (a, i) { a.classList.toggle('sel', i === pick); });
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (pick >= 0 && items[pick]) location.href = items[pick].href;
+        else if (input.value.trim()) location.href = matches(input.value).length === 1 ? items[0].href : searchUrl(input.value);
+      } else if (e.key === 'Escape') closeSearch();
+    });
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) closeSearch(); });
+    setTimeout(function () { input.focus(); input.select(); }, 30);
+  }
+  function closeSearch() {
+    if (!overlay) return;
+    var o = overlay; overlay = null;
+    o.classList.remove('open'); document.documentElement.classList.remove('sx-lock');
+    setTimeout(function () { o.remove(); }, 200);
+  }
+  $$('[data-search-open]').forEach(function (b) { b.addEventListener('click', function () { openSearch(); }); });
   document.addEventListener('keydown', function (e) {
-    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); q.focus(); q.select(); }
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); overlay ? closeSearch() : openSearch(); }
     if (e.key === 'Escape') openPop(false);
   });
-  document.addEventListener('click', function (e) { if (!e.target.closest('.search')) box.hidden = true; });
-  // ?q= in the address (the home page's SearchAction) opens the box with that query
-  var start = new URLSearchParams(location.search).get('q');
-  if (start) { q.value = start; load().then(function () { render(); q.focus(); }); }
+
+  // the results page: every match as cards, in catalog order
+  var grid = $('#searchGrid');
+  if (grid) {
+    var q0 = new URLSearchParams(location.search).get('q') || '';
+    $('#searchTitle').textContent = q0 ? 'Results for “' + q0 + '”' : 'Search reps';
+    var crumb = $('#searchCrumb'); if (crumb) crumb.textContent = q0 ? 'Search: “' + q0 + '”' : 'Search';
+    if (q0) document.title = 'Results for “' + q0 + '” | TheRepSheet';
+    load().then(function () {
+      var hits = matches(q0);
+      $('#searchCount').textContent = q0 ? hits.length + (hits.length === 1 ? ' rep' : ' reps') + ' found' : '';
+      grid.innerHTML = hits.map(cardHtml).join('');
+      $('#searchEmpty').hidden = !!hits.length || !q0;
+      apply(); syncFavs(); watch(grid);
+    });
+    var again = $('#searchAgain'); if (again) again.addEventListener('click', function () { openSearch(q0); });
+  }
 })();
