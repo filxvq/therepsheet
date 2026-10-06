@@ -134,14 +134,23 @@ ${jsonld.map((j) => `<script type="application/ld+json">${JSON.stringify(j).repl
 ${body}
 </main>
 <footer class="foot">
-  <div class="wrap foot-grid">
-    <div><a class="logo" href="/"><b>TheRep</b>Sheet<span>.com</span></a>
-      <p>The rep spreadsheet for Weidian finds: ${COUNT} reps with live prices and direct links for every major shopping agent. Updated ${UPDATED}.</p></div>
-    <div><h3>Reps</h3>${CATEGORIES.slice(0, 6).map((c) => `<a href="/${c.id}/">${esc(c.reps)}</a>`).join('')}</div>
-    <div><h3>More reps</h3>${CATEGORIES.slice(6).map((c) => `<a href="/${c.id}/">${esc(c.reps)}</a>`).join('')}<a href="/brands/">Reps by brand</a></div>
-    <div><h3>Help</h3><a href="/how-to-buy/">How to buy reps</a><a href="/faq/">Rep FAQ</a><a href="/about/">About &amp; disclaimer</a></div>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div><a class="logo" href="/"><b>TheRep</b>Sheet<span>.com</span></a>
+        <p>The rep spreadsheet for Weidian finds: ${COUNT} reps with live prices and direct links for six shopping agents. Updated ${UPDATED}.</p></div>
+      <div><h3>Categories</h3>${CATEGORIES.map((c) => `<a href="/${c.id}/">${esc(c.reps)}</a>`).join('')}</div>
+      <div><h3>Quick links</h3><a href="/">Home</a><a href="/finds/">All reps</a><a href="/brands/">Reps by brand</a><a href="/how-to-buy/">How to buy reps</a><a href="/faq/">Rep FAQ</a><a href="/favorites/">Your favorites</a><a href="/about/">About</a><a data-signup href="${defAgent.signup}" rel="nofollow sponsored noopener" target="_blank">Sign up to <span class="agent-name">${esc(defAgent.name)}</span></a></div>
+    </div>
+    <div class="foot-brands"><h3>Brands</h3><div class="brand-cols">${BRANDS.slice(0, 42).map((b) => `<a href="/brands/${b.slug}/">${esc(b.name)}</a>`).join('')}</div></div>
+    <div class="foot-legal">
+      <p><b>Who runs this.</b> TheRepSheet is kept by a small group of buyers who order through these agents themselves. Finds are added by hand, prices follow the sellers' yuan prices at the live rate, and listings that go dead are taken off.</p>
+      <p><b>Disclaimer.</b> TheRepSheet is an independent catalog. It is not endorsed by or connected to Kakobuy, USFans, Sinabuy, Litbuy, Oopbuy, Acbuy, Weidian or any brand shown. Its only purpose is to help you find listings on third-party marketplaces.</p>
+      <p>We sell nothing, hold no stock, take no payments and are not part of any transaction. Every purchase is made by you, with the agent you choose, at your own discretion. Brand and product names appear only to identify what a listing is.</p>
+      <p><b>Affiliate disclosure.</b> Some agent and sign-up links carry a referral code. It costs you nothing and pays for keeping the catalog up to date; it never changes the price of an item.</p>
+      <p><b>External content.</b> We do not control and are not responsible for the content, accuracy or quality of items on external sites. Check the details on the agent's page before you order.</p>
+    </div>
+    <p class="fine">© ${YEAR} therepsheet.com</p>
   </div>
-  <p class="wrap fine">${NAME} sells nothing and holds no stock: every order is placed by you with a shopping agent. Brand names only identify what an item is. Some agent links carry a referral code. © ${YEAR} therepsheet.com</p>
 </footer>
 <script>window.TRS=${JSON.stringify({ agents: AGENTS.map(({ id, name, code, rate, signup, perk, logo, promo }) => ({ id, name, code, rate, signup, perk, logo, promo })), plane: ICO.plane, cny: CNY_FALLBACK, def: DEFAULT_AGENT, sv: searchVersion(), cats: Object.fromEntries(CATEGORIES.map((c) => [c.id, short(c)])) })}</script>
 <script src="/assets/site.js?v=${V.js}" defer></script>
