@@ -287,7 +287,6 @@ for (const p of products) {
     </div>
     ${promoCard()}
     ${variantsHtml(p)}
-    <dl class="facts"><dt>Category</dt><dd><a href="/${cat.id}/">${esc(cat.reps)}</a></dd>${p.brand ? `<dt>Brand</dt><dd>${bp ? `<a href="/brands/${bp.slug}/">${esc(p.brand)}</a>` : esc(p.brand)}</dd>` : ''}<dt>Marketplace</dt><dd><a href="${weidian(p.id)}" rel="nofollow noopener" target="_blank">Weidian ↗</a></dd><dt>Listing ID</dt><dd>${p.id}</dd></dl>
   </div>
 </div>
 ${qcOf(p).length ? `<section class="qc-sec"><div class="sec-head"><h2>QC photos of this rep <small>${qcOf(p).length}</small></h2></div><p class="intro">Warehouse photos from real orders of this listing, taken by shopping agents before shipping.</p><div class="qc-grid">${qcOf(p).map((f, i) => `<button type="button" class="qc-shot" data-full="${f}" aria-label="Open QC photo ${i + 1}"><img src="${f}" alt="${esc(p.name)} rep QC photo ${i + 1}" width="240" height="240" loading="lazy"></button>`).join('')}</div></section>` : ''}
