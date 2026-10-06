@@ -361,7 +361,7 @@ write('/favorites/', page({ title: `Your Favorite Reps | ${NAME}`, desc: 'The re
   const stats = [`${COUNT} reps`, `${BRANDS.length} brands`, `${withQc.length} with QC photos`, `${AGENTS.length} agents`];
   const body = `<section class="hero">
   <div class="hero-text">
-    <h1>Rep Spreadsheet ${YEAR} <span>— ${ROUND}+ Weidian Reps</span></h1>
+    <h1>Rep Spreadsheet ${YEAR} <span>${ROUND}+ Rep Links</span></h1>
     <p>${esc(HOME.lead.replace('{COUNT}', COUNT)).replace('rep spreadsheet', '<strong>rep spreadsheet</strong>')}</p>
     <div class="hero-cta"><a class="btn-buy btn-xl" href="#categories">Shop reps by category ↓</a><span class="updated">${ICON.clock} Updated ${UPDATED}</span></div>
     <ul class="stats">${stats.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
@@ -381,7 +381,7 @@ ${withQc.length ? `<section><div class="sec-head"><h2>Reps With QC Photos</h2></
       potentialAction: { '@type': 'SearchAction', target: SITE + '/finds/?q={search_term_string}', 'query-input': 'required name=search_term_string' } },
     { '@context': 'https://schema.org', '@type': 'Organization', name: NAME, url: SITE + '/', logo: SITE + '/assets/icon.svg' },
     { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: FAQ.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) }];
-  write('/', page({ title: `Rep Spreadsheet ${YEAR} – ${ROUND}+ Weidian Reps with QC Photos | TheRepSheet`,
+  write('/', page({ title: `Rep Spreadsheet ${YEAR} – ${ROUND}+ Rep Links with QC Photos | TheRepSheet`,
     desc: `The rep spreadsheet with ${COUNT} Weidian reps: shoes, hoodies, jackets, bags and more, with real prices, every colour and size, and QC photos from real orders.`,
     url: '/', body, jsonld: ld, image: imgOf(products[0]) }));
 }
