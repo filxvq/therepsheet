@@ -52,14 +52,31 @@
     $$('.cur-name').forEach(function (el) { el.textContent = cur; });
     $$('[data-signup]').forEach(function (el) { el.href = pa.signup; });
     $$('[data-perk-title]').forEach(function (el) { el.textContent = pa.perk; });
-    $$('.promo .coupons').forEach(function (el) {
-      el.innerHTML = (pa.coupons || []).map(function (c, i) { return '<span class="coupon c' + (i + 1) + '"><b>' + c.big + '</b><small>' + c.sub + '</small>' + (c.note ? '<em>' + c.note + '</em>' : '') + '</span>'; }).join('');
-    });
+    if (anim || !T.promoDrawn) drawPromo(pa);
     $$('[data-perk]').forEach(function (el) {
       el.innerHTML = agent.perk ? 'New to ' + agent.name + '? <a href="' + agent.signup + '" rel="nofollow sponsored noopener" target="_blank">Sign up</a> for ' + agent.perk + '.' : '';
     });
     $$('.agent-opt').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-agent') === agent.id); });
     $$('.seg button').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-cur') === cur); });
+  }
+
+  // the new-account banner follows the agent: Kakobuy's red tickets or USFans' space coupons
+  function esc0(x) { return String(x).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function drawPromo(pa) {
+    var pr = pa.promo; if (!pr) return;
+    T.promoDrawn = true;
+    $$('.kupon-baner').forEach(function (b) {
+      b.classList.toggle('kako', pr.style !== 'usf'); b.classList.toggle('usf', pr.style === 'usf');
+      var t = $('[data-promo-title]', b); if (t) t.textContent = pr.title;
+      var sb = $('[data-promo-sub]', b); if (sb) sb.innerHTML = pr.sub.map(function (x) { return '<span>' + esc0(x) + '</span>'; }).join('');
+      var k = $('.kb-kupony', b); if (!k) return;
+      k.innerHTML = pr.coupons.map(function (c, i) {
+        var pos = i === 0 ? 'kupon-tyl' : 'kupon-przod';
+        return pr.style === 'usf'
+          ? '<div class="kupon ' + pos + '"><div class="kupon-gora"><b>' + esc0(c.big) + '</b><small>' + esc0(c.min) + '</small></div><div class="kupon-dol"><div class="kupon-opis"><span class="kupon-typ">' + T.plane + '<span>' + esc0(c.typ) + '</span></span><span class="kupon-waznosc">Valid 1 year</span></div><span class="kupon-uzyj">Use</span></div></div>'
+          : '<div class="kupon ' + pos + '"><div class="kupon-top"><b>' + esc0(c.big) + '</b></div><div class="kupon-mid"><span class="kupon-body">' + esc0(c.body) + '</span></div><div class="kupon-dol"><span class="kupon-waznosc">Valid 1 year</span><span class="kupon-uzyj">Use Now</span></div></div>';
+      }).join('');
+    });
   }
 
   // ── agent & currency popover ──

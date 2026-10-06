@@ -143,7 +143,7 @@ ${body}
   </div>
   <p class="wrap fine">${NAME} sells nothing and holds no stock: every order is placed by you with a shopping agent. Brand names only identify what an item is. Some agent links carry a referral code. © ${YEAR} therepsheet.com</p>
 </footer>
-<script>window.TRS=${JSON.stringify({ agents: AGENTS.map(({ id, name, code, rate, signup, perk, logo, coupons }) => ({ id, name, code, rate, signup, perk, logo, coupons })), cny: CNY_FALLBACK, def: DEFAULT_AGENT, sv: searchVersion(), cats: Object.fromEntries(CATEGORIES.map((c) => [c.id, short(c)])) })}</script>
+<script>window.TRS=${JSON.stringify({ agents: AGENTS.map(({ id, name, code, rate, signup, perk, logo, promo }) => ({ id, name, code, rate, signup, perk, logo, promo })), plane: ICO.plane, cny: CNY_FALLBACK, def: DEFAULT_AGENT, sv: searchVersion(), cats: Object.fromEntries(CATEGORIES.map((c) => [c.id, short(c)])) })}</script>
 <script src="/assets/site.js?v=${V.js}" defer></script>
 </body>
 </html>`;
@@ -205,15 +205,27 @@ ${pager(base, k, total)}`;
   }
 }
 
-const couponsHtml = (a) => (a.coupons || []).map((c, i) => `<span class="coupon c${i + 1}"><b>${esc(c.big)}</b><small>${esc(c.sub)}</small>${c.note ? `<em>${esc(c.note)}</em>` : ''}</span>`).join('');
-// The new-account offer for the selected agent (Kakobuy unless the visitor picked USFans), as a card.
-function promoCard(compact = false) {
-  const k = AGENTS[0];
-  return `<a class="promo${compact ? ' promo-sm' : ''}" data-signup href="${k.signup}" rel="nofollow sponsored noopener" target="_blank">
-    <span class="promo-badge">For new <span class="agent-name">${esc(k.name)}</span> users</span>
-    <span class="promo-title" data-perk-title>${esc(k.perk)}</span>
-    <span class="promo-cta">Claim now →</span>
-    <span class="coupons" aria-hidden="true">${couponsHtml(k)}</span>
+// The new-account offer for the selected agent: the vetereps.com banner, red tickets for Kakobuy and
+// the space-themed cards for USFans. Agents without an offer show Kakobuy's (site.js swaps it live).
+const ICO = {
+  check: '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg>',
+  arrow: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>',
+  plane: '<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 10h4a2 2 0 0 1 0 4h-4l-4 7h-3l2-7H7l-2 2H2l2-4-2-4h3l2 2h4L9 3h3z"/></svg>',
+};
+export const couponsHtml = (pr) => pr.coupons.map((c, i) => {
+  const pos = i === 0 ? 'kupon-tyl' : 'kupon-przod';
+  return pr.style === 'usf'
+    ? `<div class="kupon ${pos}"><div class="kupon-gora"><b>${esc(c.big)}</b><small>${esc(c.min)}</small></div><div class="kupon-dol"><div class="kupon-opis"><span class="kupon-typ">${ICO.plane}<span>${esc(c.typ)}</span></span><span class="kupon-waznosc">Valid 1 year</span></div><span class="kupon-uzyj">Use</span></div></div>`
+    : `<div class="kupon ${pos}"><div class="kupon-top"><b>${esc(c.big)}</b></div><div class="kupon-mid"><span class="kupon-body">${esc(c.body)}</span></div><div class="kupon-dol"><span class="kupon-waznosc">Valid 1 year</span><span class="kupon-uzyj">Use Now</span></div></div>`;
+}).join('');
+function promoCard() {
+  const k = AGENTS[0], pr = k.promo;
+  return `<a class="kupon-baner ${pr.style}" data-signup href="${k.signup}" rel="nofollow sponsored noopener" target="_blank">
+    <div class="kb-tekst"><span class="kb-znaczek">${ICO.check}<span>For new <span class="agent-name">${esc(k.name)}</span> users</span></span>
+      <div class="kb-tytul" data-promo-title>${esc(pr.title)}</div>
+      <div class="kb-pod" data-promo-sub>${pr.sub.map((x) => `<span>${esc(x)}</span>`).join('')}</div>
+      <span class="kb-przycisk"><span>Claim now</span>${ICO.arrow}</span></div>
+    <div class="kb-kupony" aria-hidden="true">${couponsHtml(pr)}</div>
   </a>`;
 }
 
@@ -273,7 +285,7 @@ for (const p of products) {
       <div class="others"><button type="button" class="others-btn" aria-expanded="false">Other agents ${ICON.chevron}</button>
         <div class="others-pop">${AGENTS.map((a) => `<a class="others-opt" data-agent-link="${a.id}" data-wd="${p.id}" href="${buyUrl(p.id, a)}" rel="nofollow sponsored noopener" target="_blank"><img src="${a.logo}" alt="" width="22" height="22">${esc(a.name)}</a>`).join('')}</div></div>
     </div>
-    ${promoCard(true)}
+    ${promoCard()}
     ${variantsHtml(p)}
     <dl class="facts"><dt>Category</dt><dd><a href="/${cat.id}/">${esc(cat.reps)}</a></dd>${p.brand ? `<dt>Brand</dt><dd>${bp ? `<a href="/brands/${bp.slug}/">${esc(p.brand)}</a>` : esc(p.brand)}</dd>` : ''}<dt>Marketplace</dt><dd><a href="${weidian(p.id)}" rel="nofollow noopener" target="_blank">Weidian ↗</a></dd><dt>Listing ID</dt><dd>${p.id}</dd></dl>
   </div>
