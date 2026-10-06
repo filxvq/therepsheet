@@ -1,6 +1,6 @@
 // The only script on the site. Pages are complete without it; it:
 //   1. points every buy and sign-up link at the agent the visitor picked (kept in localStorage),
-//   2. shows prices in that agent's dollars, or EUR/GBP, using live rates from /api/rates/,
+//   2. shows prices in that agent's dollars, or EUR/GBP, using live rates from /api/rates,
 //   3. keeps favorites (ids in localStorage) and draws the /favorites/ page,
 //   4. runs the search box over /search.json, loaded the first time the box is used.
 (function () {
@@ -72,7 +72,7 @@
   $$('.seg button').forEach(function (b) { b.addEventListener('click', function () { cur = b.getAttribute('data-cur'); store.set('trs_cur', cur); apply(true); }); });
   document.addEventListener('click', function (e) { if (pop && !e.target.closest('.prefs')) openPop(false); });
 
-  fetch('/api/rates/').then(function (r) { return r.ok ? r.json() : null; }).then(function (k) {
+  fetch('/api/rates').then(function (r) { return r.ok ? r.json() : null; }).then(function (k) {
     if (!k || !k.CNY) return;
     rates = { CNY: k.CNY, EUR: k.EUR || rates.EUR, GBP: k.GBP || rates.GBP };
     store.set('trs_rates', JSON.stringify(rates)); apply();
