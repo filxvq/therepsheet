@@ -350,30 +350,39 @@ write('/favorites/', page({ title: `Your Favorite Reps | ${NAME}`, desc: 'The re
 <div class="empty" id="favEmpty" hidden><p>No favorites yet. Tap the ♡ on any rep to save it here.</p><a class="btn-buy" href="/finds/">Browse the rep spreadsheet →</a></div>` }), { sitemap: false });
 
 // ── home ─────────────────────────────────────────────────────────────────────
+// Its own layout and words, not the source sheet's: a mixed pick across categories rather than the
+// source's ranking order, a QC-photo row, and section names of our own.
 {
-  const kako = AGENTS[0];
+  // the most popular reps, taken in turn from each category so the row is not one list in one order
+  const mix = (n) => { const groups = CATEGORIES.map((c) => byCat.get(c.id).slice(0, 12)), out = [];
+    for (let i = 0; out.length < n && i < 12; i++) for (const g of groups) if (g[i] && out.length < n) out.push(g[i]);
+    return out; };
+  const withQc = products.filter((p) => qcOf(p).length).sort((a, b) => qcOf(b).length - qcOf(a).length);
+  const stats = [`${COUNT} reps`, `${BRANDS.length} brands`, `${withQc.length} with QC photos`, `${AGENTS.length} agents`];
   const body = `<section class="hero">
   <div class="hero-text">
-    <h1>Rep Spreadsheet ${YEAR}<br><span>${ROUND}+ Rep Finds</span></h1>
-    <p>${esc(HOME.lead).replace('rep spreadsheet', '<strong>rep spreadsheet</strong>')}</p>
-    <div class="hero-cta"><a class="btn-buy btn-xl" href="#popular">Browse the Rep Spreadsheet ↓</a><span class="updated">${ICON.clock} Updated ${UPDATED}</span></div>
+    <h1>Rep Spreadsheet ${YEAR} <span>— ${ROUND}+ Weidian Reps</span></h1>
+    <p>${esc(HOME.lead.replace('{COUNT}', COUNT)).replace('rep spreadsheet', '<strong>rep spreadsheet</strong>')}</p>
+    <div class="hero-cta"><a class="btn-buy btn-xl" href="#categories">Shop reps by category ↓</a><span class="updated">${ICON.clock} Updated ${UPDATED}</span></div>
+    <ul class="stats">${stats.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
   </div>
   ${promoCard()}
 </section>
-<section><div class="sec-head"><h2>Browse Reps by Category</h2></div>${rail()}</section>
-<section id="popular"><div class="sec-head"><h2>Most Popular Reps This Week</h2><a class="sec-link" href="/finds/">See all reps →</a></div>${row(products.slice(0, 24))}</section>
-<section><div class="sec-head"><h2>Top Rep Brands</h2><a class="sec-link" href="/brands/">All brands →</a></div><div class="chips">${BRANDS.slice(0, 24).map((b) => `<a href="/brands/${b.slug}/">${esc(b.name)} reps <b>${b.n}</b></a>`).join('')}</div></section>
-<section><h2>How to Use the Rep Spreadsheet</h2><ol class="cards3">${HOME.use.map((s, i) => `<li><span class="num">${i + 1}</span><h3>${esc(s.t)}</h3><p>${esc(s.d)}</p></li>`).join('')}</ol></section>
-<section class="prose"><h2>What Are Reps?</h2>${HOME.what.map((t) => `<p>${esc(t)}</p>`).join('')}</section>
-<section><h2>How to Buy Reps: Step by Step</h2><ol class="steps">${GUIDE.steps.map((s) => `<li><h3>${esc(s.t)}</h3><p>${esc(s.d)}</p></li>`).join('')}</ol><p class="more"><a href="/how-to-buy/">Full guide to buying reps →</a></p></section>
-<section><h2>Why Use This Rep Spreadsheet</h2><div class="cards3">${HOME.why.map((s) => `<div><h3>${esc(s.t)}</h3><p>${esc(s.d)}</p></div>`).join('')}</div></section>
-<section class="faq"><h2>Rep Spreadsheet — FAQ</h2>${FAQ.map((f) => `<details><summary>${esc(f.q)}</summary><div><p>${esc(f.a)}</p></div></details>`).join('')}</section>`;
+<section id="categories"><div class="sec-head"><h2>Shop Reps by Category</h2><a class="sec-link" href="/finds/">All reps →</a></div>${rail()}</section>
+<section><div class="sec-head"><h2>Best Reps Right Now</h2><a class="sec-link" href="/finds/">More →</a></div>${row(mix(24))}</section>
+${withQc.length ? `<section><div class="sec-head"><h2>Reps With QC Photos</h2></div><p class="intro">Real warehouse photos from other buyers' orders, so you can see what actually arrives.</p>${row(withQc.slice(0, 16))}</section>` : ''}
+<section><div class="sec-head"><h2>Popular Rep Brands</h2><a class="sec-link" href="/brands/">All ${BRANDS.length} brands →</a></div><div class="chips">${BRANDS.slice(0, 24).map((b) => `<a href="/brands/${b.slug}/">${esc(b.name)} reps <b>${b.n}</b></a>`).join('')}</div></section>
+<section class="split"><div class="prose"><h2>New to Reps?</h2>${HOME.what.map((t) => `<p>${esc(t)}</p>`).join('')}</div>
+<div><h2>Three Steps to Your First Haul</h2><ol class="start">${HOME.start.map((s, i) => `<li><span class="num">${i + 1}</span><div><h3>${esc(s.t)}</h3><p>${esc(s.d)}</p></div></li>`).join('')}</ol></div></section>
+<section><h2>What Makes TheRepSheet Different</h2><div class="cards4">${HOME.why.map((s) => `<div><h3>${esc(s.t)}</h3><p>${esc(s.d)}</p></div>`).join('')}</div></section>
+<section><h2>Buying Reps, Step by Step</h2><ol class="steps">${GUIDE.steps.map((s) => `<li><h3>${esc(s.t)}</h3><p>${esc(s.d)}</p></li>`).join('')}</ol><p class="more"><a href="/how-to-buy/">The full guide to buying reps →</a></p></section>
+<section class="faq"><h2>Rep FAQ</h2>${FAQ.map((f) => `<details><summary>${esc(f.q)}</summary><div><p>${esc(f.a)}</p></div></details>`).join('')}</section>`;
   const ld = [{ '@context': 'https://schema.org', '@type': 'WebSite', name: NAME, url: SITE + '/',
       potentialAction: { '@type': 'SearchAction', target: SITE + '/finds/?q={search_term_string}', 'query-input': 'required name=search_term_string' } },
     { '@context': 'https://schema.org', '@type': 'Organization', name: NAME, url: SITE + '/', logo: SITE + '/assets/icon.svg' },
     { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: FAQ.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) }];
-  write('/', page({ title: `Rep Spreadsheet ${YEAR}: ${ROUND}+ Rep Finds | TheRepSheet`,
-    desc: `The rep spreadsheet with ${COUNT} Weidian rep finds: shoes, hoodies, jackets, bags and more, with live prices and links for Kakobuy, USFans and other agents.`,
+  write('/', page({ title: `Rep Spreadsheet ${YEAR} – ${ROUND}+ Weidian Reps with QC Photos | TheRepSheet`,
+    desc: `The rep spreadsheet with ${COUNT} Weidian reps: shoes, hoodies, jackets, bags and more, with real prices, every colour and size, and QC photos from real orders.`,
     url: '/', body, jsonld: ld, image: imgOf(products[0]) }));
 }
 

@@ -2,20 +2,21 @@
 // The phrase people search is "rep spreadsheet" / "reps", so the copy says it plainly.
 
 export const HOME = {
-  lead: 'Browse the most up-to-date rep spreadsheet on the web: hand-picked Weidian reps across shoes, hoodies, jackets, bags and accessories, every rep with a live price and a direct link for Kakobuy, USFans and four more agents. No digging through Discord, no dead sheets. Find the rep, click, order.',
-  use: [
-    { t: 'Find your rep.', d: 'Open a category or search the rep spreadsheet by name or brand. Each card shows the rep\'s price for the agent you picked.' },
-    { t: 'Open it on your agent.', d: 'Press Buy and the rep opens on your agent\'s product page, with sizes and colours ready to choose.' },
-    { t: 'Order, QC, ship.', d: 'Your agent buys the rep, sends you QC photos from the warehouse, and ships everything together when you are ready.' },
+  lead: 'TheRepSheet puts {COUNT} Weidian reps in one rep spreadsheet: sneakers, hoodies, jackets, bags and accessories, each with its real price, every colour and size the seller offers, and QC photos from real orders where they exist. Pick your shopping agent once and every rep on the site opens straight in it.',
+  start: [
+    { t: 'Pick a rep.', d: 'Browse a category, a brand or search by name. Colours, sizes and QC photos are on every rep page.' },
+    { t: 'Order through an agent.', d: 'Weidian sellers do not ship abroad, so an agent buys the rep for you and holds it in a warehouse in China.' },
+    { t: 'Approve the QC, then ship.', d: 'The agent photographs your actual item. If it looks right, send everything home in one parcel.' },
   ],
   what: [
-    'Reps (short for replicas) are items made to look like designer and streetwear pieces, sold by independent sellers on Chinese marketplaces such as Weidian, Taobao and 1688. Those sellers do not ship abroad, so reps are bought through a shopping agent that orders for you, photographs the item and ships it to your door.',
-    'A rep spreadsheet is the map: a list of reps with the seller\'s price and a working link, so you can go straight to the rep you want instead of searching a seller\'s whole shop. TheRepSheet is that list as a fast website, with search, categories and links for six agents.',
+    'Reps is the name the community uses for budget versions of popular streetwear and designer styles, sold by independent sellers on Chinese marketplaces such as Weidian. The sellers only ship within China, which is why every order goes through a shopping agent.',
+    'A rep spreadsheet is the shortcut: one list of reps with prices and working links, so you go straight to the item instead of digging through a seller\'s shop. TheRepSheet is that list as a fast site, with search, brands, colours, sizes and QC photos.',
   ],
   why: [
-    { t: 'Fast, no clutter.', d: 'Every page is plain and light, so the rep spreadsheet loads instantly on a phone.' },
-    { t: 'Six agents, one click.', d: 'Pick Kakobuy, USFans, Sinabuy, Litbuy, Oopbuy or Acbuy once and every rep link and price follows.' },
-    { t: 'Real prices.', d: 'Prices are the seller\'s yuan converted at today\'s rate with your agent\'s own margin, the figure you will actually pay for the rep.' },
+    { t: 'QC photos from real orders', d: 'Warehouse photos of the actual items other buyers received, shown on the rep pages that have them.' },
+    { t: 'Every colour and size', d: 'Each rep lists the options its seller offers, with a photo for every colourway.' },
+    { t: 'Six agents, one switch', d: 'Kakobuy, USFans, Sinabuy, Litbuy, Oopbuy or Acbuy: choose once and every link and price follows.' },
+    { t: 'Prices you will actually pay', d: 'The seller\'s yuan price at today\'s rate with your agent\'s own margin, not a rounded guess.' },
   ],
 };
 
