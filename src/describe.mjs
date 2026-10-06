@@ -1,4 +1,5 @@
-// The "About this find" text on a product page. Built from facts about the item and where it sits
+// The fallback "About this rep" text on a product page, and (first sentence) the price facts line
+// shown under the AI-written description from data/descriptions.json. Built from facts about the item and where it sits
 // in its category and brand, so two pages rarely read alike: the price band, its rank among the
 // brand's items, and a check that fits the category.
 const CHECKS = {
@@ -23,7 +24,7 @@ export function describe(p, { cat, catList, brandList, usd }) {
   const rank = prices.filter((x) => x < p.cny).length / Math.max(1, prices.length - 1);
   const band = rank < 0.2 ? 'among the cheapest' : rank < 0.45 ? 'in the cheaper half' : rank < 0.7 ? 'around the middle' : rank < 0.9 ? 'in the pricier half' : 'among the most expensive';
   const plural = cat.reps.toLowerCase();
-  out.push(`The ${p.name} rep is listed at ¥${p.cny} on Weidian, about ${money(usd)} through Kakobuy at today's rate. That puts it ${band} of the ${catList.length} ${plural} in the catalog, which run from ¥${prices[0]} to ¥${prices[prices.length - 1]}.`);
+  out.push(`Listed at ¥${p.cny} on Weidian, about ${money(usd)} through Kakobuy at today's rate, which puts it ${band} of the ${catList.length} ${plural} in the spreadsheet (¥${prices[0]} to ¥${prices[prices.length - 1]}).`);
   if (p.brand && brandList.length > 1) {
     const cheaper = brandList.filter((x) => x.cny < p.cny).length;
     const n = brandList.length;

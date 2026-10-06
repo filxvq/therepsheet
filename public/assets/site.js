@@ -45,12 +45,16 @@
       el.textContent = t;
     });
     if (anim) $$('.agent-name, .agent-logo, .cur-name, [data-perk], [data-perk-title]').forEach(function (el) { if (el.animate) el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 260, easing: 'ease-out' }); });
-    $$('a[data-wd]').forEach(function (el) { el.href = link(el.getAttribute('data-wd'), agent); });
+    $$('a[data-wd]').forEach(function (el) { var fixed = el.getAttribute('data-agent-link'); el.href = link(el.getAttribute('data-wd'), fixed ? byId[fixed] : agent); });
+    $$('.others-opt').forEach(function (el) { el.classList.toggle('on', el.getAttribute('data-agent-link') === agent.id); });
     $$('.agent-name').forEach(function (el) { el.textContent = el.closest('[data-signup]') ? pa.name : agent.name; });
     $$('.agent-logo').forEach(function (el) { el.src = agent.logo; });
     $$('.cur-name').forEach(function (el) { el.textContent = cur; });
     $$('[data-signup]').forEach(function (el) { el.href = pa.signup; });
     $$('[data-perk-title]').forEach(function (el) { el.textContent = pa.perk; });
+    $$('.promo .coupons').forEach(function (el) {
+      el.innerHTML = (pa.coupons || []).map(function (c, i) { return '<span class="coupon c' + (i + 1) + '"><b>' + c.big + '</b><small>' + c.sub + '</small>' + (c.note ? '<em>' + c.note + '</em>' : '') + '</span>'; }).join('');
+    });
     $$('[data-perk]').forEach(function (el) {
       el.innerHTML = agent.perk ? 'New to ' + agent.name + '? <a href="' + agent.signup + '" rel="nofollow sponsored noopener" target="_blank">Sign up</a> for ' + agent.perk + '.' : '';
     });
@@ -134,6 +138,28 @@
       else { im.addEventListener('load', function () { im.classList.add('ok'); }); im.addEventListener('error', function () { im.classList.add('ok'); }); }
     });
   }
+
+  // ── product page: photo switching, option groups, other agents ──
+  $$('.swatch img').forEach(function (im) { im.addEventListener('error', function () { im.closest('.swatch').style.display = 'none'; }); });
+  var shot = $('#mainShot');
+  function show(src, btn) {
+    if (!shot || shot.getAttribute('src') === src) return;
+    shot.classList.add('swap');
+    var im = new Image(); im.onload = im.onerror = function () { shot.src = src; shot.classList.remove('swap'); }; im.src = src;
+    $$('.thumb, .swatch').forEach(function (b) { b.classList.toggle('on', b === btn); });
+    if (btn && btn.classList.contains('swatch')) { var t = $('.thumb'); if (t) t.classList.remove('on'); }
+  }
+  document.addEventListener('click', function (e) {
+    var sw = e.target.closest('.swatch[data-shot], .thumb[data-shot]');
+    if (sw) { show(sw.getAttribute('data-shot'), sw); return; }
+    var more = e.target.closest('.more-opt');
+    if (more) { more.closest('.variant').classList.add('open'); return; }
+    var chip = e.target.closest('.chip-opt');
+    if (chip) { $$('.chip-opt', chip.parentNode).forEach(function (c) { c.classList.toggle('on', c === chip); }); return; }
+    var ob = e.target.closest('.others-btn');
+    if (ob) { var o = ob.parentNode, on = !o.classList.contains('open'); o.classList.toggle('open', on); ob.setAttribute('aria-expanded', on); return; }
+    if (!e.target.closest('.others')) $$('.others.open').forEach(function (o) { o.classList.remove('open'); $('.others-btn', o).setAttribute('aria-expanded', 'false'); });
+  });
 
   // ── search data, shared by the search box and the favorites page ──
   var data = null, loading = null;

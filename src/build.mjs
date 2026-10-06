@@ -23,6 +23,8 @@ import { describe } from './describe.mjs';
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = path.join(ROOT, 'dist');
 const products = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/products.json'), 'utf8'));
+// Unique per-product text from scripts/describe-ai.mjs; products without one fall back to describe().
+const AI = fs.existsSync(path.join(ROOT, 'data/descriptions.json')) ? JSON.parse(fs.readFileSync(path.join(ROOT, 'data/descriptions.json'), 'utf8')) : {};
 const BUILT = new Date().toISOString().slice(0, 10);
 const YEAR = BUILT.slice(0, 4);
 const UPDATED = new Date(BUILT).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
@@ -138,7 +140,7 @@ ${body}
   </div>
   <p class="wrap fine">${NAME} sells nothing and holds no stock: every order is placed by you with a shopping agent. Brand names only identify what an item is. Some agent links carry a referral code. © ${YEAR} therepsheet.com</p>
 </footer>
-<script>window.TRS=${JSON.stringify({ agents: AGENTS.map(({ id, name, code, rate, signup, perk, logo }) => ({ id, name, code, rate, signup, perk, logo })), cny: CNY_FALLBACK, def: DEFAULT_AGENT, sv: searchVersion(), cats: Object.fromEntries(CATEGORIES.map((c) => [c.id, short(c)])) })}</script>
+<script>window.TRS=${JSON.stringify({ agents: AGENTS.map(({ id, name, code, rate, signup, perk, logo, coupons }) => ({ id, name, code, rate, signup, perk, logo, coupons })), cny: CNY_FALLBACK, def: DEFAULT_AGENT, sv: searchVersion(), cats: Object.fromEntries(CATEGORIES.map((c) => [c.id, short(c)])) })}</script>
 <script src="/assets/site.js?v=${V.js}" defer></script>
 </body>
 </html>`;
@@ -200,6 +202,46 @@ ${pager(base, k, total)}`;
   }
 }
 
+const couponsHtml = (a) => (a.coupons || []).map((c, i) => `<span class="coupon c${i + 1}"><b>${esc(c.big)}</b><small>${esc(c.sub)}</small>${c.note ? `<em>${esc(c.note)}</em>` : ''}</span>`).join('');
+// The new-account offer for the selected agent (Kakobuy unless the visitor picked USFans), as a card.
+function promoCard(compact = false) {
+  const k = AGENTS[0];
+  return `<a class="promo${compact ? ' promo-sm' : ''}" data-signup href="${k.signup}" rel="nofollow sponsored noopener" target="_blank">
+    <span class="promo-badge">For new <span class="agent-name">${esc(k.name)}</span> users</span>
+    <span class="promo-title" data-perk-title>${esc(k.perk)}</span>
+    <span class="promo-cta">Claim now →</span>
+    <span class="coupons" aria-hidden="true">${couponsHtml(k)}</span>
+  </a>`;
+}
+
+// Colour, size and other option groups read from the source sheet (scripts/fetch-variants.mjs).
+// Swatches with a photo switch the main image; the first few show, the rest open with "+N".
+const VARIANTS = fs.existsSync(path.join(ROOT, 'data/variants.json')) ? JSON.parse(fs.readFileSync(path.join(ROOT, 'data/variants.json'), 'utf8')) : {};
+// Variant photos stay on the source sheet's CDN: ~19,500 of them would not fit Vercel's file
+// limits as part of this repo. A swatch whose photo fails to load hides itself (site.js).
+const vImg = (url) => (/^https:\/\//.test(url || '') ? url : null);
+// Option-group names come straight from Weidian sellers ("color classification", "yardage number");
+// show the common ones under one name.
+const groupName = (l) => { const x = l.toLowerCase();
+  if (/size|yard|eur|length|dimension|sise/.test(x)) return 'Size';
+  if (/colou?r|style|classification|model|collection|scheme|template/.test(x)) return 'Colour';
+  return l.charAt(0).toUpperCase() + l.slice(1); };
+function variantsHtml(p) {
+  const groups = VARIANTS[p.id] || [];
+  return groups.map((g) => {
+    const withImg = g.options.some((o) => o.img && vImg(o.img));
+    const cap = withImg ? 9 : 14;   // photo swatches fold after 9, text options (sizes) after 14
+    const opts = g.options.map((o, i) => {
+      const im = o.img && vImg(o.img);
+      const hide = i >= cap ? ' hidden-opt' : '';
+      return im ? `<button type="button" class="swatch${hide}" data-shot="${im}" title="${esc(o.t)}"><img src="${im}" alt="${esc(p.name)} option ${esc(o.t)}" width="56" height="56" loading="lazy"><span>${esc(o.t)}</span></button>`
+        : `<button type="button" class="chip-opt${hide}">${esc(o.t)}</button>`;
+    }).join('');
+    const more = g.options.length > cap ? `<button type="button" class="${withImg ? 'swatch more-opt' : 'chip-opt more-opt'}">+${g.options.length - cap}</button>` : '';
+    return `<div class="variant"><p class="variant-label">${esc(groupName(g.label))} <b>${g.options.length}</b></p><div class="${withImg ? 'swatches' : 'chips-opt'}">${opts}${more}</div></div>`;
+  }).join('');
+}
+
 // ── product pages ────────────────────────────────────────────────────────────
 for (const p of products) {
   const cat = catById.get(p.category);
@@ -210,19 +252,27 @@ for (const p of products) {
   const at = byCat.get(p.category).indexOf(p);
   const similar = [...near.slice(Math.max(0, at - 4), at), ...near.slice(at, at + 8)].slice(0, 8);
   const [bc, bcld] = crumbs([['Rep Spreadsheet', '/'], [cat.reps, `/${cat.id}/`], [p.name, url]]);
-  const text = describe(p, { cat, catList: byCat.get(p.category), brandList: p.brand ? products.filter((x) => x.brand === p.brand) : [], usd: usd(p.cny) });
+  const facts = describe(p, { cat, catList: byCat.get(p.category), brandList: p.brand ? products.filter((x) => x.brand === p.brand) : [], usd: usd(p.cny) });
+  const text = AI[p.id] ? [AI[p.id], facts[0]] : facts;
   const bp = p.brand && brandPage.get(p.brand);
   const body = `${bc}
 <div class="product">
-  <div class="shot"><img src="${imgOf(p)}" alt="${esc(p.name)} rep" width="720" height="720" fetchpriority="high"><button type="button" class="fav fav-lg" data-fav="${p.id}" aria-pressed="false" aria-label="Add to favorites">${ICON.heart}</button></div>
+  <div class="gallery">
+    <div class="shot"><img id="mainShot" src="${imgOf(p)}" alt="${esc(p.name)} rep" width="480" height="480" fetchpriority="high"><button type="button" class="fav fav-lg" data-fav="${p.id}" aria-pressed="false" aria-label="Add to favorites">${ICON.heart}</button></div>
+    <div class="thumbs"><button type="button" class="thumb on" data-shot="${imgOf(p)}" aria-label="Main photo"><img src="${thumbOf(p)}" alt="" width="56" height="56"></button></div>
+  </div>
   <div class="info">
     <p class="kicker">${p.brand ? (bp ? `<a href="/brands/${bp.slug}/">${esc(p.brand)} reps</a>` : `${esc(p.brand)} reps`) + ' · ' : ''}<a href="/${cat.id}/">${esc(cat.reps)}</a></p>
     <h1>${esc(p.name)} Rep</h1>
-    <p class="big-price"><span class="price" data-cny="${p.cny}">${price(p.cny)}</span> <span class="via">via <span class="agent-name">${esc(defAgent.name)}</span> · ¥${p.cny}</span></p>
-    <a class="btn-buy btn-xl" data-wd="${p.id}" href="${buyUrl(p.id)}" rel="nofollow sponsored noopener" target="_blank">Buy this rep on <span class="agent-name">${esc(defAgent.name)}</span> →</a>
-    <div class="sub-actions"><button type="button" class="btn-ghost" data-fav="${p.id}" aria-pressed="false"><span class="fav-label">♡ Save to favorites</span></button><a class="btn-ghost" href="${weidian(p.id)}" rel="nofollow noopener" target="_blank">Weidian listing ↗</a></div>
-    <div class="perk" data-perk></div>
-    <dl class="facts"><dt>Category</dt><dd><a href="/${cat.id}/">${esc(cat.reps)}</a></dd>${p.brand ? `<dt>Brand</dt><dd>${bp ? `<a href="/brands/${bp.slug}/">${esc(p.brand)}</a>` : esc(p.brand)}</dd>` : ''}<dt>Marketplace</dt><dd>Weidian</dd><dt>Listing ID</dt><dd>${p.id}</dd></dl>
+    <p class="big-price"><span class="price" data-cny="${p.cny}">${price(p.cny)}</span></p>
+    <div class="buy-row">
+      <a class="btn-buy btn-xl" data-wd="${p.id}" href="${buyUrl(p.id)}" rel="nofollow sponsored noopener" target="_blank">View on <span class="agent-name">${esc(defAgent.name)}</span> →</a>
+      <div class="others"><button type="button" class="others-btn" aria-expanded="false">Other agents ${ICON.chevron}</button>
+        <div class="others-pop">${AGENTS.map((a) => `<a class="others-opt" data-agent-link="${a.id}" data-wd="${p.id}" href="${buyUrl(p.id, a)}" rel="nofollow sponsored noopener" target="_blank"><img src="${a.logo}" alt="" width="22" height="22">${esc(a.name)}</a>`).join('')}</div></div>
+    </div>
+    ${promoCard(true)}
+    ${variantsHtml(p)}
+    <dl class="facts"><dt>Category</dt><dd><a href="/${cat.id}/">${esc(cat.reps)}</a></dd>${p.brand ? `<dt>Brand</dt><dd>${bp ? `<a href="/brands/${bp.slug}/">${esc(p.brand)}</a>` : esc(p.brand)}</dd>` : ''}<dt>Marketplace</dt><dd><a href="${weidian(p.id)}" rel="nofollow noopener" target="_blank">Weidian ↗</a></dd><dt>Listing ID</dt><dd>${p.id}</dd></dl>
   </div>
 </div>
 <section class="about-item"><h2>About this ${esc(p.name)} rep</h2>${text.map((t) => `<p>${esc(t)}</p>`).join('')}</section>
@@ -285,12 +335,7 @@ write('/favorites/', page({ title: `Your Favorite Reps | ${NAME}`, desc: 'The re
     <p>${esc(HOME.lead).replace('rep spreadsheet', '<strong>rep spreadsheet</strong>')}</p>
     <div class="hero-cta"><a class="btn-buy btn-xl" href="#popular">Browse the Rep Spreadsheet ↓</a><span class="updated">${ICON.clock} Updated ${UPDATED}</span></div>
   </div>
-  <a class="promo" data-signup href="${kako.signup}" rel="nofollow sponsored noopener" target="_blank">
-    <span class="promo-badge">For new <span class="agent-name">${esc(kako.name)}</span> users</span>
-    <span class="promo-title" data-perk-title>${esc(kako.perk)}</span>
-    <span class="promo-cta">Claim now →</span>
-    <span class="coupons" aria-hidden="true"><span class="coupon c1"><b>¥100 OFF</b><small>Cash coupon</small></span><span class="coupon c2"><b>20% OFF</b><small>Shipping · code "${esc(kako.code)}"</small><em>Valid 1 year</em></span></span>
-  </a>
+  ${promoCard()}
 </section>
 <section><div class="sec-head"><h2>Browse Reps by Category</h2></div>${rail()}</section>
 <section id="popular"><div class="sec-head"><h2>Most Popular Reps This Week</h2><a class="sec-link" href="/finds/">See all reps →</a></div>${row(products.slice(0, 24))}</section>

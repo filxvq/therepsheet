@@ -34,9 +34,11 @@ export const CATEGORIES = [
 // agents without a measurement fall back to the market rate.
 export const AGENTS = [
   { id: 'kakobuy', name: 'Kakobuy', logo: '/agents/kb.avif', code: 'Vetemefan', rate: 1.0834,
-    signup: 'https://ikako.vip/r/Vetemefan', perk: '20% off shipping + ¥3000 in coupons' },
+    signup: 'https://ikako.vip/r/Vetemefan', perk: '20% off shipping + ¥3000 in coupons',
+    coupons: [{ big: '¥100 OFF', sub: 'Cash coupon' }, { big: '20% OFF', sub: 'Shipping · code "Vetemefan"', note: 'Valid 1 year' }] },
   { id: 'usfans', name: 'USFans', logo: '/agents/usf.avif', code: 'CEP7GG', rate: 1.1148,
-    signup: 'https://www.usfans.com/register?ref=CEP7GG', perk: '40% off shipping coupon' },
+    signup: 'https://www.usfans.com/register?ref=CEP7GG', perk: '40% off shipping coupon',
+    coupons: [{ big: '40% OFF', sub: 'No minimum spend' }, { big: '40% OFF', sub: 'Shipping coupon', note: 'Valid 1 year' }] },
   { id: 'sinabuy', name: 'Sinabuy', logo: '/agents/sina.webp', code: 'vetemefan', rate: 1.0466, signup: 'https://www.sinabuy.com/?inviteCode=vetemefan' },
   { id: 'litbuy', name: 'Litbuy', logo: '/agents/lit.avif', code: '', rate: 1.1793, signup: 'https://litbuy.com/' },
   { id: 'oopbuy', name: 'Oopbuy', logo: '/agents/oop.avif', code: '', rate: 1, signup: 'https://www.oopbuy.com/' },
