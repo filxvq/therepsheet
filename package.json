@@ -4,7 +4,8 @@
   "scripts": {
     "build": "node src/build.mjs",
     "data": "node scripts/prepare.mjs",
-    "images": "node scripts/images.mjs"
+    "images": "node scripts/images.mjs",
+    "deploy": "node src/build.mjs && npx wrangler@4 deploy"
   },
   "type": "module",
   "devDependencies": {
