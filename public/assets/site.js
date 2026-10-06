@@ -178,6 +178,38 @@
     if (!e.target.closest('.others')) $$('.others.open').forEach(function (o) { o.classList.remove('open'); $('.others-btn', o).setAttribute('aria-expanded', 'false'); });
   });
 
+  // ── card rows: drag sideways with the mouse (touch scrolls natively), with a little glide after ──
+  $$('.row-scroll').forEach(function (row) {
+    var down = false, moved = false, x0 = 0, s0 = 0, lastX = 0, lastT = 0, v = 0, glide = 0;
+    row.addEventListener('pointerdown', function (e) {
+      if (e.pointerType !== 'mouse' || e.button !== 0) return;
+      cancelAnimationFrame(glide);
+      down = true; moved = false; x0 = lastX = e.clientX; s0 = row.scrollLeft; lastT = performance.now(); v = 0;
+    });
+    window.addEventListener('pointermove', function (e) {
+      if (!down) return;
+      var dx = e.clientX - x0;
+      if (!moved && Math.abs(dx) > 5) { moved = true; row.classList.add('dragging'); }
+      if (!moved) return;
+      row.scrollLeft = s0 - dx;
+      var t = performance.now(); v = (e.clientX - lastX) / Math.max(1, t - lastT); lastX = e.clientX; lastT = t;
+    });
+    window.addEventListener('pointerup', function () {
+      if (!down) return;
+      down = false;
+      if (!moved) return;
+      var speed = -v * 16;
+      (function step() {
+        speed *= 0.92;
+        if (Math.abs(speed) < 0.5) { row.classList.remove('dragging'); return; }
+        row.scrollLeft += speed; glide = requestAnimationFrame(step);
+      })();
+    });
+    // a drag that ends over a card must not open it
+    row.addEventListener('click', function (e) { if (moved) { e.preventDefault(); e.stopPropagation(); moved = false; } }, true);
+    row.addEventListener('dragstart', function (e) { e.preventDefault(); });
+  });
+
   // ── QC photo viewer: any [data-full] opens full screen, arrows and keys move through the set ──
   var lb = null, lbList = [], lbAt = 0;
   function lbShow(k) {

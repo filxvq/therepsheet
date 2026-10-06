@@ -151,8 +151,12 @@ main>section{margin:48px 0}
 
 /* ── cards ── (sizes match the source sheet's: 4 across, 10px gaps, whole photo on white) */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
-.row-scroll{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(230px,250px);gap:10px;overflow-x:auto;padding-bottom:12px;scroll-snap-type:x mandatory;scrollbar-width:thin;scrollbar-color:#2c2c36 transparent}
+.row-scroll{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(230px,250px);gap:10px;overflow-x:auto;padding:4px 0 12px;scroll-snap-type:x mandatory;scrollbar-width:none;cursor:grab}
+.row-scroll::-webkit-scrollbar{display:none}
 .row-scroll .card{scroll-snap-align:start}
+.row-scroll.dragging{cursor:grabbing;scroll-snap-type:none;user-select:none}
+.row-scroll.dragging .card{pointer-events:none}
+.row-scroll img{-webkit-user-drag:none;user-select:none}
 .card{position:relative;background:#15151c;border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;transition:transform .22s var(--ease),border-color .22s,box-shadow .22s}
 .card:hover{transform:translateY(-3px);border-color:#3a2a30;box-shadow:0 16px 40px -18px rgba(0,0,0,.8)}
 .card-img{display:block;aspect-ratio:1;background:#fff;overflow:hidden}
