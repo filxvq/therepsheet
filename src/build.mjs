@@ -12,6 +12,7 @@
 //   sitemap.xml  robots.txt  search.json  404.html
 //
 // Run: node src/build.mjs   (Vercel runs it as the build command)
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -26,6 +27,10 @@ const BUILT = new Date().toISOString().slice(0, 10);
 const YEAR = BUILT.slice(0, 4);
 const UPDATED = new Date(BUILT).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 fs.rmSync(DIST, { recursive: true, force: true });
+// Asset URLs carry a hash of the file, so a changed stylesheet is a new URL and no browser or CDN
+// keeps serving the old one under its week-long cache (a date stamp failed at two deploys a day).
+const hashOf = (f) => crypto.createHash('sha1').update(fs.readFileSync(path.join(ROOT, 'public/assets', f))).digest('hex').slice(0, 10);
+const V = { css: hashOf('site.css'), js: hashOf('site.js') };
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -90,7 +95,7 @@ ${noindex ? '<meta name="robots" content="noindex, follow">\n' : ''}<meta proper
 <meta property="og:url" content="${canonical}">
 ${image ? `<meta property="og:image" content="${SITE + image}">\n` : ''}<meta name="theme-color" content="#0c0c10">
 <link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="/assets/site.css?v=${BUILT}">
+<link rel="stylesheet" href="/assets/site.css?v=${V.css}">
 ${jsonld.map((j) => `<script type="application/ld+json">${JSON.stringify(j).replace(/</g, '\\u003c')}</script>`).join('\n')}
 </head>
 <body>
@@ -127,7 +132,7 @@ ${body}
   <p class="wrap fine">${NAME} sells nothing and holds no stock: every order is placed by you with a shopping agent. Brand names only identify what an item is. Some agent links carry a referral code. © ${YEAR} therepsheet.com</p>
 </footer>
 <script>window.TRS=${JSON.stringify({ agents: AGENTS.map(({ id, name, code, rate, signup, perk, logo }) => ({ id, name, code, rate, signup, perk, logo })), cny: CNY_FALLBACK, def: DEFAULT_AGENT, cats: Object.fromEntries(CATEGORIES.map((c) => [c.id, short(c)])) })}</script>
-<script src="/assets/site.js?v=${BUILT}" defer></script>
+<script src="/assets/site.js?v=${V.js}" defer></script>
 </body>
 </html>`;
 }
