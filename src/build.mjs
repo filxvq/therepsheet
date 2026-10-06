@@ -49,6 +49,7 @@ const buyUrl = (id, a = defAgent) => ({
   acbuy: () => 'https://www.acbuy.com/product/?id=' + id + '&source=WD' + (a.code ? '&u=' + a.code : ''),
 }[a.id])();
 const imgOf = (p) => fs.existsSync(path.join(ROOT, 'public/img', `${p.slug}-${p.id}.webp`)) ? `/img/${p.slug}-${p.id}.webp` : '/assets/no-photo.svg';
+const thumbOf = (p) => fs.existsSync(path.join(ROOT, 'public/img/sm', `${p.slug}-${p.id}.webp`)) ? `/img/sm/${p.slug}-${p.id}.webp` : imgOf(p);
 const catById = new Map(CATEGORIES.map((c) => [c.id, c]));
 const short = (c) => c.short || c.name;
 const urlOf = (p) => `/${p.category}/${p.slug}/`;
@@ -140,10 +141,10 @@ ${body}
 function card(p, eager = false) {
   const cat = catById.get(p.category);
   return `<article class="card">
-  <a class="card-img" href="${urlOf(p)}" tabindex="-1"><img src="${imgOf(p)}" alt="${esc(p.name)} rep" width="360" height="360" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></a>
+  <a class="card-img" href="${urlOf(p)}" tabindex="-1"><img src="${thumbOf(p)}" alt="${esc(p.name)} rep" width="300" height="300" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></a>
   <button type="button" class="fav" data-fav="${p.id}" aria-pressed="false" aria-label="Add ${esc(p.name)} to favorites">${ICON.heart}</button>
-  <div class="card-body"><p class="card-cat">${esc(short(cat))}</p><a class="card-name" href="${urlOf(p)}">${esc(p.name)}</a><p class="price" data-cny="${p.cny}">${price(p.cny)}</p></div>
-  <div class="card-actions"><a class="btn-ghost" href="${urlOf(p)}">View details</a><a class="btn-buy" data-wd="${p.id}" href="${buyUrl(p.id)}" rel="nofollow sponsored noopener" target="_blank">Buy on <span class="agent-name">${esc(defAgent.name)}</span> →</a></div>
+  <div class="card-body"><p class="card-cat">${esc(short(cat))}</p><a class="card-name" href="${urlOf(p)}">${esc(p.name)}</a><p class="price" data-cny="${p.cny}">${price(p.cny)}</p>
+  <div class="card-actions"><a class="btn-ghost" href="${urlOf(p)}">View details</a><a class="btn-buy" data-wd="${p.id}" href="${buyUrl(p.id)}" rel="nofollow sponsored noopener" target="_blank">View on <span class="agent-name">${esc(defAgent.name)}</span> →</a></div></div>
 </article>`;
 }
 const grid = (list) => `<div class="grid">${list.map((p) => card(p)).join('\n')}</div>`;
@@ -326,7 +327,7 @@ write('/404.html', page({ title: `Page not found | ${NAME}`, desc: 'This page do
   body: `<header class="head"><h1>This rep is gone</h1><p class="intro">The seller may have taken the listing down. Search above or <a href="/finds/">browse the rep spreadsheet</a>.</p></header>${rail()}${grid(products.slice(0, 12))}` }), { sitemap: false });
 
 // ── machine files ────────────────────────────────────────────────────────────
-fs.writeFileSync(path.join(DIST, 'search.json'), JSON.stringify(products.map((p) => [p.name, urlOf(p), imgOf(p), p.cny, p.brand || '', p.id, p.category])));
+fs.writeFileSync(path.join(DIST, 'search.json'), JSON.stringify(products.map((p) => [p.name, urlOf(p), thumbOf(p), p.cny, p.brand || '', p.id, p.category])));
 fs.writeFileSync(path.join(DIST, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${written.map((u) => `<url><loc>${SITE}${u}</loc><lastmod>${BUILT}</lastmod></url>`).join('\n')}

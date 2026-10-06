@@ -100,10 +100,10 @@
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   var HEART = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7z"/></svg>';
   function cardHtml(x) {
-    return '<article class="card"><a class="card-img" href="' + x.u + '" tabindex="-1"><img src="' + x.i + '" alt="' + esc(x.n) + ' rep" width="360" height="360" loading="lazy"></a>'
+    return '<article class="card"><a class="card-img" href="' + x.u + '" tabindex="-1"><img src="' + x.i + '" alt="' + esc(x.n) + ' rep" width="300" height="300" loading="lazy"></a>'
       + '<button type="button" class="fav" data-fav="' + x.id + '" aria-pressed="true" aria-label="Remove from favorites">' + HEART + '</button>'
-      + '<div class="card-body"><p class="card-cat">' + esc((T.cats || {})[x.cat] || '') + '</p><a class="card-name" href="' + x.u + '">' + esc(x.n) + '</a><p class="price" data-cny="' + x.c + '"></p></div>'
-      + '<div class="card-actions"><a class="btn-ghost" href="' + x.u + '">View details</a><a class="btn-buy" data-wd="' + x.id + '" href="#" rel="nofollow sponsored noopener" target="_blank">Buy on <span class="agent-name"></span> →</a></div></article>';
+      + '<div class="card-body"><p class="card-cat">' + esc((T.cats || {})[x.cat] || '') + '</p><a class="card-name" href="' + x.u + '">' + esc(x.n) + '</a><p class="price" data-cny="' + x.c + '"></p>'
+      + '<div class="card-actions"><a class="btn-ghost" href="' + x.u + '">View details</a><a class="btn-buy" data-wd="' + x.id + '" href="#" rel="nofollow sponsored noopener" target="_blank">View on <span class="agent-name"></span> →</a></div></div></article>';
   }
   function drawFavs() {
     var g = $('#favGrid'); if (!g) return;
