@@ -257,4 +257,15 @@ main>section{margin:48px 0}
   .big-price{font-size:26px}
   main>section{margin:36px 0}
 }
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* ── motion (only with scripts on, so nothing stays hidden without them) ── */
+.js .card{opacity:0;transform:translateY(14px)}
+.js .card.in{opacity:1;transform:none;transition:opacity .45s var(--ease),transform .5s var(--ease),border-color .22s,box-shadow .22s}
+.js .card.in:hover{transform:translateY(-3px)}
+.js .card-img img,.js .shot img,.js .results img{opacity:0;transition:opacity .4s ease,transform .4s var(--ease)}
+.js .card-img img.ok,.js .shot img.ok,.js .results img.ok{opacity:1}
+.results a{transition:background-color .15s}
+.prefs-pop .agent-opt{transition:background-color .18s,border-color .18s,transform .15s}
+.faq details>div{overflow:hidden}
+a,button{-webkit-tap-highlight-color:transparent}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.js .card,.js .card-img img,.js .shot img{opacity:1!important;transform:none!important}}

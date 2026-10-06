@@ -30,7 +30,7 @@ fs.rmSync(DIST, { recursive: true, force: true });
 // Asset URLs carry a hash of the file, so a changed stylesheet is a new URL and no browser or CDN
 // keeps serving the old one under its week-long cache (a date stamp failed at two deploys a day).
 const hashOf = (f) => crypto.createHash('sha1').update(fs.readFileSync(path.join(ROOT, 'public/assets', f))).digest('hex').slice(0, 10);
-const V = { css: hashOf('site.css'), js: hashOf('site.js') };
+const V = { css: hashOf('site.css'), js: hashOf('site.js'), icon: hashOf('icon.svg') };
 // search.json and its version are built once, on first use (the helpers they need are declared
 // below). The version goes into the page so a changed catalog is a new URL, never a stale cache.
 let SEARCH = null, SV = null;
@@ -100,7 +100,8 @@ ${noindex ? '<meta name="robots" content="noindex, follow">\n' : ''}<meta proper
 <meta property="og:description" content="${esc(desc)}">
 <meta property="og:url" content="${canonical}">
 ${image ? `<meta property="og:image" content="${SITE + image}">\n` : ''}<meta name="theme-color" content="#0c0c10">
-<link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/icon.svg?v=${V.icon}" type="image/svg+xml">
+<script>document.documentElement.classList.add('js')</script>
 <link rel="stylesheet" href="/assets/site.css?v=${V.css}">
 ${jsonld.map((j) => `<script type="application/ld+json">${JSON.stringify(j).replace(/</g, '\\u003c')}</script>`).join('\n')}
 </head>

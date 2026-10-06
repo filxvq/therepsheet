@@ -36,9 +36,15 @@
     var v = cur === 'USD' ? usd : usd * (rates[cur] || 1);
     return SYM[cur] + v.toFixed(2);
   }
-  function apply() {
+  // anim: the visitor switched agent or currency, so the new prices and names fade in
+  function apply(anim) {
     var pa = promoAgent();
-    $$('[data-cny]').forEach(function (el) { el.textContent = fmt(+el.getAttribute('data-cny')); });
+    $$('[data-cny]').forEach(function (el) {
+      var t = fmt(+el.getAttribute('data-cny'));
+      if (anim && el.textContent !== t && el.animate) el.animate([{ opacity: 0, transform: 'translateY(4px)' }, { opacity: 1, transform: 'none' }], { duration: 260, easing: 'ease-out' });
+      el.textContent = t;
+    });
+    if (anim) $$('.agent-name, .agent-logo, .cur-name, [data-perk], [data-perk-title]').forEach(function (el) { if (el.animate) el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 260, easing: 'ease-out' }); });
     $$('a[data-wd]').forEach(function (el) { el.href = link(el.getAttribute('data-wd'), agent); });
     $$('.agent-name').forEach(function (el) { el.textContent = el.closest('[data-signup]') ? pa.name : agent.name; });
     $$('.agent-logo').forEach(function (el) { el.src = agent.logo; });
@@ -57,9 +63,9 @@
   function openPop(on) { if (!pop) return; pop.classList.toggle('open', on); btn.setAttribute('aria-expanded', on ? 'true' : 'false'); }
   if (btn) btn.addEventListener('click', function (e) { e.stopPropagation(); openPop(!pop.classList.contains('open')); });
   $$('.agent-opt').forEach(function (b) { b.addEventListener('click', function () {
-    agent = byId[b.getAttribute('data-agent')] || agent; store.set('trs_agent', agent.id); apply(); setTimeout(function () { openPop(false); }, 160);
+    agent = byId[b.getAttribute('data-agent')] || agent; store.set('trs_agent', agent.id); apply(true); setTimeout(function () { openPop(false); }, 160);
   }); });
-  $$('.seg button').forEach(function (b) { b.addEventListener('click', function () { cur = b.getAttribute('data-cur'); store.set('trs_cur', cur); apply(); }); });
+  $$('.seg button').forEach(function (b) { b.addEventListener('click', function () { cur = b.getAttribute('data-cur'); store.set('trs_cur', cur); apply(true); }); });
   document.addEventListener('click', function (e) { if (pop && !e.target.closest('.prefs')) openPop(false); });
 
   fetch('/api/rates/').then(function (r) { return r.ok ? r.json() : null; }).then(function (k) {
@@ -87,8 +93,47 @@
     store.set('trs_favs', JSON.stringify(favs));
     syncFavs();
     $$('[data-fav="' + id + '"]').forEach(function (x) { x.classList.remove('pulse'); void x.offsetWidth; x.classList.add('pulse'); });
-    if ($('#favGrid') && i >= 0) { var card = b.closest('.card'); if (card) { card.style.opacity = '0'; card.style.transform = 'scale(.96)'; setTimeout(drawFavs, 180); } }
+    if ($('#favGrid') && i >= 0) { var card = b.closest('.card'); if (card) removeCard(card); }
   });
+
+  // Removing a favorite: the card fades and shrinks away, then the cards after it glide into the
+  // gap (FLIP: measure where each one was, let the grid reflow, start each from its old spot).
+  function removeCard(card) {
+    var g = card.parentNode, rest = $$('.card', g).filter(function (c) { return c !== card; });
+    card.style.pointerEvents = 'none';
+    card.animate([{ opacity: 1, transform: 'scale(1)' }, { opacity: 0, transform: 'scale(.9)' }], { duration: 240, easing: 'cubic-bezier(.4,0,.2,1)', fill: 'forwards' })
+      .onfinish = function () {
+        var before = rest.map(function (c) { return c.getBoundingClientRect(); });
+        card.remove();
+        rest.forEach(function (c, k) {
+          var a = c.getBoundingClientRect(), dx = before[k].left - a.left, dy = before[k].top - a.top;
+          if (dx || dy) c.animate([{ transform: 'translate(' + dx + 'px,' + dy + 'px)' }, { transform: 'none' }], { duration: 420, easing: 'cubic-bezier(.2,.8,.2,1)' });
+        });
+        var left = rest.length, empty = $('#favEmpty');
+        empty.hidden = left > 0;
+        if (!left) empty.animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }], { duration: 320, easing: 'ease-out' });
+        $('#favNote').textContent = left ? left + (left === 1 ? ' rep' : ' reps') + ' saved on this device.' : 'Saved on this device.';
+      };
+  }
+
+  // Cards rise into view as they scroll in, a few at a time; photos fade in once decoded.
+  var seen = window.IntersectionObserver && new IntersectionObserver(function (es) {
+    var k = 0;
+    es.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      var el = e.target; seen.unobserve(el);
+      el.style.transitionDelay = Math.min(k++ * 45, 270) + 'ms';
+      el.classList.add('in');
+      setTimeout(function () { el.style.transitionDelay = ''; }, 800);
+    });
+  }, { rootMargin: '0px 0px -30px 0px' });
+  function watch(root) {
+    $$('.card:not(.in)', root).forEach(function (c) { if (seen) seen.observe(c); else c.classList.add('in'); });
+    $$('.card-img img, .shot img, .results img', root).forEach(function (im) {
+      if (im.complete && im.naturalWidth) im.classList.add('ok');
+      else { im.addEventListener('load', function () { im.classList.add('ok'); }); im.addEventListener('error', function () { im.classList.add('ok'); }); }
+    });
+  }
 
   // ── search data, shared by the search box and the favorites page ──
   var data = null, loading = null;
@@ -113,11 +158,11 @@
       g.innerHTML = list.map(cardHtml).join('');
       $('#favEmpty').hidden = list.length > 0;
       $('#favNote').textContent = list.length ? list.length + (list.length === 1 ? ' rep' : ' reps') + ' saved on this device.' : 'Saved on this device.';
-      apply(); syncFavs();
+      apply(); syncFavs(); watch(g);
     });
   }
 
-  apply(); syncFavs(); drawFavs();
+  apply(); syncFavs(); drawFavs(); watch(document);
 
   // ── search box ──
   var q = $('#q'), box = $('#results');
@@ -133,6 +178,7 @@
       return '<a href="' + x.u + '"><img src="' + x.i + '" alt="" loading="lazy"><span class="r-name"><span class="r-cat">' + esc((T.cats || {})[x.cat] || '') + '</span>' + esc(x.n) + '</span><span class="r-price">' + fmt(x.c) + '</span></a>';
     }).join('') : '<div class="none">No reps match “' + esc(q.value) + '”.</div>';
     box.hidden = false;
+    watch(box);
   }
   q.addEventListener('focus', function () { load().then(function () { if (q.value) render(); }); });
   q.addEventListener('input', function () { load().then(render); });
