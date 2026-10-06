@@ -155,7 +155,7 @@ function card(p, eager = false) {
   <a class="card-img" href="${urlOf(p)}" tabindex="-1">${qcOf(p).length ? '<span class="qc-badge">QC</span>' : ''}<img src="${thumbOf(p)}" alt="${esc(p.name)} rep" width="300" height="300" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></a>
   <button type="button" class="fav" data-fav="${p.id}" aria-pressed="false" aria-label="Add ${esc(p.name)} to favorites">${ICON.heart}</button>
   <div class="card-body"><p class="card-cat">${esc(short(cat))}</p><a class="card-name" href="${urlOf(p)}">${esc(p.name)}</a><p class="price" data-cny="${p.cny}">${price(p.cny)}</p>
-  <div class="card-actions"><a class="btn-ghost" href="${urlOf(p)}">View details</a><a class="btn-buy" data-wd="${p.id}" href="${buyUrl(p.id)}" rel="nofollow sponsored noopener" target="_blank">View on <span class="agent-name">${esc(defAgent.name)}</span> →</a></div></div>
+  <div class="card-actions"><a class="btn-ghost" href="${urlOf(p)}">View details</a><a class="btn-buy" data-wd="${p.id}" href="${buyUrl(p.id)}" rel="nofollow sponsored noopener" target="_blank"><span>View on <span class="agent-name">${esc(defAgent.name)}</span> →</span></a></div></div>
 </article>`;
 }
 const grid = (list) => `<div class="grid">${list.map((p) => card(p)).join('\n')}</div>`;

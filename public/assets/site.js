@@ -220,7 +220,7 @@
     return '<article class="card"><a class="card-img" href="' + x.u + '" tabindex="-1"><img src="' + x.i + '" alt="' + esc(x.n) + ' rep" width="300" height="300" loading="lazy"></a>'
       + '<button type="button" class="fav" data-fav="' + x.id + '" aria-pressed="true" aria-label="Remove from favorites">' + HEART + '</button>'
       + '<div class="card-body"><p class="card-cat">' + esc((T.cats || {})[x.cat] || '') + '</p><a class="card-name" href="' + x.u + '">' + esc(x.n) + '</a><p class="price" data-cny="' + x.c + '"></p>'
-      + '<div class="card-actions"><a class="btn-ghost" href="' + x.u + '">View details</a><a class="btn-buy" data-wd="' + x.id + '" href="#" rel="nofollow sponsored noopener" target="_blank">View on <span class="agent-name"></span> →</a></div></div></article>';
+      + '<div class="card-actions"><a class="btn-ghost" href="' + x.u + '">View details</a><a class="btn-buy" data-wd="' + x.id + '" href="#" rel="nofollow sponsored noopener" target="_blank"><span>View on <span class="agent-name"></span> →</span></a></div></div></article>';
   }
   function drawFavs() {
     var g = $('#favGrid'); if (!g) return;
