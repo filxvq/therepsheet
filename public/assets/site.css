@@ -241,9 +241,9 @@ main>section{margin:48px 0}
 .swatches{display:flex;flex-wrap:wrap;gap:8px}
 .chips-opt{display:flex;flex-wrap:wrap;gap:8px}
 .swatch{display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:0;padding:0;cursor:pointer;color:var(--muted);font-size:11px}
-.swatch img{width:56px;height:56px;border-radius:8px;background:#fff;object-fit:cover;border:2px solid transparent;transition:border-color .18s,transform .15s}
+.swatch img{display:block;width:56px;height:56px;border-radius:8px;object-fit:cover;transition:box-shadow .18s,transform .15s}
 .swatch:hover img{transform:translateY(-2px)}
-.swatch.on img{border-color:var(--red)}
+.swatch.on img{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--red)}
 .swatch.on span{color:var(--ink)}
 .swatch.more-opt{width:56px;height:56px;border-radius:8px;background:var(--panel2);border:1px solid var(--line);justify-content:center;font-size:13px;font-weight:600;color:var(--ink)}
 .chip-opt{min-width:44px;height:40px;padding:0 12px;border-radius:8px;background:var(--panel2);border:1px solid var(--line);font-size:14px;font-weight:500;cursor:pointer;transition:border-color .18s,background-color .18s}
