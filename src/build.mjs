@@ -274,7 +274,6 @@ for (const p of products) {
 <div class="product">
   <div class="gallery">
     <div class="shot"><img id="mainShot" src="${imgOf(p)}" alt="${esc(p.name)} rep" width="480" height="480" fetchpriority="high"><button type="button" class="fav fav-lg" data-fav="${p.id}" aria-pressed="false" aria-label="Add to favorites">${ICON.heart}</button></div>
-    <div class="thumbs"><button type="button" class="thumb on" data-shot="${imgOf(p)}" aria-label="Main photo"><img src="${thumbOf(p)}" alt="" width="56" height="56"></button>${qcOf(p).slice(0, 5).map((f, i) => `<button type="button" class="thumb" data-shot="${f}" aria-label="QC photo ${i + 1}"><img src="${f}" alt="" width="56" height="56" loading="lazy"></button>`).join('')}</div>
   </div>
   <div class="info">
     <p class="kicker">${p.brand ? (bp ? `<a href="/brands/${bp.slug}/">${esc(p.brand)} reps</a>` : `${esc(p.brand)} reps`) + ' · ' : ''}<a href="/${cat.id}/">${esc(cat.reps)}</a></p>
