@@ -45,7 +45,7 @@
   if (sel) { sel.value = agent.id; sel.addEventListener('change', function () { agent = byId[sel.value] || agent; store.set('trs_agent', agent.id); apply(); }); }
   if (cs) { cs.value = cur; cs.addEventListener('change', function () { cur = cs.value; store.set('trs_cur', cur); apply(); }); }
   apply();
-  fetch('/api/rates').then(function (r) { return r.ok ? r.json() : null; }).then(function (k) {
+  fetch('/api/rates/').then(function (r) { return r.ok ? r.json() : null; }).then(function (k) {
     if (!k || !k.CNY) return;
     rates = { CNY: k.CNY, EUR: k.EUR || rates.EUR, GBP: k.GBP || rates.GBP };
     store.set('trs_rates', JSON.stringify(rates)); apply();
