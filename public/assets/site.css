@@ -238,8 +238,14 @@ main>section{margin:48px 0}
 .variant.open .more-opt{display:none}
 .facts{display:grid;grid-template-columns:auto 1fr;gap:8px 20px;font-size:14px;border-top:1px solid var(--line);padding-top:16px;margin-top:22px}
 .facts dt{color:var(--muted)}.facts dd{margin:0}.facts a{text-decoration:none;border-bottom:1px solid var(--line)}
-.about-item{max-width:780px}
-.about-item h2{margin-bottom:10px}
+.about-item{max-width:780px;margin-top:36px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+.about-item summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px}
+.about-item summary::-webkit-details-marker{display:none}
+.about-item summary h2{font-size:17px;margin:0}
+.about-item summary::after{content:"";width:9px;height:9px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);transition:transform .25s var(--ease);flex:none;margin-top:-4px}
+.about-item[open] summary::after{transform:rotate(-135deg);margin-top:4px}
+.about-body{padding:0 18px 6px}
+.about-item[open] .about-body{animation:rise .3s var(--ease)}
 .about-item p{color:#cfced6}
 
 /* ── home blocks ── */

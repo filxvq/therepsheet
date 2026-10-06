@@ -291,7 +291,7 @@ for (const p of products) {
   </div>
 </div>
 ${qcOf(p).length ? `<section class="qc-sec"><div class="sec-head"><h2>QC photos of this rep <small>${qcOf(p).length}</small></h2></div><p class="intro">Warehouse photos from real orders of this listing, taken by shopping agents before shipping.</p><div class="qc-grid">${qcOf(p).map((f, i) => `<button type="button" class="qc-shot" data-full="${f}" aria-label="Open QC photo ${i + 1}"><img src="${f}" alt="${esc(p.name)} rep QC photo ${i + 1}" width="240" height="240" loading="lazy"></button>`).join('')}</div></section>` : ''}
-<section class="about-item"><h2>About this ${esc(p.name)} rep</h2>${text.map((t) => `<p>${esc(t)}</p>`).join('')}</section>
+<details class="about-item"><summary><h2>About this ${esc(p.name)} rep</h2></summary><div class="about-body">${text.map((t) => `<p>${esc(t)}</p>`).join('')}</div></details>
 ${sameBrand.length ? `<section><div class="sec-head"><h2>More ${esc(p.brand)} reps</h2>${bp ? `<a class="sec-link" href="/brands/${bp.slug}/">All ${bp.n} →</a>` : ''}</div>${row(sameBrand)}</section>` : ''}
 ${similar.length ? `<section><div class="sec-head"><h2>More ${esc(cat.reps.toLowerCase())}</h2><a class="sec-link" href="/${cat.id}/">All ${byCat.get(cat.id).length} →</a></div>${row(similar)}</section>` : ''}`;
   const ld = { '@context': 'https://schema.org', '@type': 'Product', name: p.name + ' Rep', image: SITE + imgOf(p), url: SITE + url,
