@@ -1,0 +1,14 @@
+// Cloudflare Workers deployment: the built site in dist/ served as static assets, and
+// worker/index.js answering /api/* (the rest never wakes the worker).
+{
+  "name": "therepsheet",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/api/*"]
+  }
+}
