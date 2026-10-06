@@ -209,7 +209,7 @@ ${k === 1 && intro ? `<p class="intro">${esc(intro)}</p>` : ''}</header>
 ${k === 1 ? extra : ''}
 ${grid(list.slice((k - 1) * PER_PAGE, k * PER_PAGE))}
 ${pager(base, k, total)}`;
-    write(url, page({ title: k === 1 ? title : `${h1} – Page ${k} | ${NAME}`, desc, url, body, active, jsonld: [bcld],
+    write(url, page({ title: k === 1 ? title : `${h1} – Page ${k} | ${NAME}`, desc: k === 1 ? desc : `Page ${k} of ${total}: more ${h1.toLowerCase()} from the rep spreadsheet, each with its price and agent links.`, url, body, active, jsonld: [bcld],
       image: list[0] && imgOf(list[0]) }), { sitemap: k === 1 });
   }
 }
@@ -266,6 +266,23 @@ function variantsHtml(p) {
   }).join('');
 }
 
+// Titles and descriptions that fit in a search result. Several sellers list the same item under the
+// same name, so a name shared by more than one product gets the number its address already carries.
+const nameCount = new Map();
+products.forEach((p) => nameCount.set(p.name.toLowerCase(), (nameCount.get(p.name.toLowerCase()) || 0) + 1));
+const variantNo = (p) => (nameCount.get(p.name.toLowerCase()) > 1 ? ' #' + ((p.slug.match(/-(\d+)$/) || [])[1] || '1') : '');
+const fit = (parts, max) => { let out = ''; for (const x of parts) { if ((out + x).length > max) break; out += x; } return out; };
+function productTitle(p) {
+  const base = `${p.name}${variantNo(p)} Rep – ${price(p.cny)}`;
+  return base.length > 65 ? `${p.name}${variantNo(p)} Rep` : fit([base, ' | Rep Spreadsheet'], 65);
+}
+function productDesc(p) {
+  const opts = (VARIANTS[p.id] || []).map((g) => g.options.length).reduce((a, b) => a + b, 0);
+  const qc = qcOf(p).length;
+  return fit([`${p.name}${variantNo(p)} rep for ${price(p.cny)}.`, qc ? ` ${qc} QC photos from real orders.` : '',
+    opts ? ' All colours and sizes listed.' : '', ' Buy through Kakobuy, USFans or 4 more agents.'], 158);
+}
+
 // ── product pages ────────────────────────────────────────────────────────────
 for (const p of products) {
   const cat = catById.get(p.category);
@@ -298,15 +315,15 @@ for (const p of products) {
     <details class="about-item"><summary><h2>About this ${esc(p.name)} rep</h2></summary><div class="about-body">${text.map((t) => `<p>${esc(t)}</p>`).join('')}</div></details>
   </div>
 </div>
-${qcOf(p).length ? `<section class="qc-sec"><div class="sec-head"><h2>QC photos of this rep <small>${qcOf(p).length}</small></h2></div><p class="intro">Warehouse photos from real orders of this listing, taken by shopping agents before shipping.</p><div class="qc-grid">${qcOf(p).map((f, i) => `<button type="button" class="qc-shot" data-full="${f}" aria-label="Open QC photo ${i + 1}"><img src="${f}" alt="${esc(p.name)} rep QC photo ${i + 1}" width="240" height="240" loading="lazy"></button>`).join('')}</div></section>` : ''}
+${qcOf(p).length ? `<section class="qc-sec"><div class="sec-head"><h2>QC photos of this rep <small>${qcOf(p).length}</small></h2></div><p class="intro">Warehouse photos from real orders of this listing, taken by shopping agents before shipping.</p><div class="row-scroll qc-row">${qcOf(p).map((f, i) => `<button type="button" class="qc-shot" data-full="${f}" aria-label="Open QC photo ${i + 1}"><img src="${f}" alt="${esc(p.name)} rep QC photo ${i + 1}" width="240" height="240" loading="lazy"></button>`).join('')}</div></section>` : ''}
 ${sameBrand.length ? `<section><div class="sec-head"><h2>More ${esc(p.brand)} reps</h2>${bp ? `<a class="sec-link" href="/brands/${bp.slug}/">All ${bp.n} →</a>` : ''}</div>${row(sameBrand)}</section>` : ''}
 ${similar.length ? `<section><div class="sec-head"><h2>More ${esc(cat.reps.toLowerCase())}</h2><a class="sec-link" href="/${cat.id}/">All ${byCat.get(cat.id).length} →</a></div>${row(similar)}</section>` : ''}`;
   const ld = { '@context': 'https://schema.org', '@type': 'Product', name: p.name + ' Rep', image: SITE + imgOf(p), url: SITE + url,
     description: text[0], category: cat.name, ...(p.brand ? { brand: { '@type': 'Brand', name: p.brand } } : {}), sku: String(p.id),
     offers: { '@type': 'Offer', price: usd(p.cny).toFixed(2), priceCurrency: 'USD', availability: 'https://schema.org/InStock', url: SITE + url } };
   write(url, page({
-    title: `${p.name} Rep – ${price(p.cny)} | Rep Spreadsheet`,
-    desc: `${p.name} rep for ${price(p.cny)} from a Weidian seller. Buy this rep through Kakobuy, USFans or four other agents, straight from the rep spreadsheet.`,
+    title: productTitle(p),
+    desc: productDesc(p),
     url, body, image: imgOf(p), jsonld: [bcld, ld], active: p.category }));
 }
 
@@ -315,7 +332,7 @@ for (const c of CATEGORIES) {
   const list = byCat.get(c.id);
   const brandsHere = BRANDS.filter((b) => b.items.some((p) => p.category === c.id)).slice(0, 14);
   listing({ base: `/${c.id}/`, h1: c.reps, title: `${c.reps} ${YEAR} – ${list.length} ${short(c)} Reps | Rep Spreadsheet`,
-    desc: `${list.length} ${c.reps.toLowerCase()} in the rep spreadsheet, with live prices and buy links for Kakobuy and other agents. ${c.intro.split('. ')[0]}.`,
+    desc: fit([`${list.length} ${c.reps.toLowerCase()} in the rep spreadsheet, with prices, colours, sizes and agent links.`, ` ${c.intro.split('. ')[0]}.`], 158),
     intro: c.intro, list, crumb: [['Rep Spreadsheet', '/'], [c.reps, `/${c.id}/`]], active: c.id,
     extra: `${rail(c.id)}${brandsHere.length ? `<div class="chips">${brandsHere.map((b) => `<a href="/brands/${b.slug}/">${esc(b.name)} reps</a>`).join('')}</div>` : ''}` });
 }
@@ -381,7 +398,7 @@ ${withQc.length ? `<section><div class="sec-head"><h2>Reps With QC Photos</h2></
       potentialAction: { '@type': 'SearchAction', target: SITE + '/finds/?q={search_term_string}', 'query-input': 'required name=search_term_string' } },
     { '@context': 'https://schema.org', '@type': 'Organization', name: NAME, url: SITE + '/', logo: SITE + '/assets/icon.svg' },
     { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: FAQ.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) }];
-  write('/', page({ title: `Rep Spreadsheet ${YEAR} – ${ROUND}+ Rep Links with QC Photos | TheRepSheet`,
+  write('/', page({ title: `Rep Spreadsheet ${YEAR}: ${ROUND}+ Rep Links & QC Photos | TheRepSheet`,
     desc: `The rep spreadsheet with ${COUNT} Weidian reps: shoes, hoodies, jackets, bags and more, with real prices, every colour and size, and QC photos from real orders.`,
     url: '/', body, jsonld: ld, image: imgOf(products[0]) }));
 }
