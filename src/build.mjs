@@ -377,14 +377,12 @@ write('/favorites/', page({ title: `Your Favorite Reps | ${NAME}`, desc: 'The re
   const mix = (n) => { const groups = CATEGORIES.map((c) => byCat.get(c.id).slice(0, 12)), out = [];
     for (let i = 0; out.length < n && i < 12; i++) for (const g of groups) if (g[i] && out.length < n) out.push(g[i]);
     return out; };
-  const withQc = products.filter((p) => qcOf(p).length).sort((a, b) => qcOf(b).length - qcOf(a).length);
-  const stats = [`${COUNT} reps`, `${BRANDS.length} brands`, `${withQc.length} with QC photos`, `${AGENTS.length} agents`];
+  const withQc = products.filter((p) => qcOf(p).length).sort((a, b) => qcOf(b).length - qcOf(a).length);
   const body = `<section class="hero">
   <div class="hero-text">
     <h1>Rep Spreadsheet ${YEAR} <span>${ROUND}+ Rep Links</span></h1>
     <p>${esc(HOME.lead.replace('{COUNT}', COUNT)).replace('rep spreadsheet', '<strong>rep spreadsheet</strong>')}</p>
-    <div class="hero-cta"><span class="updated">${ICON.clock} Updated ${UPDATED}</span></div>
-    <ul class="stats">${stats.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
+    <div class="hero-cta"><span class="updated">${ICON.clock} Updated ${UPDATED}</span></div>
   </div>
   ${promoCard()}
 </section>
