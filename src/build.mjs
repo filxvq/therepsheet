@@ -383,7 +383,7 @@ write('/favorites/', page({ title: `Your Favorite Reps | ${NAME}`, desc: 'The re
   <div class="hero-text">
     <h1>Rep Spreadsheet ${YEAR} <span>${ROUND}+ Rep Links</span></h1>
     <p>${esc(HOME.lead.replace('{COUNT}', COUNT)).replace('rep spreadsheet', '<strong>rep spreadsheet</strong>')}</p>
-    <div class="hero-cta"><a class="btn-buy btn-xl" href="#categories">Shop reps by category ↓</a><span class="updated">${ICON.clock} Updated ${UPDATED}</span></div>
+    <div class="hero-cta"><span class="updated">${ICON.clock} Updated ${UPDATED}</span></div>
     <ul class="stats">${stats.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
   </div>
   ${promoCard()}
