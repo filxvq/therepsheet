@@ -143,13 +143,15 @@
     es.forEach(function (e) {
       if (!e.isIntersecting) return;
       var el = e.target; seen.unobserve(el);
+      if (el.classList.contains('row-scroll')) { $$('.card', el).forEach(function (c, i) { c.style.transitionDelay = Math.min(i * 45, 270) + 'ms'; c.classList.add('in'); setTimeout(function () { c.style.transitionDelay = ''; }, 800); }); return; }
       el.style.transitionDelay = Math.min(k++ * 45, 270) + 'ms';
       el.classList.add('in');
       setTimeout(function () { el.style.transitionDelay = ''; }, 800);
     });
   }, { rootMargin: '0px 0px -30px 0px' });
   function watch(root) {
-    $$('.card:not(.in)', root).forEach(function (c) { if (seen) seen.observe(c); else c.classList.add('in'); });
+    $$('.card:not(.in)', root).forEach(function (c) { if (c.closest('.row-scroll')) return; if (seen) seen.observe(c); else c.classList.add('in'); });
+    $$('.row-scroll', root).forEach(function (r) { if (seen) seen.observe(r); else $$('.card', r).forEach(function (c) { c.classList.add('in'); }); });
     $$('.card-img img, .shot img, .results img', root).forEach(function (im) {
       if (im.complete && im.naturalWidth) im.classList.add('ok');
       else { im.addEventListener('load', function () { im.classList.add('ok'); }); im.addEventListener('error', function () { im.classList.add('ok'); }); }
@@ -178,33 +180,56 @@
     if (!e.target.closest('.others')) $$('.others.open').forEach(function (o) { o.classList.remove('open'); $('.others-btn', o).setAttribute('aria-expanded', 'false'); });
   });
 
-  // ── card rows: drag sideways with the mouse (touch scrolls natively), with a little glide after ──
+  // ── card rows: drag sideways with the mouse (touch scrolls natively). The row follows the pointer
+  // frame by frame, keeps the throw's speed when let go, slows down gently and settles on a card edge.
   $$('.row-scroll').forEach(function (row) {
-    var down = false, moved = false, x0 = 0, s0 = 0, lastX = 0, lastT = 0, v = 0, glide = 0;
+    var down = false, moved = false, x0 = 0, s0 = 0, target = 0, raf = 0, samples = [];
+    function stop() { cancelAnimationFrame(raf); raf = 0; }
+    function edges() { return $$('.card, .qc-shot', row).map(function (c) { return c.offsetLeft - row.firstElementChild.offsetLeft; }); }
+    function settle() {   // ease to the nearest card edge, never a jump
+      var max = row.scrollWidth - row.clientWidth, x = row.scrollLeft;
+      if (x <= 2 || x >= max - 2) { row.classList.remove('dragging'); return; }
+      var best = edges().reduce(function (b, e) { return Math.abs(e - x) < Math.abs(b - x) ? e : b; }, Infinity);
+      if (best === Infinity) { row.classList.remove('dragging'); return; }
+      best = Math.max(0, Math.min(max, best));
+      var from = x, t0 = performance.now(), dur = 320;
+      (function step(t) {
+        var k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+        row.scrollLeft = from + (best - from) * e;
+        if (k < 1) raf = requestAnimationFrame(step); else { raf = 0; row.classList.remove('dragging'); }
+      })(t0);
+    }
     row.addEventListener('pointerdown', function (e) {
       if (e.pointerType !== 'mouse' || e.button !== 0) return;
-      cancelAnimationFrame(glide);
-      down = true; moved = false; x0 = lastX = e.clientX; s0 = row.scrollLeft; lastT = performance.now(); v = 0;
+      stop(); down = true; moved = false; x0 = e.clientX; s0 = target = row.scrollLeft; samples = [[performance.now(), e.clientX]];
     });
     window.addEventListener('pointermove', function (e) {
       if (!down) return;
       var dx = e.clientX - x0;
-      if (!moved && Math.abs(dx) > 5) { moved = true; row.classList.add('dragging'); }
+      if (!moved && Math.abs(dx) > 4) { moved = true; row.classList.add('dragging'); }
       if (!moved) return;
-      row.scrollLeft = s0 - dx;
-      var t = performance.now(); v = (e.clientX - lastX) / Math.max(1, t - lastT); lastX = e.clientX; lastT = t;
+      target = s0 - dx;
+      var now = performance.now(); samples.push([now, e.clientX]);
+      while (samples.length > 2 && now - samples[0][0] > 100) samples.shift();
+      if (!raf) raf = requestAnimationFrame(function () { raf = 0; row.scrollLeft = target; });
     });
     window.addEventListener('pointerup', function () {
       if (!down) return;
       down = false;
       if (!moved) return;
-      var speed = -v * 16;
-      (function step() {
-        speed *= 0.92;
-        if (Math.abs(speed) < 0.5) { row.classList.remove('dragging'); return; }
-        row.scrollLeft += speed; glide = requestAnimationFrame(step);
+      stop(); row.scrollLeft = target;
+      // speed of the last ~100 ms of the drag, in px per frame; a pause before letting go means no throw
+      var now = performance.now(), f = samples[0], l = samples[samples.length - 1];
+      var v = now - l[0] > 60 || l[0] === f[0] ? 0 : -(l[1] - f[1]) / (l[0] - f[0]) * 16;
+      v = Math.max(-50, Math.min(50, v));
+      (function glide() {
+        v *= 0.94;
+        var before = row.scrollLeft; row.scrollLeft += v;
+        if (Math.abs(v) < 2 || row.scrollLeft === before) { raf = 0; settle(); return; }
+        raf = requestAnimationFrame(glide);
       })();
     });
+    row.addEventListener('wheel', stop, { passive: true });
     // a drag that ends over a card must not open it
     row.addEventListener('click', function (e) { if (moved) { e.preventDefault(); e.stopPropagation(); moved = false; } }, true);
     row.addEventListener('dragstart', function (e) { e.preventDefault(); });
