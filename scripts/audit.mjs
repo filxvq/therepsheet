@@ -60,7 +60,7 @@ for (const f of pages) {
     const tag = m[0], src = (tag.match(/src="([^"]+)"/) || [])[1] || '';
     if (!/alt="/.test(tag)) add('img without alt', `${u} ${src}`);
     if (src.startsWith('/') && !exists(src)) add('missing image', `${u} ${src}`);
-    if (src.includes('no-photo')) add('placeholder photo', u);
+    if (src.includes('/assets/no-photo.svg')) add('placeholder photo', u);
   }
 }
 for (const u of sitemap) if (!exists(u)) add('sitemap URL has no page', u);
