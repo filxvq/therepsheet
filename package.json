@@ -5,7 +5,8 @@
     "build": "node src/build.mjs",
     "data": "node scripts/prepare.mjs",
     "images": "node scripts/images.mjs",
-    "deploy": "node src/build.mjs && npx wrangler@4 deploy"
+    "deploy": "node src/build.mjs && npx wrangler@4 deploy",
+    "deploy:img": "cd img-worker && npx wrangler@4 deploy"
   },
   "type": "module",
   "devDependencies": {

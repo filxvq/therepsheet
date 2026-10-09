@@ -1,0 +1,12 @@
+// A second Worker that only serves the colour/version photos under therepsheet.com/v/*.
+// They live here, not in the main site, because the 19.5k files would push the main Worker past
+// Cloudflare's 20,000-file limit. Fill public/v/ with `node scripts/variant-images.mjs`, then
+// deploy with `npx wrangler@4 deploy` from this folder (npm run deploy:img from the root).
+{
+  "name": "therepsheet-img",
+  "compatibility_date": "2026-10-01",
+  "workers_dev": false,
+  "preview_urls": false,
+  "assets": { "directory": "./public", "not_found_handling": "none" },
+  "routes": [{ "pattern": "therepsheet.com/v/*", "zone_name": "therepsheet.com" }]
+}

@@ -253,9 +253,13 @@ function promoCard() {
 // Colour, size and other option groups read from the source sheet (scripts/fetch-variants.mjs).
 // Swatches with a photo switch the main image; the first few show, the rest open with "+N".
 const VARIANTS = fs.existsSync(path.join(ROOT, 'data/variants.json')) ? JSON.parse(fs.readFileSync(path.join(ROOT, 'data/variants.json'), 'utf8')) : {};
-// Variant photos stay on the source sheet's CDN: ~19,500 of them would not fit Vercel's file
-// limits as part of this repo. A swatch whose photo fails to load hides itself (site.js).
-const vImg = (url) => (/^https:\/\//.test(url || '') ? url : null);
+// Variant photos are our own copies (scripts/variant-images.mjs), served by the second Worker in
+// img-worker/ under /v/; one not copied yet falls back to the source URL. A swatch whose photo
+// fails to load hides itself (site.js).
+const V_DIR = path.join(ROOT, 'img-worker/public/v');
+const vImg = (url) => { if (!/^https:\/\//.test(url || '')) return null;
+  const name = path.basename(new URL(url).pathname).replace(/\.[a-z0-9]+$/i, '') + '.webp';
+  return fs.existsSync(path.join(V_DIR, name)) ? `/v/${name}` : url; };
 // Option-group names come straight from Weidian sellers ("color classification", "yardage number");
 // show the common ones under one name.
 const groupName = (l) => { const x = l.toLowerCase();

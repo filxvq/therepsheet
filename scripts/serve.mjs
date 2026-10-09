@@ -18,8 +18,9 @@ http.createServer(async (req, res) => {
     const shim = { setHeader: (k, v) => res.setHeader(k, v), status(c) { res.statusCode = c; return shim; }, json(o) { res.setHeader('Content-Type', 'application/json'); res.end(JSON.stringify(o)); } };
     return rates(req, shim);
   }
-  let p = path.join(DIST, decodeURIComponent(url.pathname));
-  if (!p.startsWith(DIST)) { res.statusCode = 403; return res.end(); }
+  // /v/* is the variant-photo Worker in production (img-worker/)
+  let p = url.pathname.startsWith('/v/') ? path.join(ROOT, 'img-worker/public', decodeURIComponent(url.pathname)) : path.join(DIST, decodeURIComponent(url.pathname));
+  if (!p.startsWith(DIST) && !p.startsWith(path.join(ROOT, 'img-worker/public'))) { res.statusCode = 403; return res.end(); }
   if (fs.existsSync(p) && fs.statSync(p).isDirectory()) {
     if (!url.pathname.endsWith('/')) { res.writeHead(308, { Location: url.pathname + '/' }); return res.end(); }
     p = path.join(p, 'index.html');
