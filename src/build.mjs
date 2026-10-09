@@ -7,6 +7,8 @@
 //   /<category>/               a category, 60 per page, /<category>/page/2/ ...
 //   /<category>/<slug>/        a product
 //   /brands/  /brands/<slug>/  brands with at least BRAND_PAGE_MIN items
+//   /brands/<slug>/<category>/ a brand in one category ("Balenciaga Hoodie Reps"), BRAND_CAT_MIN items or more
+//   /guides/  /guides/<slug>/  buying guides      /tools/link-converter/      /spreadsheet/<agent>/ (agents other than Kakobuy and USFans)
 //   /favorites/                the visitor's saved reps (drawn by site.js, not indexed)
 //   /how-to-buy/  /faq/  /about/
 //   sitemap.xml  robots.txt  search.json  404.html
@@ -16,7 +18,8 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { SITE, NAME, CATEGORIES, AGENTS, DEFAULT_AGENT, CNY_FALLBACK, BRAND_PAGE_MIN, PER_PAGE } from './config.mjs';
+import { SITE, NAME, CATEGORIES, AGENTS, DEFAULT_AGENT, CNY_FALLBACK, BRAND_PAGE_MIN, BRAND_CAT_MIN, PER_PAGE } from './config.mjs';
+import { GUIDES } from './guides.mjs';
 import { HOME, FAQ, GUIDE, ABOUT } from './content.mjs';
 import { describe } from './describe.mjs';
 
@@ -39,7 +42,7 @@ const V = { css: hashOf('site.css'), js: hashOf('site.js'), icon: hashOf('icon.s
 // search.json and its version are built once, on first use (the helpers they need are declared
 // below). The version goes into the page so a changed catalog is a new URL, never a stale cache.
 let SEARCH = null, SV = null;
-const searchJson = () => SEARCH || (SEARCH = JSON.stringify(products.map((p) => [p.name, urlOf(p), thumbOf(p), p.cny, p.brand || '', p.id, p.category])));
+const searchJson = () => SEARCH || (SEARCH = JSON.stringify(products.map((p) => [p.name, urlOf(p), thumbOf(p), p.cny, p.brand || '', p.id, p.category, p.sourceId || ''])));
 const searchVersion = () => SV || (SV = crypto.createHash('sha1').update(searchJson()).digest('hex').slice(0, 10));
 
 // ── helpers ──────────────────────────────────────────────────────────────────
@@ -82,9 +85,21 @@ products.forEach((p) => byCat.get(p.category).push(p));
 const brandCount = new Map();
 products.forEach((p) => p.brand && brandCount.set(p.brand, (brandCount.get(p.brand) || 0) + 1));
 const BRANDS = [...brandCount].filter(([, k]) => k >= BRAND_PAGE_MIN).sort((a, b) => b[1] - a[1])
-  .map(([name, k]) => ({ name, n: k, slug: slugify(name), items: products.filter((p) => p.brand === name) }));
+  .map(([name, k]) => {
+    const slug = slugify(name), items = products.filter((p) => p.brand === name);
+    const groups = CATEGORIES.map((c) => ({ c, items: items.filter((p) => p.category === c.id) })).filter((g) => g.items.length);
+    // a brand + category page only when the brand spans categories and has enough reps in this one
+    const subs = groups.length > 1 ? groups.filter((g) => g.items.length >= BRAND_CAT_MIN).map((g) => ({ ...g, url: `/brands/${slug}/${g.c.id}/` })) : [];
+    return { name, n: k, slug, items, subs };
+  });
 const brandPage = new Map(BRANDS.map((b) => [b.name, b]));
 const POPULAR = products.slice(0, 60);
+const statsOf = (list) => { const pr = list.map((p) => usd(p.cny)).sort((a, b) => a - b);
+  return { n: list.length, half: '$' + Math.ceil(pr[Math.floor((pr.length - 1) / 2)] || 0), qc: list.filter((p) => qcOf(p).length).length }; };
+const statTitle = (h1, list) => { const st = statsOf(list);
+  return fit([`${h1}: ${st.n} Finds`, st.qc >= 3 ? `, ${st.qc} With QC Photos` : '', ` (${YEAR})`, ` | ${NAME}`], 65); };
+const statDesc = (what, list) => { const st = statsOf(list);
+  return fit([`${st.n} ${what}`, st.n > 3 ? `, half under ${st.half}` : '', st.qc >= 2 ? `, ${st.qc} with QC photos from real orders` : '', '.', ' Prices, colours, sizes and buy links for Kakobuy, USFans and 4 more agents.'], 158); };
 
 // ── page shell ───────────────────────────────────────────────────────────────
 function page({ title, desc, url, body, image, jsonld = [], noindex = false, active = '' }) {
@@ -136,7 +151,7 @@ ${body}
       <div><a class="logo" href="/"><b>TheRep</b>Sheet<span>.com</span></a>
         <p>The rep spreadsheet for Weidian finds: ${COUNT} reps with live prices and direct links for six shopping agents. Updated ${UPDATED}.</p></div>
       <div><h3>Categories</h3>${CATEGORIES.map((c) => `<a href="/${c.id}/">${esc(c.reps)}</a>`).join('')}</div>
-      <div><h3>Quick links</h3><a href="/">Home</a><a href="/finds/">All reps</a><a href="/brands/">Reps by brand</a><a href="/how-to-buy/">How to buy reps</a><a href="/faq/">Rep FAQ</a><a href="/favorites/">Your favorites</a><a href="/about/">About</a><a data-signup href="${defAgent.signup}" rel="nofollow sponsored noopener" target="_blank">Sign up to <span class="agent-name">${esc(defAgent.name)}</span></a></div>
+      <div><h3>Quick links</h3><a href="/">Home</a><a href="/finds/">All reps</a><a href="/brands/">Reps by brand</a><a href="/how-to-buy/">How to buy reps</a><a href="/guides/">Rep guides</a><a href="/tools/link-converter/">Link converter</a><a href="/faq/">Rep FAQ</a><a href="/favorites/">Your favorites</a><a href="/about/">About</a><a data-signup href="${defAgent.signup}" rel="nofollow sponsored noopener" target="_blank">Sign up to <span class="agent-name">${esc(defAgent.name)}</span></a></div>
     </div>
     <div class="foot-brands"><h3>Brands</h3><div class="brand-cols">${BRANDS.slice(0, 42).map((b) => `<a href="/brands/${b.slug}/">${esc(b.name)}</a>`).join('')}</div></div>
     <div class="foot-legal">
@@ -328,15 +343,23 @@ ${similar.length ? `<section><div class="sec-head"><h2>More ${esc(cat.reps.toLow
 for (const c of CATEGORIES) {
   const list = byCat.get(c.id);
   const brandsHere = BRANDS.filter((b) => b.items.some((p) => p.category === c.id)).slice(0, 14);
-  listing({ base: `/${c.id}/`, h1: c.reps, title: `${c.reps} ${YEAR} – ${list.length} ${short(c)} Reps | Rep Spreadsheet`,
-    desc: fit([`${list.length} ${c.reps.toLowerCase()} in the rep spreadsheet, with prices, colours, sizes and agent links.`, ` ${c.intro.split('. ')[0]}.`], 158),
+  listing({ base: `/${c.id}/`, h1: c.reps, title: statTitle(c.reps, list),
+    desc: statDesc(c.reps.toLowerCase(), list),
     intro: c.intro, list, crumb: [['Rep Spreadsheet', '/'], [c.reps, `/${c.id}/`]], active: c.id,
-    extra: `${rail(c.id)}${brandsHere.length ? `<div class="chips">${brandsHere.map((b) => `<a href="/brands/${b.slug}/">${esc(b.name)} reps</a>`).join('')}</div>` : ''}` });
+    extra: `${rail(c.id)}${brandsHere.length ? `<div class="chips">${brandsHere.map((b) => { const g = b.subs.find((x) => x.c === c); return g ? `<a href="${g.url}">${esc(b.name)} ${esc(c.reps.toLowerCase())} <b>${g.items.length}</b></a>` : `<a href="/brands/${b.slug}/">${esc(b.name)} reps</a>`; }).join('')}</div>` : ''}` });
 }
 for (const b of BRANDS) {
-  listing({ base: `/brands/${b.slug}/`, h1: `${b.name} Reps`, title: `${b.name} Reps ${YEAR} – ${b.n} Finds | Rep Spreadsheet`,
-    desc: `${b.n} ${b.name} reps from Weidian sellers in the rep spreadsheet, with prices and buy links for Kakobuy, USFans and other agents.`,
-    list: b.items, crumb: [['Rep Spreadsheet', '/'], ['Reps by brand', '/brands/'], [`${b.name} reps`, `/brands/${b.slug}/`]], active: 'brands' });
+  listing({ base: `/brands/${b.slug}/`, h1: `${b.name} Reps`, title: statTitle(`${b.name} Reps`, b.items),
+    desc: statDesc(`${b.name} reps`, b.items),
+    list: b.items, crumb: [['Rep Spreadsheet', '/'], ['Reps by brand', '/brands/'], [`${b.name} reps`, `/brands/${b.slug}/`]], active: 'brands',
+    extra: b.subs.length ? `<div class="chips">${b.subs.map((g) => `<a href="${g.url}">${esc(b.name)} ${esc(g.c.reps.toLowerCase())} <b>${g.items.length}</b></a>`).join('')}</div>` : '' });
+  for (const g of b.subs) {
+    const h = `${b.name} ${g.c.reps}`;
+    listing({ base: g.url, h1: h, title: statTitle(h, g.items), desc: statDesc(`${b.name} ${g.c.reps.toLowerCase()}`, g.items),
+      intro: `Every ${b.name} ${g.c.reps.toLowerCase().replace(/ reps$/, '')} rep in the spreadsheet, with its price, colours, sizes and QC photos where buyers shared them.`,
+      list: g.items, crumb: [['Rep Spreadsheet', '/'], [`${b.name} reps`, `/brands/${b.slug}/`], [h, g.url]], active: g.c.id,
+      extra: `<div class="chips"><a href="/brands/${b.slug}/">All ${esc(b.name)} reps <b>${b.n}</b></a><a href="/${g.c.id}/">All ${esc(g.c.reps.toLowerCase())} <b>${byCat.get(g.c.id).length}</b></a></div>` });
+  }
 }
 {
   const [bc, bcld] = crumbs([['Rep Spreadsheet', '/'], ['Reps by brand', '/brands/']]);
@@ -377,12 +400,14 @@ write('/favorites/', page({ title: `Your Favorite Reps | ${NAME}`, desc: 'The re
   const mix = (n) => { const groups = CATEGORIES.map((c) => byCat.get(c.id).slice(0, 12)), out = [];
     for (let i = 0; out.length < n && i < 12; i++) for (const g of groups) if (g[i] && out.length < n) out.push(g[i]);
     return out; };
-  const withQc = products.filter((p) => qcOf(p).length).sort((a, b) => qcOf(b).length - qcOf(a).length);
+  const withQc = products.filter((p) => qcOf(p).length).sort((a, b) => qcOf(b).length - qcOf(a).length);
+
   const body = `<section class="hero">
   <div class="hero-text">
     <h1>Rep Spreadsheet ${YEAR} <span>${ROUND}+ Rep Links</span></h1>
     <p>${esc(HOME.lead.replace('{COUNT}', COUNT)).replace('rep spreadsheet', '<strong>rep spreadsheet</strong>')}</p>
-    <div class="hero-cta"><span class="updated">${ICON.clock} Updated ${UPDATED}</span></div>
+    <div class="hero-cta"><span class="updated">${ICON.clock} Updated ${UPDATED}</span></div>
+
   </div>
   ${promoCard()}
 </section>
@@ -427,6 +452,54 @@ ${GUIDE.steps.map((s, i) => `<h2>${i + 1}. ${esc(s.t)}</h2><p>${esc(s.d)}</p>${s
 write('/404.html', page({ title: `Page not found | ${NAME}`, desc: 'This page does not exist.', url: '/404.html', noindex: true,
   body: `<header class="head"><h1>This rep is gone</h1><p class="intro">The seller may have taken the listing down. Search above or <a href="/finds/">browse the rep spreadsheet</a>.</p></header>${rail()}${grid(products.slice(0, 12))}` }), { sitemap: false });
 
+// ── guides ───────────────────────────────────────────────────────────────────
+const agentsTable = () => `<table class="agents-table"><thead><tr><th>Agent</th><th>Margin on the yuan price</th><th>New-account offer</th></tr></thead><tbody>${AGENTS.map((a) => `<tr><td><img src="${a.logo}" alt="" width="22" height="22"> ${esc(a.name)}</td><td>${a.rate > 1 ? '+' + ((a.rate - 1) * 100).toFixed(1) + '%' : 'not measured'}</td><td>${a.perk ? `<a href="${a.signup}" rel="nofollow sponsored noopener" target="_blank">${esc(a.perk)}</a>` : '–'}</td></tr>`).join('')}</tbody></table>`;
+{
+  const [bc, bcld] = crumbs([['Rep Spreadsheet', '/'], ['Rep guides', '/guides/']]);
+  write('/guides/', page({ title: `Rep Guides: QC, Sizing, Shipping & Agents (${YEAR}) | ${NAME}`, desc: 'Short, practical guides for buying reps: checking QC photos, GL and RL, sizing, batches, shipping, agents and Weidian.',
+    url: '/guides/', jsonld: [bcld],
+    body: `${bc}<header class="head"><h1>Rep Guides</h1><p class="intro">Short answers to the questions that come up on every rep order, from picking an agent to checking QC photos and shipping your haul.</p></header>
+<ul class="guide-list">${[{ slug: '../how-to-buy', title: GUIDE.title, desc: GUIDE.intro }, ...GUIDES].map((g) => `<li><a href="/guides/${g.slug}/"><b>${esc(g.title)}</b><span>${esc(g.desc.slice(0, 150))}</span></a></li>`).join('').replace('/guides/../how-to-buy/', '/how-to-buy/')}</ul>` }));
+  for (const g of GUIDES) {
+    const url = `/guides/${g.slug}/`;
+    const [gbc, gbcld] = crumbs([['Rep Spreadsheet', '/'], ['Rep guides', '/guides/'], [g.title, url]]);
+    const more = GUIDES.filter((x) => x !== g).slice(0, 4);
+    const body = `${gbc}<article class="prose"><h1>${esc(g.title)}</h1><p class="intro">${esc(g.intro)}</p>
+${g.agentsTable ? agentsTable() : ''}
+${g.sections.map((x) => `<h2>${esc(x.h)}</h2>${x.p.map((t) => `<p>${esc(t).replace('link converter', '<a href="/tools/link-converter/">link converter</a>').replace('comparison of rep agents', '<a href="/guides/best-rep-agents/">comparison of rep agents</a>')}</p>`).join('')}`).join('\n')}
+<h2>More rep guides</h2><ul>${more.map((x) => `<li><a href="/guides/${x.slug}/">${esc(x.title)}</a></li>`).join('')}<li><a href="/how-to-buy/">${esc(GUIDE.title)}</a></li></ul></article>
+<section><div class="sec-head"><h2>Popular reps</h2><a class="sec-link" href="/finds/">All reps →</a></div>${row(POPULAR.slice(0, 16))}</section>`;
+    write(url, page({ title: fit([g.seo, ` | ${NAME}`], 70), desc: g.desc, url, body,
+      jsonld: [gbcld, { '@context': 'https://schema.org', '@type': 'Article', headline: g.title, description: g.desc, dateModified: BUILT, author: { '@type': 'Organization', name: NAME }, publisher: { '@type': 'Organization', name: NAME } }] }));
+  }
+}
+
+// ── tools: link converter (runs in site.js; the page itself explains and lists the agents) ──
+{
+  const [bc, bcld] = crumbs([['Rep Spreadsheet', '/'], ['Link converter', '/tools/link-converter/']]);
+  write('/tools/link-converter/', page({ title: `Weidian Link Converter for Kakobuy, USFans & More | ${NAME}`,
+    desc: 'Paste a Weidian link or an agent link and get the same item on Kakobuy, USFans, Sinabuy, Litbuy, Oopbuy and Acbuy. Free, no sign-up.',
+    url: '/tools/link-converter/', jsonld: [bcld, { '@context': 'https://schema.org', '@type': 'WebApplication', name: 'Weidian link converter', applicationCategory: 'UtilitiesApplication', operatingSystem: 'Any', offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' } }],
+    body: `${bc}<header class="head"><h1>Weidian Link Converter</h1><p class="intro">Paste a Weidian link, or a Kakobuy, USFans, Sinabuy, Litbuy, Oopbuy or Acbuy link to a Weidian item, and get the same item on every agent.</p></header>
+<div class="conv"><input id="convIn" type="url" inputmode="url" placeholder="https://weidian.com/item.html?itemID=…" autocomplete="off"><p class="conv-msg" id="convMsg">Works with Weidian item links and agent links to Weidian items.</p><div id="convOut" class="conv-out"></div></div>
+<article class="prose"><h2>How it works</h2><p>Every Weidian item has a number, the itemID. Agents open the same item from that number, each with its own address. The converter reads the number from the link you paste and builds the address for each agent. If the item is in the rep spreadsheet, it also links to its page here, with colours, sizes and QC photos.</p>
+<h2>Which link should I use?</h2><p>Use the agent you already have an account with. If you have none yet, see the <a href="/guides/best-rep-agents/">agent comparison</a>; new accounts usually get shipping coupons.</p></article>` }));
+}
+
+// ── agent spreadsheets (not Kakobuy or USFans: those are the user's other sites' names) ──
+for (const a of AGENTS.filter((x) => !['kakobuy', 'usfans'].includes(x.id))) {
+  const url = `/spreadsheet/${a.id}/`, h = `${a.name} Spreadsheet`;
+  const [bc, bcld] = crumbs([['Rep Spreadsheet', '/'], [h, url]]);
+  const list = POPULAR.slice(0, 48);
+  const body = `${bc}<header class="head"><h1>${esc(h)} ${YEAR}</h1><p class="count">${COUNT} reps with ${esc(a.name)} links</p>
+<p class="intro">Every rep on ${NAME} opens on ${esc(a.name)}. The reps below link straight to ${esc(a.name)}; to see the whole spreadsheet with ${esc(a.name)} prices, pick ${esc(a.name)} in the agent switch at the top of the page and every link and price on the site follows.</p></header>
+<div class="chips"><a href="/finds/">All reps by category</a><a href="/brands/">Reps by brand</a><a href="/tools/link-converter/">Convert a link to ${esc(a.name)}</a></div>
+<div class="grid">${list.map((p) => card(p).replace(/data-wd="(\d+)" href="[^"]*"/, (m, id) => `data-wd="${id}" data-agent-link="${a.id}" href="${buyUrl(id, a)}"`).replace(/View on <span class="agent-name">[^<]*<\/span>/, `View on ${esc(a.name)}`)).join('\n')}</div>
+<article class="prose"><h2>Buying reps with ${esc(a.name)}</h2><p>${esc(a.name)} is a shopping agent: it buys the item from the Weidian seller, receives it at its warehouse in China, sends you QC photos and ships your haul. ${a.rate > 1 ? `On this site ${esc(a.name)} prices include a ${((a.rate - 1) * 100).toFixed(1)}% margin on the yuan price, the rate we measured for it.` : ''} See <a href="/guides/best-rep-agents/">how the agents compare</a> and <a href="/how-to-buy/">how to buy reps</a>.</p></article>`;
+  write(url, page({ title: `${h} ${YEAR}: ${ROUND}+ Reps With ${a.name} Links | ${NAME}`, desc: fit([`${h} with ${COUNT} reps: shoes, hoodies, jackets, bags and more, each with a direct ${a.name} link, its price, colours, sizes and QC photos.`], 158),
+    url, body, jsonld: [bcld], image: imgOf(list[0]) }));
+}
+
 // ── machine files ────────────────────────────────────────────────────────────
 fs.writeFileSync(path.join(DIST, 'search.json'), searchJson());
 fs.writeFileSync(path.join(DIST, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
@@ -437,4 +510,4 @@ fs.writeFileSync(path.join(DIST, 'robots.txt'), `User-agent: *\nAllow: /\n\nSite
 
 // static files last, so a stale copy never shadows a built page
 fs.cpSync(path.join(ROOT, 'public'), DIST, { recursive: true });
-console.log(`built ${written.length} indexable pages, ${products.length} products, ${BRANDS.length} brand pages`);
+console.log(`built ${written.length} indexable pages, ${products.length} products, ${BRANDS.length} brand pages, ${BRANDS.reduce((x, b) => x + b.subs.length, 0)} brand + category pages, ${GUIDES.length} guides`);

@@ -268,7 +268,7 @@
   var data = null, loading = null;
   function load() {
     return loading || (loading = fetch('/search.json?v=' + (T.sv || '')).then(function (r) { return r.json(); }).then(function (d) {
-      data = d.map(function (x) { return { n: x[0], u: x[1], i: x[2], c: x[3], b: x[4], id: String(x[5]), cat: x[6], k: (x[0] + ' ' + x[4]).toLowerCase() }; });
+      data = d.map(function (x) { return { n: x[0], u: x[1], i: x[2], c: x[3], b: x[4], id: String(x[5]), cat: x[6], src: String(x[7] || ''), k: (x[0] + ' ' + x[4]).toLowerCase() }; });
     }));
   }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
@@ -367,5 +367,43 @@
       apply(); syncFavs(); watch(grid);
     });
     var again = $('#searchAgain'); if (again) again.addEventListener('click', function () { openSearch(q0); });
+  }
+  // ── /tools/link-converter/: read the Weidian itemID from any supported link, list it for every agent ──
+  var convIn = $('#convIn');
+  if (convIn) {
+    var convOut = $('#convOut'), convMsg = $('#convMsg');
+    var idOf = function (raw) {
+      var s = String(raw || '').trim(); if (!s) return null;
+      try { s = decodeURIComponent(s); } catch (e) {}
+      var m = s.match(/weidian\.com\/[^\s]*?itemI[dD]=(\d{6,})/) || s.match(/[?&]itemI[dD]=(\d{6,})/)
+        || s.match(/usfans\.com\/product\/3\/(\d{6,})/) || s.match(/sinabuy\.com\/product\/2\/(\d{6,})/)
+        || s.match(/oopbuy\.com\/product\/weidian\/(\d{6,})/)
+        || (/channel=WEIDIAN/i.test(s) && s.match(/[?&]id=(\d{6,})/)) || (/source=WD/i.test(s) && s.match(/[?&]id=(\d{6,})/))
+        || s.match(/^(\d{8,})$/);
+      return m ? m[1] : null;
+    };
+    var draw = function () {
+      var id = idOf(convIn.value);
+      if (!convIn.value.trim()) { convOut.innerHTML = ''; convMsg.textContent = 'Works with Weidian item links and agent links to Weidian items.'; return; }
+      if (!id) { convOut.innerHTML = ''; convMsg.textContent = 'No Weidian item found in that link. Paste a weidian.com item link or an agent link to a Weidian item.'; return; }
+      convMsg.textContent = 'Weidian item ' + id + ':';
+      convOut.innerHTML = agents.map(function (a) {
+        var href = link(id, a);
+        return '<div class="conv-row"><img src="' + a.logo + '" alt="" width="24" height="24"><b>' + esc(a.name) + '</b><input readonly value="' + esc(href) + '"><button type="button" class="btn-ghost conv-copy" data-copy="' + esc(href) + '">Copy</button><a class="btn-buy" href="' + esc(href) + '" rel="nofollow sponsored noopener" target="_blank"><span>Open</span></a></div>';
+      }).join('') + '<div class="conv-row conv-weidian"><b>Weidian</b><input readonly value="' + esc(weidian(id)) + '"><button type="button" class="btn-ghost conv-copy" data-copy="' + esc(weidian(id)) + '">Copy</button></div>';
+      load().then(function () {
+        var hit = data && data.filter(function (x) { return x.id === id || x.src === id; })[0];
+        if (hit && idOf(convIn.value) === id) convOut.insertAdjacentHTML('afterbegin', '<a class="conv-hit" href="' + hit.u + '"><img src="' + hit.i + '" alt=""><span><b>' + esc(hit.n) + '</b>In the rep spreadsheet: colours, sizes and QC photos →</span></a>');
+      });
+    };
+    convIn.addEventListener('input', draw);
+    convOut.addEventListener('click', function (e) {
+      var b = e.target.closest('.conv-copy'); if (!b) return;
+      var t = b.getAttribute('data-copy');
+      (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { b.textContent = 'Copied'; }, function () {
+        var i = b.previousElementSibling; i.select(); try { document.execCommand('copy'); b.textContent = 'Copied'; } catch (x) {} });
+      setTimeout(function () { b.textContent = 'Copy'; }, 1400);
+    });
+    var q = new URLSearchParams(location.search).get('url'); if (q) { convIn.value = q; draw(); }
   }
 })();

@@ -50,4 +50,5 @@ export const DEFAULT_AGENT = 'kakobuy';
 export const CNY_FALLBACK = 6.71;   // yuan per dollar until /api/rates answers
 
 export const BRAND_PAGE_MIN = 8;    // a brand gets its own page from this many items
+export const BRAND_CAT_MIN = 4;     // and a brand + category page ("Balenciaga Hoodie Reps") from this many there
 export const PER_PAGE = 60;

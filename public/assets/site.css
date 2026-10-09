@@ -464,3 +464,27 @@ a,button{-webkit-tap-highlight-color:transparent}
 .info .kupon-baner.kako .kb-tytul{max-width:9.3em;font-size:26px}
 @media(min-width:521px){.info .kupon-baner.kako .kb-kupony{font-size:14px;margin:-6px 0}}
 .kb-znaczek svg,.kb-przycisk svg{flex:none}
+
+/* guides index, agent table, link converter */
+.guide-list{list-style:none;padding:0;margin:8px 0 0;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+.guide-list a{display:flex;flex-direction:column;gap:4px;height:100%;text-decoration:none;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;transition:border-color .15s,transform .15s var(--ease)}
+.guide-list a:hover{border-color:var(--red);transform:translateY(-2px)}
+.guide-list b{font-size:16px}.guide-list span{color:var(--muted);font-size:14px}
+.agents-table{width:100%;border-collapse:collapse;margin:18px 0 6px;font-size:14.5px}
+.agents-table th,.agents-table td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line)}
+.agents-table th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+.agents-table td img{vertical-align:middle;border-radius:5px;margin-right:6px}
+.conv{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin:0 0 26px}
+.conv>input{width:100%;height:52px;border-radius:12px;border:1px solid var(--line);background:var(--bg2);color:var(--ink);font:inherit;font-size:16px;padding:0 16px;outline:0}
+.conv>input:focus{border-color:var(--red)}
+.conv-msg{color:var(--muted);font-size:14px;margin:10px 2px}
+.conv-out{display:grid;gap:8px}
+.conv-row{display:grid;grid-template-columns:24px 90px 1fr auto auto;gap:10px;align-items:center}
+.conv-row img{border-radius:6px}
+.conv-row input{min-width:0;height:38px;border-radius:9px;border:1px solid var(--line);background:var(--bg2);color:var(--muted);font:inherit;font-size:13px;padding:0 10px}
+.conv-row .btn-buy,.conv-row .btn-ghost{height:38px;padding:0 14px}
+.conv-weidian{grid-template-columns:24px 90px 1fr auto}.conv-weidian b{grid-column:2}
+.conv-hit{display:flex;align-items:center;gap:12px;text-decoration:none;background:var(--red-soft);border:1px solid var(--red);border-radius:12px;padding:10px 12px;margin-bottom:6px}
+.conv-hit img{width:48px;height:48px;border-radius:8px;object-fit:cover;background:#fff}
+.conv-hit span{display:flex;flex-direction:column;font-size:13.5px;color:var(--muted)}.conv-hit b{color:var(--ink);font-size:15px}
+@media(max-width:640px){.conv-row{grid-template-columns:24px 1fr auto auto}.conv-row input{display:none}.conv-weidian{grid-template-columns:24px 1fr auto}}
