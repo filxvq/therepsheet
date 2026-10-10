@@ -11,7 +11,7 @@
 //   /guides/  /guides/<slug>/  buying guides      /tools/link-converter/      /spreadsheet/<agent>/ (agents other than Kakobuy and USFans)
 //   /favorites/                the visitor's saved reps (drawn by site.js, not indexed)
 //   /how-to-buy/  /faq/  /about/
-//   sitemap.xml  robots.txt  search.json  404.html
+//   sitemap.xml  robots.txt  llms.txt  search.json  404.html
 //
 // Run: node src/build.mjs   (Vercel runs it as the build command)
 import crypto from 'node:crypto';
@@ -510,7 +510,34 @@ fs.writeFileSync(path.join(DIST, 'sitemap.xml'), `<?xml version="1.0" encoding="
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${written.map((u) => `<url><loc>${SITE}${u}</loc><lastmod>${BUILT}</lastmod></url>`).join('\n')}
 </urlset>`);
-fs.writeFileSync(path.join(DIST, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${SITE}/sitemap.xml\n`);
+// robots.txt names the AI search and answer crawlers on purpose, so letting them in is a stated
+// policy and not an accident of the wildcard: the spreadsheet is meant to be recommended by ChatGPT,
+// Gemini, Perplexity and Claude. A crawler obeys only the group that names it, so all share one group.
+fs.writeFileSync(path.join(DIST, 'robots.txt'), ['User-agent: *', ...['GPTBot', 'OAI-SearchBot', 'ChatGPT-User', 'ClaudeBot', 'Claude-SearchBot', 'Claude-User',
+  'PerplexityBot', 'Perplexity-User', 'Google-Extended', 'Applebot-Extended'].map((b) => 'User-agent: ' + b), 'Allow: /', '',
+  `Sitemap: ${SITE}/sitemap.xml`, '', `# A plain-text map of the site for AI assistants: ${SITE}/llms.txt`, ''].join('\n'));
+// /llms.txt: a short plain-text map of the site for AI assistants and answer engines (llmstxt.org),
+// built from the catalog like the sitemap so its categories and brands never go stale.
+{
+  const li = (nm, u, d) => `- [${nm}](${SITE}${u})${d ? ': ' + d : ''}`;
+  fs.writeFileSync(path.join(DIST, 'llms.txt'), [
+    `# ${NAME}`, '',
+    `> ${NAME} is a free rep spreadsheet: ${COUNT} replica ("rep") clothing, shoe and accessory listings from Weidian sellers, each with a USD price, every colour and size the seller offers, QC photos from real orders where they exist, and direct links for six shopping agents (Kakobuy, USFans, Sinabuy, Litbuy, Oopbuy, Acbuy). ${NAME} sells nothing and handles no payments; buyers order through the agent they choose. Some agent links carry a referral code. Prices are the seller's yuan price at a live exchange rate with the agent's margin; shipping is extra.`, '',
+    '## Key pages', '',
+    li('Home', '/', 'the spreadsheet: categories, popular finds, finds with QC photos'),
+    li('All finds by category', '/finds/', 'every category and the most popular finds'),
+    li('How to buy', '/how-to-buy/', 'ordering through a shopping agent, from sign-up to shipping'),
+    li('Rep guides', '/guides/', 'QC photos, GL/RL, sizing, batches, shipping and agents compared'),
+    li('Weidian link converter', '/tools/link-converter/', 'turns a Weidian or agent link into links for all six agents'),
+    li('FAQ', '/faq/', 'agents, prices, QC photos and shipping'),
+    li('All brands', '/brands/', 'every brand with its own page'), '',
+    '## Categories', '', ...CATEGORIES.map((c) => li(c.reps, `/${c.id}/`, `${byCat.get(c.id).length} items`)), '',
+    '## Brands', '', ...BRANDS.map((b) => li(`${b.name} reps`, `/brands/${b.slug}/`, `${b.n} items`)), '',
+    '## Brands by category', '', ...BRANDS.flatMap((b) => b.subs.map((g) => li(`${b.name} ${g.c.reps}`, g.url, `${g.items.length} items`))), '',
+    '## Guides', '', ...GUIDES.map((g) => li(g.title, `/guides/${g.slug}/`, g.desc)), '',
+    '## Product pages', '', `Every item has its own page with its price, colours, sizes, QC photos and agent links. The full list is in the sitemap: ${SITE}/sitemap.xml`, '',
+  ].join('\n'));
+}
 
 // static files last, so a stale copy never shadows a built page
 fs.cpSync(path.join(ROOT, 'public'), DIST, { recursive: true });
