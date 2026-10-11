@@ -407,3 +407,43 @@
     var q = new URLSearchParams(location.search).get('url'); if (q) { convIn.value = q; draw(); }
   }
 })();
+
+// ── traffic beacon for the owner's private panel (vetereps.com/stats) ──
+// Two random ids, one per browser and one per tab session, and nothing else identifying; no IP is
+// stored. A heartbeat every 20 s while the tab is visible makes "now on site" real. Opt out on this
+// site with ?notrack in the address (?track turns it back on).
+(function () {
+  function setNotrack(on) {
+    try { if (on) localStorage.setItem('vr_notrack', '1'); else localStorage.removeItem('vr_notrack'); } catch (e) {}
+    document.cookie = on ? 'vr_notrack=1; Path=/; Max-Age=315360000; SameSite=Lax' : 'vr_notrack=; Path=/; Max-Age=0; SameSite=Lax';
+  }
+  function isNotrack() {
+    try { if (localStorage.getItem('vr_notrack') === '1') return true; } catch (e) {}
+    return /(?:^|;\s*)vr_notrack=1(?:;|$)/.test(document.cookie);
+  }
+  try {
+    if (/[?&]notrack\b/.test(location.search)) setNotrack(true);
+    if (/[?&]track\b/.test(location.search)) setNotrack(false);
+    if (isNotrack()) { setNotrack(true); return; }
+  } catch (e) { return; }
+  var rid = function () { return (Math.random().toString(36).slice(2) + Date.now().toString(36)).slice(0, 20); };
+  var vid, sid, st, first;
+  try {
+    vid = localStorage.getItem('vr_vid'); if (!vid) { vid = rid(); localStorage.setItem('vr_vid', vid); }
+    sid = sessionStorage.getItem('vr_sid'); first = !sid;
+    if (!sid) { sid = rid(); st = Date.now(); sessionStorage.setItem('vr_sid', sid); sessionStorage.setItem('vr_st', String(st)); }
+    else st = Number(sessionStorage.getItem('vr_st')) || Date.now();
+  } catch (e) { vid = rid(); sid = rid(); st = Date.now(); first = true; }
+  function send(b) {
+    b.vid = vid; b.sid = sid; b.st = st;
+    var s = JSON.stringify(b);
+    try { if (navigator.sendBeacon && navigator.sendBeacon('/api/track', new Blob([s], { type: 'text/plain;charset=UTF-8' }))) return; } catch (e) {}
+    try { fetch('/api/track', { method: 'POST', body: s, keepalive: true, headers: { 'Content-Type': 'text/plain' } }).catch(function () {}); } catch (e) {}
+  }
+  send({ t: 'hit', path: location.pathname, ref: first ? document.referrer : '' });
+  function ping() { if (document.visibilityState === 'visible') send({ t: 'ping' }); }
+  setInterval(ping, 20000);
+  document.addEventListener('visibilitychange', ping);
+  // every buy link carries data-wd (the Weidian item id), whichever agent it points at
+  document.addEventListener('click', function (e) { if (e.target.closest && e.target.closest('a[data-wd]')) send({ t: 'order', path: location.pathname }); }, true);
+})();

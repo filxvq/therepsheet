@@ -27,10 +27,14 @@ async function rates(request, ctx) {
   return new Response(JSON.stringify({ error: 'rates unavailable' }), { status: 502, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
 }
 
+import { track } from './stats-d1.mjs';
+
 export default {
   async fetch(request, env, ctx) {
     const { pathname } = new URL(request.url);
     if (pathname.replace(/\/$/, '') === '/api/rates') return rates(request, ctx);
+    // visits go into the owner's shared stats database, read at vetereps.com/stats
+    if (pathname === '/api/track') return track(request, env.STATS);
     return env.ASSETS.fetch(request);
   },
 };

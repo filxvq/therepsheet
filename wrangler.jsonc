@@ -7,6 +7,8 @@
   // only therepsheet.com serves the site; the workers.dev address would be a duplicate copy
   "workers_dev": false,
   "preview_urls": false,
+  // the owner's traffic stats, shared with vetereps.com and the other site (worker/stats-d1.mjs)
+  "d1_databases": [{ "binding": "STATS", "database_name": "site-stats", "database_id": "e69e4e3a-4f91-4acc-865b-5e4bf86cb6f5" }],
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
