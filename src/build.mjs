@@ -29,7 +29,8 @@ const products = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/products.json'
 // Unique per-product text from scripts/describe-ai.mjs; products without one fall back to describe().
 // QC photos per product from scripts/qc.mjs
 const QC = fs.existsSync(path.join(ROOT, 'data/qc.json')) ? JSON.parse(fs.readFileSync(path.join(ROOT, 'data/qc.json'), 'utf8')) : {};
-const qcOf = (p) => (QC[p.id] || []).filter((f) => fs.existsSync(path.join(ROOT, 'public', f)));
+// the photos sit in qc-worker/public (the rep-qc-img Worker serves /img/qc/* in production)
+const qcOf = (p) => (QC[p.id] || []).filter((f) => fs.existsSync(path.join(ROOT, 'qc-worker/public', f)));
 const AI = fs.existsSync(path.join(ROOT, 'data/descriptions.json')) ? JSON.parse(fs.readFileSync(path.join(ROOT, 'data/descriptions.json'), 'utf8')) : {};
 const BUILT = new Date().toISOString().slice(0, 10);
 const YEAR = BUILT.slice(0, 4);

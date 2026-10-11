@@ -8,3 +8,4 @@ data/describe-ai.log
 data/qc-cache/
 data/qc.log
 img-worker/public/v/
+qc-worker/public/

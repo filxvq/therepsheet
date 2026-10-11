@@ -19,8 +19,11 @@ http.createServer(async (req, res) => {
     return rates(req, shim);
   }
   // /v/* is the variant-photo Worker in production (img-worker/)
-  let p = url.pathname.startsWith('/v/') ? path.join(ROOT, 'img-worker/public', decodeURIComponent(url.pathname)) : path.join(DIST, decodeURIComponent(url.pathname));
-  if (!p.startsWith(DIST) && !p.startsWith(path.join(ROOT, 'img-worker/public'))) { res.statusCode = 403; return res.end(); }
+  // /img/qc/* is the QC-photo Worker (rep-qc-img, therepsheet/qc-worker/)
+  const QC_DIR = path.join(ROOT, 'qc-worker/public');
+  let p = url.pathname.startsWith('/v/') ? path.join(ROOT, 'img-worker/public', decodeURIComponent(url.pathname))
+    : url.pathname.startsWith('/img/qc/') ? path.join(QC_DIR, decodeURIComponent(url.pathname)) : path.join(DIST, decodeURIComponent(url.pathname));
+  if (!p.startsWith(DIST) && !p.startsWith(path.join(ROOT, 'img-worker/public')) && !p.startsWith(QC_DIR)) { res.statusCode = 403; return res.end(); }
   if (fs.existsSync(p) && fs.statSync(p).isDirectory()) {
     if (!url.pathname.endsWith('/')) { res.writeHead(308, { Location: url.pathname + '/' }); return res.end(); }
     p = path.join(p, 'index.html');
