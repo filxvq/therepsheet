@@ -8,7 +8,7 @@
 // Rows written per pageview: about 9 (the D1 free tier allows 100k a day). A heartbeat writes only
 // when the visitor's last mark is over 40 s old.
 
-export const SITES = { 'vetereps.com': 'vetereps', 'therepsheet.com': 'therepsheet', 'theweidianspreadsheet.com': 'weidian' };
+export const SITES = { 'vetereps.com': 'vetereps', 'therepsheet.com': 'therepsheet', 'theweidianspreadsheet.com': 'weidian', 'theqcfinder.com': 'qcfinder' };
 const TZ = 'Europe/Warsaw';
 const LIVE_MS = 60 * 1000;           // "on site now" = seen in the last minute (the page pings every 20 s)
 const SESSION_MS = 30 * 60 * 1000;   // a visit ends after 30 minutes of silence

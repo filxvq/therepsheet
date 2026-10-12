@@ -1,5 +1,5 @@
-// A Worker that only serves the QC photos under /img/qc/*, shared by therepsheet.com and
-// theweidianspreadsheet.com (same 1881 products). They live here, not in the site Workers, because
+// A Worker that only serves the QC photos under /img/qc/*, shared by therepsheet.com,
+// theweidianspreadsheet.com (same 1881 products) and theqcfinder.com (its card thumbnails are in img/qc/sm/). They live here, not in the site Workers, because
 // ~19k files would push either one past Cloudflare's 20,000-file limit. Fill public/img/qc/ with
 // `node scripts/qc.mjs`, then deploy with `npm run deploy:qc` from the repo root.
 {
@@ -10,6 +10,7 @@
   "assets": { "directory": "./public", "not_found_handling": "none" },
   "routes": [
     { "pattern": "therepsheet.com/img/qc/*", "zone_name": "therepsheet.com" },
-    { "pattern": "theweidianspreadsheet.com/img/qc/*", "zone_name": "theweidianspreadsheet.com" }
+    { "pattern": "theweidianspreadsheet.com/img/qc/*", "zone_name": "theweidianspreadsheet.com" },
+    { "pattern": "theqcfinder.com/img/qc/*", "zone_name": "theqcfinder.com" }
   ]
 }
