@@ -122,6 +122,8 @@ ${noindex ? '<meta name="robots" content="noindex, follow">\n' : ''}<meta proper
 <meta property="og:url" content="${canonical}">
 ${image ? `<meta property="og:image" content="${SITE + image}">\n` : ''}<meta name="theme-color" content="#0c0c10">
 <link rel="icon" href="/assets/icon.svg?v=${V.icon}" type="image/svg+xml">
+<link rel="icon" href="/favicon-48.png?v=${V.icon}" type="image/png" sizes="48x48">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=${V.icon}">
 <script>document.documentElement.classList.add('js')</script>
 <link rel="stylesheet" href="/assets/site.css?v=${V.css}">
 ${jsonld.map((j) => `<script type="application/ld+json">${JSON.stringify(j).replace(/</g, '\\u003c')}</script>`).join('\n')}
