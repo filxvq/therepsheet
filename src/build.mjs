@@ -302,6 +302,11 @@ function productDesc(p) {
     opts ? ' All colours and sizes listed.' : '', ' Buy through Kakobuy, USFans or 4 more agents.'], 158);
 }
 
+// "Find more QC on TheQCFinder": the same item on theqcfinder.com, which keeps every QC photo of it.
+// Its addresses come from ../theqcfinder/data/urls.json (written by that site's build); no file, no link.
+const QF = (() => { try { return JSON.parse(fs.readFileSync(path.join(ROOT, '../theqcfinder/data/urls.json'), 'utf8')); } catch { return {}; } })();
+const qcFinderLink = (p) => (QF[p.id] ? `<p class="more qf-more"><a href="https://theqcfinder.com${QF[p.id]}">Find more QC on TheQCFinder →</a></p>` : '');
+
 // ── product pages ────────────────────────────────────────────────────────────
 for (const p of products) {
   const cat = catById.get(p.category);
@@ -334,7 +339,7 @@ for (const p of products) {
     <details class="about-item"><summary><h2>About this ${esc(p.name)} rep</h2></summary><div class="about-body">${text.map((t) => `<p>${esc(t)}</p>`).join('')}</div></details>
   </div>
 </div>
-${qcOf(p).length ? `<section class="qc-sec"><div class="sec-head"><h2>QC photos of this rep <small>${qcOf(p).length}</small></h2></div><p class="intro">Warehouse photos from real orders of this listing, taken by shopping agents before shipping.</p><div class="row-scroll qc-row">${qcOf(p).map((f, i) => `<button type="button" class="qc-shot" data-full="${f}" aria-label="Open QC photo ${i + 1}"><img src="${f}" alt="${esc(p.name)} rep QC photo ${i + 1}" width="240" height="240" loading="lazy"></button>`).join('')}</div></section>` : ''}
+${qcOf(p).length ? `<section class="qc-sec"><div class="sec-head"><h2>QC photos of this rep <small>${qcOf(p).length}</small></h2></div><p class="intro">Warehouse photos from real orders of this listing, taken by shopping agents before shipping.</p><div class="row-scroll qc-row">${qcOf(p).map((f, i) => `<button type="button" class="qc-shot" data-full="${f}" aria-label="Open QC photo ${i + 1}"><img src="${f}" alt="${esc(p.name)} rep QC photo ${i + 1}" width="240" height="240" loading="lazy"></button>`).join('')}</div>${qcFinderLink(p)}</section>` : ''}
 ${sameBrand.length ? `<section><div class="sec-head"><h2>More ${esc(p.brand)} reps</h2>${bp ? `<a class="sec-link" href="/brands/${bp.slug}/">All ${bp.n} →</a>` : ''}</div>${row(sameBrand)}</section>` : ''}
 ${similar.length ? `<section><div class="sec-head"><h2>More ${esc(cat.reps.toLowerCase())}</h2><a class="sec-link" href="/${cat.id}/">All ${byCat.get(cat.id).length} →</a></div>${row(similar)}</section>` : ''}`;
   const ld = { '@context': 'https://schema.org', '@type': 'Product', name: p.name + ' Rep', image: SITE + imgOf(p), url: SITE + url,

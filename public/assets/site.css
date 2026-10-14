@@ -488,3 +488,4 @@ a,button{-webkit-tap-highlight-color:transparent}
 .conv-hit img{width:48px;height:48px;border-radius:8px;object-fit:cover;background:#fff}
 .conv-hit span{display:flex;flex-direction:column;font-size:13.5px;color:var(--muted)}.conv-hit b{color:var(--ink);font-size:15px}
 @media(max-width:640px){.conv-row{grid-template-columns:24px 1fr auto auto}.conv-row input{display:none}.conv-weidian{grid-template-columns:24px 1fr auto}}
+.qf-more a{color:var(--red2)}
