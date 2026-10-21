@@ -457,12 +457,15 @@ a,button{-webkit-tap-highlight-color:transparent}
   .kb-kupony .kupon-tyl,.kb-kupony .kupon-przod{animation:none;}
 }
 .kupon-baner{margin-top:0}
-.hero .kupon-baner{min-height:250px}
-@media(max-width:640px){.hero .kupon-baner{min-height:0}}
-.hero .kupon-baner .kb-tytul{max-width:9.3em}
-.info .kupon-baner{margin:18px 0 6px;min-height:200px}
-.info .kupon-baner.kako .kb-tytul{max-width:9.3em;font-size:26px}
-@media(min-width:521px){.info .kupon-baner.kako .kb-kupony{font-size:14px;margin:-6px 0}}
+/* the same banner as on theqcfinder.com: the title wraps on its own, and on an item page the card is
+   no wider than theqcfinder's info column, so text and coupons stay together */
+.hero .kupon-baner{min-height:270px}
+.info .kupon-baner{margin:18px 0 6px;max-width:540px}
+@media(max-width:560px){
+  .hero .kupon-baner,.kupon-baner{min-height:0;padding:18px 12px 18px 18px}
+  .kb-tytul{margin:10px 0 4px}
+  .kb-pod{margin-bottom:12px}
+}
 .kb-znaczek svg,.kb-przycisk svg{flex:none}
 
 /* guides index, agent table, link converter */
