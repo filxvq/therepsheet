@@ -84,7 +84,7 @@ export async function w2c(request, env, ctx) {
   const token = String(env.W2C_API_KEY).trim().replace(/^Bearer\s+/i, '');
   const what = /^\d{6,20}$/.test(id) ? 'platform=' + plat + '&id=' + id : 'url=' + encodeURIComponent(link);
   const cache = caches.default;
-  const key = new Request(new URL('/api/w2c?v=3&' + what, request.url).toString());
+  const key = new Request(new URL('/api/w2c?v=4&' + what, request.url).toString());
   const hit = await cache.match(key);
   if (hit) return hit;
   try {
@@ -97,7 +97,9 @@ export async function w2c(request, env, ctx) {
     // a thin first answer: wait for every source on the stream
     if (!full) {
       const st = await viaStream(what, token);
-      if (st && st.out.sets.length >= out.sets.length) { out = st.out; full = st.done; }
+      if (st && st.out.sets.length >= out.sets.length) out = st.out;
+      // a listing with fewer than 3 sets may still get more (or a source of W2C may be failing): keep it 10 min
+      full = out.sets.length >= 3;
     }
     const res = json(out, 200, 'public, max-age=' + (full ? 21600 : 600));
     ctx.waitUntil(cache.put(key, res.clone()));
