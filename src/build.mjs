@@ -143,7 +143,7 @@ ${jsonld.map((j) => `<script type="application/ld+json">${JSON.stringify(j).repl
     </div>
     <a class="signup" data-signup href="${defAgent.signup}" rel="nofollow sponsored noopener" target="_blank">Sign up to <span class="agent-name">${esc(defAgent.name)}</span> →</a>
   </div>
-  <nav class="wrap cats" aria-label="Categories"><a href="/finds/"${active === 'finds' ? ' aria-current="page"' : ''}>All</a>${nav}<a href="/brands/"${active === 'brands' ? ' aria-current="page"' : ''}>Brands</a></nav>
+  <nav class="wrap cats" aria-label="Categories"><a href="/finds/"${active === 'finds' ? ' aria-current="page"' : ''}>All</a>${nav}<a href="/brands/"${active === 'brands' ? ' aria-current="page"' : ''}>Brands</a><a href="/qc-check/"${active === 'qc-check' ? ' aria-current="page"' : ''}>QC Check</a></nav>
 </header>
 <main class="wrap">
 ${body}
@@ -393,6 +393,12 @@ ${rail()}
     url: '/finds/', body, jsonld: [bcld], active: 'finds' }));
 }
 // ── search results (drawn by site.js from search.json, not indexed) ──
+// ── /qc-check/: every QC set of any Weidian, Taobao or 1688 listing (site.js + /api/w2c) ──
+write('/qc-check/', page({ title: `QC Check: QC Photos for Any Link | ${NAME}`, desc: 'Paste a Weidian, Taobao or 1688 link and see every QC photo set from real warehouse orders, with parcel weight and box size.', url: '/qc-check/', noindex: true, active: 'qc-check',
+  body: `<nav class="crumbs" aria-label="Breadcrumb"><a href="/">${esc(NAME)}</a><i>/</i><span>QC Check</span></nav>
+<header class="head"><h1>QC Check</h1><p class="intro">Paste a Weidian, Taobao, 1688 or agent link and see every QC photo set from real warehouse orders, newest first.</p></header>
+<form class="qcc-form" id="qccForm" role="search"><input id="qccIn" type="text" inputmode="url" placeholder="Paste a Weidian, Taobao or 1688 link" autocomplete="off" aria-label="Product link"><button type="submit" class="btn-buy">Check QC</button></form>
+<div id="qccOut"></div>` }), { sitemap: false });
 write('/search/', page({ title: `Search Reps | ${NAME}`, desc: 'Search the rep spreadsheet by name or brand.', url: '/search/', noindex: true,
   body: `<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Rep Spreadsheet</a><i>/</i><span id="searchCrumb">Search</span></nav>
 <header class="head"><h1 id="searchTitle">Search reps</h1><p class="count" id="searchCount"></p></header>

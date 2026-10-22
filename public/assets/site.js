@@ -235,6 +235,69 @@
     row.addEventListener('dragstart', function (e) { e.preventDefault(); });
   });
 
+  // ── /qc-check/: every QC set of a pasted link, from the W2C QC API through our /api/w2c ──
+  var qcc = $('#qccForm');
+  if (qcc) (function () {
+    var qin = $('#qccIn'), out = $('#qccOut');
+    var e1 = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+    var srcUrl = function (plat, id) { return plat === '1688' ? 'https://detail.1688.com/offer/' + id + '.html' : plat === 'taobao' ? 'https://item.taobao.com/item.htm?id=' + id : weidian(id); };
+    function parse(s) {
+      s = (s || '').trim(); var m;
+      if ((m = s.match(/1688\.com\/offer\/(\d+)/i))) return { plat: '1688', id: m[1] };
+      if ((m = s.match(/(?:taobao|tmall)\.com\/.*?[?&]id=(\d+)/i))) return { plat: 'taobao', id: m[1] };
+      if ((m = s.match(/weidian\.com\/.*?itemI[dD]=(\d+)/))) return { plat: 'weidian', id: m[1] };
+      if ((m = s.match(/^\d{6,20}$/))) return { plat: s.length <= 10 ? 'weidian' : 'taobao', id: s };
+      if (/^https?:\/\//i.test(s) || /\.(com|vip|gg)\//i.test(s)) return { url: /^https?:/i.test(s) ? s : 'https://' + s };
+      return null;
+    }
+    function day(t) { return t ? new Date(t).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : ''; }
+    function msg(t, load) { out.innerHTML = '<p class="qcc-msg' + (load ? ' qcc-load' : '') + '">' + (load ? '<span class="qcc-spin"></span>' : '') + t + '</p>'; }
+    function run(raw) {
+      var L = parse(raw);
+      if (!L) { msg('Paste a Weidian, Taobao or 1688 product link.'); return; }
+      msg('Looking for QC photos…', true);
+      var q = L.id ? 'plat=' + L.plat + '&id=' + L.id : 'url=' + encodeURIComponent(L.url);
+      try { history.replaceState(null, '', '/qc-check/?' + q); } catch (e) {}
+      fetch('/api/w2c?' + q).then(function (r) { return r.json(); }).catch(function () { return { error: 'network' }; }).then(function (w) {
+        var sets = w.sets || [];
+        var plat = L.plat || (w.item && w.item.platform), id = L.id || (w.item && w.item.id);
+        if (!sets.length) { msg(w.error && !/422|409/.test(w.error) ? 'QC photos could not be loaded just now. Try again in a minute.' : 'No QC photos found for this listing yet.'); return; }
+        var facts = [(w.photos || 0) + ' QC photos', sets.length + ' QC sets'];
+        if (w.weight) facts.push(w.weight + ' g');
+        if (w.dims) facts.push(w.dims.join(' × ') + ' cm');
+        if (w.days) facts.push('ships in ~' + w.days + ' days');
+        var kb = byId.kakobuy;
+        var buy = plat === 'weidian' && id
+          ? '<a class="btn-buy" data-wd="' + e1(id) + '" href="' + e1(link(id, agent)) + '" rel="nofollow sponsored noopener" target="_blank">View on <span class="agent-name">' + e1(agent.name) + '</span> →</a>'
+          : id ? '<a class="btn-buy" href="https://www.kakobuy.com/item/details?url=' + encodeURIComponent(srcUrl(plat, id)) + (kb && kb.code ? '&affcode=' + kb.code : '') + '" rel="nofollow sponsored noopener" target="_blank">View on Kakobuy →</a>' : '';
+        out.innerHTML = '<div class="qcc-head">' + (w.image ? '<img src="' + e1(w.image) + '" alt="" width="84" height="84" referrerpolicy="no-referrer">' : '')
+          + '<div><h2>' + e1(w.title || 'QC photos') + '</h2><p class="qcc-facts">' + facts.map(e1).join(' · ') + '</p>' + buy + '</div></div><div id="qccSets"></div>';
+        var box = $('#qccSets'), shown = 0;
+        function draw() {
+          box.insertAdjacentHTML('beforeend', sets.slice(shown, shown + 8).map(function (s, k) {
+            var n = shown + k + 1;
+            var h = 'Set ' + n + (s.at ? ' · ' + day(s.at) : '') + (s.weight ? ' · ' + s.weight + ' g' : '') + ' · ' + s.images.length + ' photos';
+            return '<div class="qcc-set"><h3>' + e1(h) + '</h3><div class="qcc-grid">' + s.images.map(function (x, i) {
+              return '<button type="button" class="qc-shot" data-full="' + e1(x.full) + '" aria-label="QC set ' + n + ', photo ' + (i + 1) + '"><img src="' + e1(x.thumb) + '" alt="QC photo" width="160" height="160" loading="lazy" onerror="this.parentNode.hidden=true"></button>';
+            }).join('') + '</div></div>';
+          }).join(''));
+          shown += 8;
+          var old = $('.qcc-more', out); if (old) old.remove();
+          if (shown < sets.length) {
+            var b = document.createElement('button'); b.type = 'button'; b.className = 'qcc-more'; b.textContent = 'Show more sets (' + (sets.length - shown) + ')';
+            b.addEventListener('click', draw); box.insertAdjacentElement('afterend', b);
+          }
+        }
+        draw();
+        apply();
+      });
+    }
+    qcc.addEventListener('submit', function (e) { e.preventDefault(); run(qin.value); });
+    var q0 = new URLSearchParams(location.search);
+    if (q0.get('url')) { qin.value = q0.get('url'); run(qin.value); }
+    else if (q0.get('id')) { qin.value = srcUrl(q0.get('plat') || 'weidian', q0.get('id')); run(qin.value); }
+  })();
+
   // ── QC photo viewer: any [data-full] opens full screen, arrows and keys move through the set ──
   var lb = null, lbList = [], lbAt = 0;
   function lbShow(k) {

@@ -28,6 +28,7 @@ async function rates(request, ctx) {
 }
 
 import { track } from './stats-d1.mjs';
+import { w2c } from './w2c.mjs';
 
 export default {
   async fetch(request, env, ctx) {
@@ -35,6 +36,8 @@ export default {
     if (pathname.replace(/\/$/, '') === '/api/rates') return rates(request, ctx);
     // visits go into the owner's shared stats database, read at vetereps.com/stats
     if (pathname === '/api/track') return track(request, env.STATS);
+    // every QC set of any listing, from the W2C QC API (worker/w2c.mjs), for /qc-check/
+    if (pathname === '/api/w2c') return w2c(request, env, ctx);
     return env.ASSETS.fetch(request);
   },
 };
