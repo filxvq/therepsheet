@@ -18,7 +18,7 @@ const toSet = (g) => ({
   weight: g.parcel && g.parcel.weightG > 0 ? g.parcel.weightG : 0,
   images: (g.images || []).filter((x) => x && /^https:\/\//.test(x.url)).map((x) => ({ full: x.url, thumb: x.thumb || x.url })),
 });
-function shape(item, listing, s, titleEn, gallery) {
+function shape(item, listing, s, titleEn, gallery, sources) {
   const sets = gallery.map(toSet).filter((g) => g.images.length);
   s = s || {};
   return {
@@ -29,6 +29,8 @@ function shape(item, listing, s, titleEn, gallery) {
     photos: s.photos || sets.reduce((a, g) => a + g.images.length, 0), sets,
     weight: s.weightG || 0, dims: Array.isArray(s.dimensionsCm) && s.dimensionsCm.length === 3 ? s.dimensionsCm : null,
     days: s.avgArrivalDays || 0, latest: s.latestQcAt || 0,
+    // which of W2C's sources answered and how many photos each had (for checking a thin result)
+    sources: (sources || []).map((x) => ({ source: x.source, status: x.status, count: x.count || 0 })),
   };
 }
 
@@ -37,7 +39,7 @@ async function viaStream(what, token) {
   const ctl = new AbortController();
   const timer = setTimeout(() => ctl.abort(), STREAM_MS);
   const bySet = new Map();
-  let item = null, listing = null, summary = null, titleEn = '', order = null, done = false;
+  let item = null, listing = null, summary = null, titleEn = '', order = null, done = false, sources = [];
   try {
     const r = await fetch(BASE + '/product/stream?' + what + '&skus=0', { headers: { Authorization: 'Bearer ' + token, Accept: 'application/x-ndjson' }, signal: ctl.signal });
     if (!r.ok || !r.body) return null;
@@ -50,7 +52,8 @@ async function viaStream(what, token) {
       if (ev.titleEn) titleEn = ev.titleEn;
       if (ev.summary) summary = ev.summary;
       if (Array.isArray(ev.sets)) ev.sets.forEach((g) => g && g.key && bySet.set(g.key, g));
-      if (ev.type === 'done') { done = true; if (Array.isArray(ev.galleryKeys)) order = ev.galleryKeys; }
+      if (ev.type === 'source' && ev.source) sources.push(typeof ev.source === 'object' ? ev.source : { source: ev.source, status: 'ok' });
+      if (ev.type === 'done') { done = true; if (Array.isArray(ev.galleryKeys)) order = ev.galleryKeys; if (Array.isArray(ev.sources)) sources = ev.sources; }
     };
     while (!done) {
       const { value, done: end } = await reader.read();
@@ -67,7 +70,7 @@ async function viaStream(what, token) {
   } catch (e) { /* aborted: use what came in */ } finally { clearTimeout(timer); }
   // final order from "done"; without it, newest first
   const gallery = order ? order.map((k) => bySet.get(k)).filter(Boolean) : [...bySet.values()].sort((a, b) => (b.takenAt || 0) - (a.takenAt || 0));
-  return { out: shape(item, listing, summary, titleEn, gallery), done };
+  return { out: shape(item, listing, summary, titleEn, gallery, sources), done };
 }
 
 // GET /api/w2c?plat=weidian|taobao|1688&id=<number>   or   /api/w2c?url=<any product or agent link>
@@ -81,7 +84,7 @@ export async function w2c(request, env, ctx) {
   const token = String(env.W2C_API_KEY).trim().replace(/^Bearer\s+/i, '');
   const what = /^\d{6,20}$/.test(id) ? 'platform=' + plat + '&id=' + id : 'url=' + encodeURIComponent(link);
   const cache = caches.default;
-  const key = new Request(new URL('/api/w2c?v=2&' + what, request.url).toString());
+  const key = new Request(new URL('/api/w2c?v=3&' + what, request.url).toString());
   const hit = await cache.match(key);
   if (hit) return hit;
   try {
@@ -89,7 +92,7 @@ export async function w2c(request, env, ctx) {
     if (r.status === 429) return json({ sets: [], error: 'busy', retryAfter: Number(r.headers.get('retry-after')) || 60 }, 503);
     if (!r.ok) return json({ sets: [], error: 'w2c ' + r.status }, r.status === 422 || r.status === 409 ? 200 : 502);
     const d = await r.json();
-    let out = shape(d.item, d.listing, d.summary, d.titleEn, d.gallery || []);
+    let out = shape(d.item, d.listing, d.summary, d.titleEn, d.gallery || [], d.sources);
     let full = out.sets.length >= 3;
     // a thin first answer: wait for every source on the stream
     if (!full) {
