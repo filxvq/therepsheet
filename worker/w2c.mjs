@@ -14,12 +14,17 @@ const STREAM_MS = 13000;   // the most a visitor waits for the stream
 const json = (o, status = 200, cache = 'no-store') => new Response(JSON.stringify(o), { status, headers: { 'content-type': 'application/json', 'cache-control': cache } });
 
 const toSet = (g) => ({
-  key: g.key, at: g.takenAt || 0, sku: g.sku || null,
+  key: g.key, at: g.takenAt || 0, sku: g.sku || null, source: g.source || '',
+  size: g.sku && g.sku.label ? String(g.sku.label).slice(0, 40) : '',
   weight: g.parcel && g.parcel.weightG > 0 ? g.parcel.weightG : 0,
   images: (g.images || []).filter((x) => x && /^https:\/\//.test(x.url)).map((x) => ({ full: x.url, thumb: x.thumb || x.url })),
 });
 function shape(item, listing, s, titleEn, gallery, sources) {
-  const sets = gallery.map(toSet).filter((g) => g.images.length);
+  // goodsqc photographs six shots per order and W2C groups its orders by size, so a goodsqc "set" of
+  // 12 or 18 photos is two or three orders: split it back into sets of six
+  const sets = gallery.map(toSet).filter((g) => g.images.length).flatMap((g) => g.source === 'goodsqc' && g.images.length > 6 && g.images.length % 6 === 0
+    ? Array.from({ length: g.images.length / 6 }, (_, i) => ({ ...g, key: g.key + '-' + i, images: g.images.slice(i * 6, i * 6 + 6) }))
+    : [g]);
   s = s || {};
   return {
     item: item || null,
@@ -84,7 +89,7 @@ export async function w2c(request, env, ctx) {
   const token = String(env.W2C_API_KEY).trim().replace(/^Bearer\s+/i, '');
   const what = /^\d{6,20}$/.test(id) ? 'platform=' + plat + '&id=' + id : 'url=' + encodeURIComponent(link);
   const cache = caches.default;
-  const key = new Request(new URL('/api/w2c?v=4&' + what, request.url).toString());
+  const key = new Request(new URL('/api/w2c?v=5&' + what, request.url).toString());
   const hit = await cache.match(key);
   if (hit) return hit;
   try {

@@ -276,9 +276,9 @@
         function draw() {
           box.insertAdjacentHTML('beforeend', sets.slice(shown, shown + 8).map(function (s, k) {
             var n = shown + k + 1;
-            var h = 'Set ' + n + (s.at ? ' · ' + day(s.at) : '') + (s.weight ? ' · ' + s.weight + ' g' : '') + ' · ' + s.images.length + ' photos';
+            var h = 'Set ' + n + (s.at ? ' · ' + day(s.at) : '') + (s.size ? ' · size ' + s.size : '') + (s.weight ? ' · ' + s.weight + ' g' : '') + ' · ' + s.images.length + ' photos';
             return '<div class="qcc-set"><h3>' + e1(h) + '</h3><div class="qcc-grid">' + s.images.map(function (x, i) {
-              return '<button type="button" class="qc-shot" data-full="' + e1(x.full) + '" aria-label="QC set ' + n + ', photo ' + (i + 1) + '"><img src="' + e1(x.thumb) + '" alt="QC photo" width="160" height="160" loading="lazy" onerror="this.parentNode.hidden=true"></button>';
+              return '<button type="button" class="qc-shot" data-full="' + e1(x.full) + '" aria-label="QC set ' + n + ', photo ' + (i + 1) + '"><img src="' + e1(x.thumb) + '" alt="QC photo" width="160" height="160" loading="lazy" onerror="qcImgErr(this)"></button>';
             }).join('') + '</div></div>';
           }).join(''));
           shown += 8;
@@ -510,3 +510,16 @@
   // every buy link carries data-wd (the Weidian item id), whichever agent it points at
   document.addEventListener('click', function (e) { if (e.target.closest && e.target.closest('a[data-wd]')) send({ t: 'order', path: location.pathname }); }, true);
 })();
+
+// A W2C photo now and then fails once (its source is slow): try it again after a moment, then drop
+// the tile, and the whole set when none of its photos is left.
+window.qcImgErr = function (img) {
+  if (!img.getAttribute('data-retry')) {
+    img.setAttribute('data-retry', '1');
+    setTimeout(function () { img.src = img.src + (img.src.indexOf('?') < 0 ? '?' : '&') + 'r=1'; }, 1500);
+    return;
+  }
+  var tile = img.parentNode; tile.hidden = true; tile.style.display = 'none';
+  var set = tile.parentNode && tile.parentNode.parentNode;
+  if (set && set.querySelectorAll('img').length && ![].some.call(set.querySelectorAll(':scope > div > *'), function (t) { return t.style.display !== 'none'; })) set.style.display = 'none';
+};
