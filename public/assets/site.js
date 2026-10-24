@@ -286,10 +286,12 @@
           if (shown < sets.length) {
             var b = document.createElement('button'); b.type = 'button'; b.className = 'qcc-more'; b.textContent = 'Show more sets (' + (sets.length - shown) + ')';
             b.addEventListener('click', draw); box.insertAdjacentElement('afterend', b);
+            qcCenterMore(box, b);
           }
         }
         draw();
         apply();
+        addEventListener('resize', function () { qcCenterMore(box, $('.qcc-more', out)); });
       });
     }
     qcc.addEventListener('submit', function (e) { e.preventDefault(); run(qin.value); });
@@ -522,4 +524,20 @@ window.qcImgErr = function (img) {
   var tile = img.parentNode; tile.hidden = true; tile.style.display = 'none';
   var set = tile.parentNode && tile.parentNode.parentNode;
   if (set && set.querySelectorAll('img').length && ![].some.call(set.querySelectorAll(':scope > div > *'), function (t) { return t.style.display !== 'none'; })) set.style.display = 'none';
+};
+
+// On a computer the "Show more sets" button sits in the middle of the photos (from the left edge to the
+// widest row), not of the whole page; on a phone the photos fill the width, so it stays as it is.
+window.qcCenterMore = function (list, btn) {
+  if (!list || !btn) return;
+  if (!window.matchMedia('(min-width: 561px)').matches || btn.hidden) { btn.style.marginLeft = ''; btn.style.marginRight = ''; return; }
+  var left = list.getBoundingClientRect().left, right = 0;
+  [].forEach.call(list.querySelectorAll('img'), function (img) {
+    var t = img.parentNode;
+    if (t.style.display === 'none' || t.hidden) return;
+    var r = t.getBoundingClientRect().right - left; if (r > right) right = r;
+  });
+  if (!right) return;
+  btn.style.marginLeft = Math.max(0, (right - btn.offsetWidth) / 2) + 'px';
+  btn.style.marginRight = 'auto';
 };
