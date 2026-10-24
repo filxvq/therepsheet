@@ -258,7 +258,7 @@
       msg('Looking for QC photos…', true);
       var q = L.id ? 'plat=' + L.plat + '&id=' + L.id : 'url=' + encodeURIComponent(L.url);
       try { history.replaceState(null, '', '/qc-check/?' + q); } catch (e) {}
-      fetch('/api/w2c?' + q).then(function (r) { return r.json(); }).catch(function () { return { error: 'network' }; }).then(function (w) {
+      fetch('/api/w2c?' + q + '&v=5').then(function (r) { return r.json(); }).catch(function () { return { error: 'network' }; }).then(function (w) {
         var sets = w.sets || [];
         var plat = L.plat || (w.item && w.item.platform), id = L.id || (w.item && w.item.id);
         if (!sets.length) { msg(w.error && !/422|409/.test(w.error) ? 'QC photos could not be loaded just now. Try again in a minute.' : 'No QC photos found for this listing yet.'); return; }

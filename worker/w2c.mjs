@@ -91,7 +91,8 @@ export async function w2c(request, env, ctx) {
   const cache = caches.default;
   const key = new Request(new URL('/api/w2c?v=5&' + what, request.url).toString());
   const hit = await cache.match(key);
-  if (hit) return hit;
+  // whatever the cached copy says, a browser keeps the answer 5 min
+  if (hit) { const h = new Response(hit.body, hit); h.headers.set('cache-control', 'public, max-age=300'); return h; }
   try {
     const r = await fetch(BASE + '/product?' + what + '&skus=0', { headers: { Authorization: 'Bearer ' + token, Accept: 'application/json' } });
     if (r.status === 429) return json({ sets: [], error: 'busy', retryAfter: Number(r.headers.get('retry-after')) || 60 }, 503);
@@ -106,9 +107,12 @@ export async function w2c(request, env, ctx) {
       // a listing with fewer than 3 sets may still get more (or a source of W2C may be failing): keep it 10 min
       full = out.sets.length >= 3;
     }
-    const res = json(out, 200, 'public, max-age=' + (full ? 21600 : 600));
+    // the browser keeps it 5 min (s-maxage is what Cloudflare's cache goes by), so a fix on our side or
+    // new photos at W2C reach visitors soon
+    const res = json(out, 200, 'public, max-age=300, s-maxage=' + (full ? 21600 : 600));
     ctx.waitUntil(cache.put(key, res.clone()));
-    return res;
+    const back = new Response(res.body, res); back.headers.set('cache-control', 'public, max-age=300');
+    return back;
   } catch (e) {
     return json({ sets: [], error: 'unavailable' }, 502);
   }
