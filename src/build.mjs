@@ -184,7 +184,7 @@ function card(p, eager = false) {
 }
 const grid = (list) => `<div class="grid">${list.map((p) => card(p)).join('\n')}</div>`;
 const row = (list) => `<div class="row-scroll">${list.map((p, i) => card(p, i < 4)).join('\n')}</div>`;
-const rail = (active = '') => `<div class="rail">${CATEGORIES.map((c) => `<a class="rail-item${active === c.id ? ' on' : ''}" href="/${c.id}/"><span class="rail-disc">${ICON.cat(c)}</span><span class="rail-name">${esc(short(c))}</span></a>`).join('')}</div>`;
+const rail = (active = '') => `<div class="rail">${CATEGORIES.map((c) => `<a class="rail-item${active === c.id ? ' on' : ''}" href="/${c.id}/"><span class="rail-disc"><img src="/assets/cats/${c.id}.webp" alt="" width="70" height="70" loading="lazy" decoding="async"></span><span class="rail-name">${esc(short(c))}</span></a>`).join('')}</div>`;
 
 function crumbs(items) {
   const html = `<nav class="crumbs" aria-label="Breadcrumb">${items.map(([nm, u], i) => i === items.length - 1 ? `<span>${esc(nm)}</span>` : `<a href="${u}">${esc(nm)}</a>`).join('<i>/</i>')}</nav>`;
