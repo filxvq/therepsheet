@@ -302,17 +302,26 @@
 
   // ── QC photo viewer: any [data-full] opens full screen, arrows and keys move through the set ──
   var lb = null, lbList = [], lbAt = 0;
+  // The small copy the page already shows appears at once, blurred, so the viewer is never blank; the
+  // full photo replaces it the moment it lands, and the photos either side start loading too.
+  var lbThumb = {};
   function lbShow(k) {
     lbAt = (k + lbList.length) % lbList.length;
-    var im = $('img', lb); im.style.opacity = '0';
-    var pre = new Image(); pre.onload = pre.onerror = function () { im.src = lbList[lbAt]; im.style.opacity = '1'; }; pre.src = lbList[lbAt];
-    $('.lb-count', lb).textContent = (lbAt + 1) + ' / ' + lbList.length;
+    var at = lbAt, full = lbList[at], im = $('img', lb), th = lbThumb[full];
+    lb.classList.add('loading');
+    if (th && th !== full) { im.src = th; im.classList.add('lo'); im.style.opacity = '1'; } else im.style.opacity = '0';
+    var pre = new Image(); pre.referrerPolicy = 'no-referrer';
+    pre.onload = pre.onerror = function () { if (!lb || lbAt !== at) return; im.src = full; im.classList.remove('lo'); im.style.opacity = '1'; lb.classList.remove('loading'); };
+    pre.src = full;
+    [at + 1, at - 1].forEach(function (j) { var n = new Image(); n.referrerPolicy = 'no-referrer'; n.src = lbList[(j + lbList.length) % lbList.length]; });
+    $('.lb-count', lb).textContent = (at + 1) + ' / ' + lbList.length;
   }
   function lbClose() { if (!lb) return; lb.classList.remove('open'); var el = lb; lb = null; setTimeout(function () { el.remove(); }, 200); }
   document.addEventListener('click', function (e) {
     var t = e.target.closest('[data-full]');
     if (t) {
-      lbList = $$('[data-full]').map(function (x) { return x.getAttribute('data-full'); });
+      lbThumb = {};
+      lbList = $$('[data-full]').map(function (x) { var u = x.getAttribute('data-full'), i = x.querySelector('img'); if (i && (i.currentSrc || i.src) && !lbThumb[u]) lbThumb[u] = i.currentSrc || i.src; return u; });
       lb = document.createElement('div'); lb.className = 'lightbox';
       lb.innerHTML = '<img alt=""><button type="button" class="lb-btn lb-prev" aria-label="Previous">‹</button><button type="button" class="lb-btn lb-next" aria-label="Next">›</button><button type="button" class="lb-close" aria-label="Close">×</button><span class="lb-count"></span>';
       document.body.appendChild(lb); void lb.offsetWidth; lb.classList.add('open');

@@ -518,3 +518,9 @@ a,button{-webkit-tap-highlight-color:transparent}
 /* the category discs show a photo of a typical item on white instead of a drawn icon */
 .rail-disc{background:#fff;overflow:hidden}
 .rail-disc img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* viewer: a fixed box, so the blurred small copy and the full photo sit in the same place */
+.lightbox img { width: 92vw; height: 86vh; max-width: none; max-height: none; object-fit: contain; border-radius: 0; box-shadow: none; transition: opacity .15s, filter .25s; }
+.lightbox img.lo { filter: blur(10px); }
+.lightbox.loading::after { content: ""; position: absolute; left: 50%; top: 50%; width: 34px; height: 34px; margin: -17px 0 0 -17px; border-radius: 50%; border: 3px solid rgba(255, 255, 255, .2); border-top-color: #fff; animation: lbspin .8s linear infinite; pointer-events: none; }
+@keyframes lbspin { to { transform: rotate(360deg); } }
