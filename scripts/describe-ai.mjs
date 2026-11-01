@@ -29,7 +29,10 @@ if (process.argv.includes('--clean')) {
   for (const p of products) if (out[p.id] && madeUp(p, out[p.id])) { delete out[p.id]; dropped++; }
   console.log('dropped', dropped, 'descriptions with made-up details');
 }
-const todo = products.filter((p) => !out[p.id]);
+// --only id,id: write these again (an item renamed or moved) and nothing else
+const onlyArg = process.argv.indexOf('--only');
+const only = onlyArg > 0 ? new Set(process.argv[onlyArg + 1].split(',')) : null;
+const todo = only ? products.filter((p) => only.has(p.id)) : products.filter((p) => !out[p.id]);
 console.log(`${todo.length} to write, ${Object.keys(out).length} already done, model ${MODEL}`);
 
 const SYSTEM = `You write short product descriptions for a streetwear and fashion catalog. For each item you get its name, brand, category and price in Chinese yuan.

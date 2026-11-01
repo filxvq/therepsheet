@@ -555,4 +555,7 @@ fs.writeFileSync(path.join(DIST, 'robots.txt'), ['User-agent: *', ...['GPTBot', 
 
 // static files last, so a stale copy never shadows a built page
 fs.cpSync(path.join(ROOT, 'public'), DIST, { recursive: true });
+// items moved to another category (or given a new slug) keep their old address as a 301 (data/moved.json)
+const MOVED = path.join(ROOT, 'data/moved.json');
+if (fs.existsSync(MOVED)) fs.writeFileSync(path.join(DIST, '_redirects'), JSON.parse(fs.readFileSync(MOVED, 'utf8')).map(([a, b]) => `${a} ${b} 301`).join('\n') + '\n');
 console.log(`built ${written.length} indexable pages, ${products.length} products, ${BRANDS.length} brand pages, ${BRANDS.reduce((x, b) => x + b.subs.length, 0)} brand + category pages, ${GUIDES.length} guides`);

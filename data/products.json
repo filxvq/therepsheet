@@ -234,7 +234,7 @@
   "sourceId": "7702122380",
   "name": "Moncler Jacket",
   "brand": "Moncler",
-  "category": "hoodies",
+  "category": "jackets",
   "slug": "moncler-jacket",
   "cny": 120,
   "srcImg": "https://cdn.kakobuyspreadsheet.gg/moncler-jacket-7702122380.jpg"
@@ -672,7 +672,7 @@
  {
   "id": "7871028848",
   "sourceId": "7702119414",
-  "name": "Rolex",
+  "name": "Rolex Submariner Watch",
   "brand": "Rolex",
   "category": "accessories",
   "slug": "rolex",
@@ -1062,7 +1062,7 @@
  {
   "id": "7868054195",
   "sourceId": "7699210049",
-  "name": "JERSEYS",
+  "name": "Brazil Christ the Redeemer Jersey",
   "brand": null,
   "category": "t-shirts",
   "slug": "jerseys",
@@ -1114,7 +1114,7 @@
   "sourceId": "7699150697",
   "name": "Supreme 22SS Track Jacket",
   "brand": "Supreme",
-  "category": "hoodies",
+  "category": "jackets",
   "slug": "supreme-22ss-track-jacket",
   "cny": 316,
   "srcImg": "https://cdn.kakobuyspreadsheet.gg/supreme-22ss-track-jacket-7699150697.jpg"
@@ -1722,7 +1722,7 @@
  {
   "id": "7871061182",
   "sourceId": "7702211868",
-  "name": "JERSEYS",
+  "name": "Germany 1994 Retro Jersey",
   "brand": null,
   "category": "t-shirts",
   "slug": "jerseys-2",
@@ -1862,7 +1862,7 @@
  {
   "id": "7868072223",
   "sourceId": "7699150989",
-  "name": "RICK OWENS",
+  "name": "Rick Owens Cargo Shorts",
   "brand": "Rick Owens",
   "category": "shorts",
   "slug": "rick-owens",
@@ -2194,7 +2194,7 @@
   "sourceId": "7699194467",
   "name": "Burberry Scarf",
   "brand": "Burberry",
-  "category": "hats",
+  "category": "accessories",
   "slug": "burberry-scarf",
   "cny": 121,
   "srcImg": "https://cdn.kakobuyspreadsheet.gg/burberry-scarf-7699194467.jpg"
@@ -2902,7 +2902,7 @@
  {
   "id": "7868045177",
   "sourceId": "7699163059",
-  "name": "Rolex",
+  "name": "Rolex Submariner Two-Tone Watch",
   "brand": "Rolex",
   "category": "accessories",
   "slug": "rolex-2",
@@ -3294,7 +3294,7 @@
   "sourceId": "7699180419",
   "name": "Cactus Jack x Spotify FC Barcelona Shorts",
   "brand": "Travis Scott",
-  "category": "t-shirts",
+  "category": "shorts",
   "slug": "cactus-jack-x-spotify-fc-barcelona-shorts",
   "cny": 76,
   "srcImg": "https://cdn.kakobuyspreadsheet.gg/cactus-jack-x-spotify-fc-barcelona-shorts-1ecdbb55.webp"
@@ -3354,7 +3354,7 @@
   "sourceId": "7702216000",
   "name": "Acne Studios Scarf",
   "brand": "Acne Studios",
-  "category": "hats",
+  "category": "accessories",
   "slug": "acne-studios-scarf",
   "cny": 36,
   "srcImg": "https://cdn.kakobuyspreadsheet.gg/acne-studio-scarf-7702216000.jpg"
@@ -3974,8 +3974,8 @@
   "sourceId": "7702152456",
   "name": "Nike Nocta Tech Fleece Pants",
   "brand": "Nike",
-  "category": "hoodies",
-  "slug": "nike-nocta-tech-fleece-pants",
+  "category": "pants",
+  "slug": "nike-nocta-tech-fleece-pants-2",
   "cny": 160,
   "srcImg": "https://cdn.kakobuyspreadsheet.gg/nike-nocta-tech-fleece-pants-7702152456.jpg"
  },
@@ -4534,7 +4534,7 @@
   "sourceId": "7702099392",
   "name": "Chrome Hearts Mesh Jersey",
   "brand": "Chrome Hearts",
-  "category": "hoodies",
+  "category": "t-shirts",
   "slug": "chrome-hearts-mesh-jersey",
   "cny": 145,
   "srcImg": "https://cdn.kakobuyspreadsheet.gg/chrome-hearts-longsleeves-15-styles-7702099392.jpg"
@@ -5462,7 +5462,7 @@
  {
   "id": "7868099735",
   "sourceId": "7699196513",
-  "name": "ROLEX",
+  "name": "Rolex Datejust Two-Tone Watch",
   "brand": "Rolex",
   "category": "accessories",
   "slug": "rolex-3",
@@ -5694,8 +5694,8 @@
   "sourceId": "7699170051",
   "name": "Ralph Lauren Jackets",
   "brand": "Ralph Lauren",
-  "category": "hoodies",
-  "slug": "ralph-lauren-jackets",
+  "category": "jackets",
+  "slug": "ralph-lauren-jackets-3",
   "cny": 232,
   "srcImg": "https://cdn.kakobuyspreadsheet.gg/ralph-lauren-jackets-7699170051.jpg"
  },
@@ -5844,7 +5844,7 @@
   "sourceId": "7699109375",
   "name": "Nike Jacket",
   "brand": "Nike",
-  "category": "hoodies",
+  "category": "jackets",
   "slug": "nike-jacket",
   "cny": 475,
   "srcImg": "https://cdn.kakobuyspreadsheet.gg/nike-jacket-7699109375.jpg"
@@ -5962,7 +5962,7 @@
  {
   "id": "7868029359",
   "sourceId": "7702169830",
-  "name": "Bapetsa",
+  "name": "Bape Sta Sneakers",
   "brand": null,
   "category": "shoes",
   "slug": "bapetsa",
@@ -6114,7 +6114,7 @@
   "sourceId": "7699227613",
   "name": "No Faith Studios 24SS Longsleeve",
   "brand": null,
-  "category": "hoodies",
+  "category": "t-shirts",
   "slug": "no-faith-studios-24ss-longsleeve",
   "cny": 146,
   "srcImg": "https://cdn.kakobuyspreadsheet.gg/no-faith-studios-24ss-longsleeve-41795ceb.webp"
@@ -6394,7 +6394,7 @@
   "sourceId": "7699211767",
   "name": "Nike Jacket",
   "brand": "Nike",
-  "category": "hoodies",
+  "category": "jackets",
   "slug": "nike-jacket-2",
   "cny": 172,
   "srcImg": "https://cdn.kakobuyspreadsheet.gg/nike-jacket-7699211767.jpg"
@@ -6404,7 +6404,7 @@
   "sourceId": "7702176420",
   "name": "Nike Dri-Fit Set",
   "brand": "Nike",
-  "category": "t-shirts",
+  "category": "tracksuits",
   "slug": "nike-dri-fit-set",
   "cny": 116,
   "srcImg": "https://cdn.kakobuyspreadsheet.gg/nike-dri-fit-set-7702176420.jpg"
@@ -6434,7 +6434,7 @@
   "sourceId": "7702212144",
   "name": "Cheetos Hoodie",
   "brand": null,
-  "category": "other",
+  "category": "hoodies",
   "slug": "cheetos-hoodie",
   "cny": 60,
   "srcImg": "https://cdn.kakobuyspreadsheet.gg/cheetos-hoodie-f9ee360d.webp"
@@ -6502,9 +6502,9 @@
  {
   "id": "7868068867",
   "sourceId": "7702162306",
-  "name": "Stussy",
+  "name": "Stussy Flannel Shirt",
   "brand": "Stussy",
-  "category": "hoodies",
+  "category": "t-shirts",
   "slug": "stussy",
   "cny": 113,
   "srcImg": "https://cdn.kakobuyspreadsheet.gg/stussy-7702162306.jpg"
@@ -6582,7 +6582,7 @@
  {
   "id": "7868168147",
   "sourceId": "7702215906",
-  "name": "CARTIER BRACLET",
+  "name": "Cartier Trinity Cord Bracelet",
   "brand": "Cartier",
   "category": "accessories",
   "slug": "cartier-braclet",
@@ -8872,7 +8872,7 @@
  {
   "id": "7868107865",
   "sourceId": "7702207704",
-  "name": "Burberry",
+  "name": "Burberry Knight Logo Hoodie",
   "brand": "Burberry",
   "category": "hoodies",
   "slug": "burberry",
@@ -8974,7 +8974,7 @@
   "sourceId": "7699117259",
   "name": "Nike x Cav Empt CE Jacket",
   "brand": "Nike",
-  "category": "hoodies",
+  "category": "jackets",
   "slug": "nike-x-cav-empt-ce-jacket",
   "cny": 359,
   "srcImg": "https://cdn.kakobuyspreadsheet.gg/nike-x-cavempt-ce-jacket-7699117259.jpg"
@@ -9084,7 +9084,7 @@
   "sourceId": "7702136698",
   "name": "Ralph Lauren Jackets",
   "brand": "Ralph Lauren",
-  "category": "hoodies",
+  "category": "jackets",
   "slug": "ralph-lauren-jackets-2",
   "cny": 280,
   "srcImg": "https://cdn.kakobuyspreadsheet.gg/ralph-lauren-jackets-7702136698.jpg"
@@ -9164,7 +9164,7 @@
   "sourceId": "7699207911",
   "name": "Maison Margiela Shirt",
   "brand": "Maison Margiela",
-  "category": "hoodies",
+  "category": "t-shirts",
   "slug": "maison-margiela-shirt",
   "cny": 163,
   "srcImg": "https://cdn.kakobuyspreadsheet.gg/maison-margiela-shirt-7699207911.jpg"
@@ -9204,7 +9204,7 @@
   "sourceId": "7702212096",
   "name": "LV Bag x Virgil Abloh",
   "brand": "Louis Vuitton",
-  "category": "accessories",
+  "category": "bags",
   "slug": "lv-bag-x-virgil-abloh",
   "cny": 405,
   "srcImg": "https://cdn.kakobuyspreadsheet.gg/lv-bag-x-virgil-abloh-7702212096.jpg"
@@ -9232,9 +9232,9 @@
  {
   "id": "7868076853",
   "sourceId": "7699171997",
-  "name": "Nikeacket",
+  "name": "Nike Jacket",
   "brand": null,
-  "category": "hoodies",
+  "category": "jackets",
   "slug": "nikeacket",
   "cny": 158,
   "srcImg": "https://cdn.kakobuyspreadsheet.gg/nikeacket-7699171997.jpg"
@@ -9672,7 +9672,7 @@
  {
   "id": "7868083071",
   "sourceId": "7699158629",
-  "name": "Burberry",
+  "name": "Burberry Check Cardigan",
   "brand": "Burberry",
   "category": "hoodies",
   "slug": "burberry-2",
@@ -9754,7 +9754,7 @@
   "sourceId": "7699158591",
   "name": "Maison Margiela Kiss Shirt",
   "brand": "Maison Margiela",
-  "category": "hoodies",
+  "category": "t-shirts",
   "slug": "maison-margiela-kiss-shirt",
   "cny": 153,
   "srcImg": "https://cdn.kakobuyspreadsheet.gg/maison-margiela-kiss-shirt-7699158591.jpg"
@@ -9764,7 +9764,7 @@
   "sourceId": "7702154054",
   "name": "Nike Embroidered Jacket",
   "brand": "Nike",
-  "category": "hoodies",
+  "category": "jackets",
   "slug": "nike-embroidered-jacket",
   "cny": 126,
   "srcImg": "https://cdn.kakobuyspreadsheet.gg/nike-embroidered-jacket-57ac3cc7.webp"
@@ -10522,7 +10522,7 @@
  {
   "id": "7868105913",
   "sourceId": "7699127017",
-  "name": "Casablanca",
+  "name": "Casablanca T-Shirts",
   "brand": "Casablanca",
   "category": "t-shirts",
   "slug": "casablanca",
@@ -11372,7 +11372,7 @@
  {
   "id": "7868159973",
   "sourceId": "7699198099",
-  "name": "CelineTee",
+  "name": "Celine Logo Tee",
   "brand": null,
   "category": "t-shirts",
   "slug": "celinetee",
@@ -11654,8 +11654,8 @@
   "sourceId": "7702144590",
   "name": "Ralph Lauren Jacket",
   "brand": "Ralph Lauren",
-  "category": "hoodies",
-  "slug": "ralph-lauren-jacket",
+  "category": "jackets",
+  "slug": "ralph-lauren-jacket-2",
   "cny": 219,
   "srcImg": "https://cdn.kakobuyspreadsheet.gg/ralph-lauren-jacket-7702144590.jpg"
  },
@@ -11664,7 +11664,7 @@
   "sourceId": "7702187976",
   "name": "Six PM Jacket",
   "brand": null,
-  "category": "hoodies",
+  "category": "jackets",
   "slug": "six-pm-jacket",
   "cny": 224,
   "srcImg": "https://cdn.kakobuyspreadsheet.gg/six-pm-jacket-7702187976.jpg"
@@ -11954,7 +11954,7 @@
   "sourceId": "7702221870",
   "name": "FBI Cap",
   "brand": null,
-  "category": "accessories",
+  "category": "hats",
   "slug": "fbi-cap",
   "cny": 101,
   "srcImg": "https://cdn.kakobuyspreadsheet.gg/fbi-cap-7702221870.jpg"
@@ -12024,7 +12024,7 @@
   "sourceId": "7699253645",
   "name": "Chrome Hearts Glasses",
   "brand": "Chrome Hearts",
-  "category": "other",
+  "category": "accessories",
   "slug": "chrome-hearts-glasses",
   "cny": 320,
   "srcImg": "https://cdn.kakobuyspreadsheet.gg/chrome-hearts-glasses-7699253645.jpg"
@@ -12144,7 +12144,7 @@
   "sourceId": "7702158012",
   "name": "Balenciaga Jacket",
   "brand": "Balenciaga",
-  "category": "hoodies",
+  "category": "jackets",
   "slug": "balenciaga-jacket",
   "cny": 339,
   "srcImg": "https://cdn.kakobuyspreadsheet.gg/balenciaga-jacket-7702158012.jpg"
@@ -12494,7 +12494,7 @@
   "sourceId": "7699174373",
   "name": "Adidas Jacket",
   "brand": "Adidas",
-  "category": "hoodies",
+  "category": "jackets",
   "slug": "adidas-jacket",
   "cny": 142,
   "srcImg": "https://cdn.kakobuyspreadsheet.gg/adidas-jacket-7699174373.jpg"
@@ -12632,7 +12632,7 @@
  {
   "id": "7868096173",
   "sourceId": "7699029595",
-  "name": "Bottega Veneta Jacket",
+  "name": "Bottega Veneta Hoodie",
   "brand": null,
   "category": "hoodies",
   "slug": "bottega-veneta-jacket",
@@ -13474,7 +13474,7 @@
   "sourceId": "7702138898",
   "name": "Purple Brand Shorts",
   "brand": "Purple Brand",
-  "category": "pants",
+  "category": "shorts",
   "slug": "purple-brand-shorts",
   "cny": 185,
   "srcImg": "https://cdn.kakobuyspreadsheet.gg/purple-brand-shorts-57d9df73.webp"
@@ -13512,7 +13512,7 @@
  {
   "id": "7871156408",
   "sourceId": "7702139126",
-  "name": "y2K",
+  "name": "Top Tier Y2K Beanie",
   "brand": null,
   "category": "hats",
   "slug": "y2k",
@@ -13522,7 +13522,7 @@
  {
   "id": "7871103588",
   "sourceId": "7702150888",
-  "name": "LV BRACLET",
+  "name": "Louis Vuitton Monogram Bracelet",
   "brand": "Louis Vuitton",
   "category": "accessories",
   "slug": "lv-braclet",
@@ -13782,7 +13782,7 @@
  {
   "id": "7868107887",
   "sourceId": "7702095376",
-  "name": "Nike Nocta Tech Fleece Jacket",
+  "name": "Nike Nocta Tech Fleece Crewneck",
   "brand": "Nike",
   "category": "hoodies",
   "slug": "nike-nocta-tech-fleece-jacket",
@@ -14142,7 +14142,7 @@
  {
   "id": "7868112237",
   "sourceId": "7699180711",
-  "name": "Rolex",
+  "name": "Rolex Daytona Watch",
   "brand": "Rolex",
   "category": "accessories",
   "slug": "rolex-4",
@@ -14404,7 +14404,7 @@
   "sourceId": "7699196051",
   "name": "Balenciaga Be Kind Longsleeve",
   "brand": "Balenciaga",
-  "category": "hoodies",
+  "category": "t-shirts",
   "slug": "balenciaga-be-kind-longsleeve",
   "cny": 140,
   "srcImg": "https://cdn.kakobuyspreadsheet.gg/balenciaga-text-longsleeve-7699196051.jpg"
@@ -14414,7 +14414,7 @@
   "sourceId": "7702138690",
   "name": "Acne Studios Jacket",
   "brand": "Acne Studios",
-  "category": "hoodies",
+  "category": "jackets",
   "slug": "acne-studios-jacket",
   "cny": 255,
   "srcImg": "https://cdn.kakobuyspreadsheet.gg/acne-studio-jacket-7702138690.jpg"
@@ -14624,7 +14624,7 @@
   "sourceId": "7702184080",
   "name": "Miu Miu Workwear Jacket",
   "brand": "Miu Miu",
-  "category": "hoodies",
+  "category": "jackets",
   "slug": "miu-miu-workwear-jacket",
   "cny": 367,
   "srcImg": "https://cdn.kakobuyspreadsheet.gg/miu-miu-workwear-jacket-429b57e6.webp"
@@ -15272,7 +15272,7 @@
  {
   "id": "7871156450",
   "sourceId": "7702158502",
-  "name": "ERD",
+  "name": "ERD Studded Belt",
   "brand": "ERD",
   "category": "accessories",
   "slug": "erd",
@@ -15402,7 +15402,7 @@
  {
   "id": "7868148333",
   "sourceId": "7699251751",
-  "name": "YSL LE5A7",
+  "name": "YSL Le 5 a 7 Bag",
   "brand": "Saint Laurent",
   "category": "bags",
   "slug": "ysl-le5a7",
@@ -15692,7 +15692,7 @@
  {
   "id": "7868160303",
   "sourceId": "7699184203",
-  "name": "Burberry",
+  "name": "Burberry Zip-Up Hoodie",
   "brand": "Burberry",
   "category": "hoodies",
   "slug": "burberry-3",
@@ -15732,7 +15732,7 @@
  {
   "id": "7871180268",
   "sourceId": "7699211769",
-  "name": "Nike",
+  "name": "Nike Striped Rugby Sweater",
   "brand": "Nike",
   "category": "hoodies",
   "slug": "nike",
@@ -15854,7 +15854,7 @@
   "sourceId": "7702178100",
   "name": "HBA x Vogue Never Trust a Vogue Girl Longsleeve",
   "brand": null,
-  "category": "hoodies",
+  "category": "t-shirts",
   "slug": "hba-x-vogue-never-trust-a-vogue-girl-longsleeve",
   "cny": 321,
   "srcImg": "https://cdn.kakobuyspreadsheet.gg/hba-x-vogue-never-trust-a-vogue-girl-longsleeve-ebb7968f.webp"
@@ -16044,7 +16044,7 @@
   "sourceId": "7699161011",
   "name": "Lego Keychain Pendants",
   "brand": "LEGO",
-  "category": "other",
+  "category": "accessories",
   "slug": "lego-keychain-pendants",
   "cny": 5,
   "srcImg": "https://cdn.kakobuyspreadsheet.gg/lego-keychain-pendants-7699161011.jpg"
@@ -16054,8 +16054,8 @@
   "sourceId": "7699148695",
   "name": "Corteiz Jacket",
   "brand": "Corteiz",
-  "category": "hoodies",
-  "slug": "corteiz-jacket",
+  "category": "jackets",
+  "slug": "corteiz-jacket-4",
   "cny": 150,
   "srcImg": "https://cdn.kakobuyspreadsheet.gg/corteiz-jacket-7699148695.jpg"
  },
@@ -16164,7 +16164,7 @@
   "sourceId": "7699229999",
   "name": "LV Speedy Traveling Bag",
   "brand": "Louis Vuitton",
-  "category": "accessories",
+  "category": "bags",
   "slug": "lv-speedy-traveling-bag",
   "cny": 367,
   "srcImg": "https://cdn.kakobuyspreadsheet.gg/lv-speedy-traveling-bag-7699229999.jpg"
@@ -16754,7 +16754,7 @@
   "sourceId": "7699105555",
   "name": "Balenciaga S24 Tracksuit",
   "brand": "Balenciaga",
-  "category": "hoodies",
+  "category": "tracksuits",
   "slug": "balenciaga-s24-tracksuit",
   "cny": 339,
   "srcImg": "https://cdn.kakobuyspreadsheet.gg/balenciaga-s24-tracksuit-7699105555.jpg"
@@ -16982,7 +16982,7 @@
  {
   "id": "7871168390",
   "sourceId": "7699125495",
-  "name": "Hangers",
+  "name": "Clothes Hangers",
   "brand": null,
   "category": "other",
   "slug": "hangers",
@@ -17492,7 +17492,7 @@
  {
   "id": "7868138407",
   "sourceId": "7702176642",
-  "name": "Mints",
+  "name": "Vitamin C Mints",
   "brand": null,
   "category": "other",
   "slug": "mints",
@@ -17562,7 +17562,7 @@
  {
   "id": "7868116555",
   "sourceId": "7699168939",
-  "name": "Cartier",
+  "name": "Cartier Santos Iced Out Watch",
   "brand": "Cartier",
   "category": "accessories",
   "slug": "cartier",
@@ -17872,9 +17872,9 @@
  {
   "id": "7868100743",
   "sourceId": "7699113397",
-  "name": "Amiri Vest",
+  "name": "Amiri Sleeveless Hoodie",
   "brand": "Amiri",
-  "category": "t-shirts",
+  "category": "hoodies",
   "slug": "amiri-vest",
   "cny": 102,
   "srcImg": "https://cdn.kakobuyspreadsheet.gg/amiri-vest-7699113397.jpg"
@@ -17934,7 +17934,7 @@
   "sourceId": "7699121329",
   "name": "Lululemon Waist Bag",
   "brand": "Lululemon",
-  "category": "accessories",
+  "category": "bags",
   "slug": "lululemon-waist-bag",
   "cny": 79,
   "srcImg": "https://cdn.kakobuyspreadsheet.gg/lululemon-waist-bag-7699121329.jpg"
@@ -18104,8 +18104,8 @@
   "sourceId": "7702158474",
   "name": "LV Bag",
   "brand": "Louis Vuitton",
-  "category": "accessories",
-  "slug": "lv-bag",
+  "category": "bags",
+  "slug": "lv-bag-8",
   "cny": 263,
   "srcImg": "https://cdn.kakobuyspreadsheet.gg/lv-bag-7702158474.jpg"
  },
