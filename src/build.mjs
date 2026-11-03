@@ -205,11 +205,24 @@ function pager(base, k, total) {
 
 // ── writers ──────────────────────────────────────────────────────────────────
 const written = [];
+// lastmod in the sitemap is the day the page's content last changed, not the day of the build, so Google
+// can trust it and scripts/indexnow.mjs sends only what changed. data/page-dates.json keeps { url: [hash, day] };
+// the hash covers the title, description and <main>, without the "Updated <today>" line.
+const DATES_FILE = path.join(ROOT, 'data/page-dates.json');
+const oldDates = fs.existsSync(DATES_FILE) ? JSON.parse(fs.readFileSync(DATES_FILE, 'utf8')) : {};
+const pageDates = {};
+function stamp(url, html) {
+  const part = (re) => (html.match(re) || [''])[0];
+  const text = (part(/<title>[\s\S]*?<\/title>/) + part(/<meta name="description"[^>]*>/) + part(/<main[\s\S]*<\/main>/)).split(UPDATED).join('');
+  const hash = crypto.createHash('sha1').update(text).digest('hex').slice(0, 12);
+  const old = oldDates[url];
+  pageDates[url] = [hash, old && old[0] === hash ? old[1] : BUILT];
+}
 function write(url, html, { sitemap = true } = {}) {
   const file = url.endsWith('/') ? path.join(DIST, url, 'index.html') : path.join(DIST, url);
   fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.writeFileSync(file, html);
-  if (sitemap) written.push(url);
+  if (sitemap) { written.push(url); stamp(url, html); }
 }
 
 function listing({ base, h1, title, desc, intro, list, crumb, active, extra = '' }) {
@@ -522,8 +535,9 @@ for (const a of AGENTS.filter((x) => !['kakobuy', 'usfans'].includes(x.id))) {
 fs.writeFileSync(path.join(DIST, 'search.json'), searchJson());
 fs.writeFileSync(path.join(DIST, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${written.map((u) => `<url><loc>${SITE}${u}</loc><lastmod>${BUILT}</lastmod></url>`).join('\n')}
+${written.map((u) => `<url><loc>${SITE}${u}</loc><lastmod>${pageDates[u][1]}</lastmod></url>`).join('\n')}
 </urlset>`);
+fs.writeFileSync(DATES_FILE, JSON.stringify(pageDates));
 // robots.txt names the AI search and answer crawlers on purpose, so letting them in is a stated
 // policy and not an accident of the wildcard: the spreadsheet is meant to be recommended by ChatGPT,
 // Gemini, Perplexity and Claude. A crawler obeys only the group that names it, so all share one group.
