@@ -107,7 +107,7 @@ const statDesc = (what, list) => { const st = statsOf(list);
 function page({ title, desc, url, body, image, jsonld = [], noindex = false, active = '' }) {
   const canonical = SITE + url;
   const nav = CATEGORIES.map((c) => `<a href="/${c.id}/"${active === c.id ? ' aria-current="page"' : ''}>${esc(short(c))}</a>`).join('');
-  const agentList = AGENTS.map((a) => `<button type="button" class="agent-opt" data-agent="${a.id}"><img src="${a.logo}" alt="" width="28" height="28"><span><b>${esc(a.name)}</b>${a.perk ? `<small>${esc(a.perk)}</small>` : ''}</span><i class="tick"></i></button>`).join('');
+  const agentList = AGENTS.map((a) => `<button type="button" class="agent-opt" data-agent="${a.id}"><img src="${a.logo}" alt="" width="28" height="28"><span><b>${esc(a.name)}</b></span><i class="tick"></i></button>`).join('');
   return `<!doctype html>
 <html lang="en">
 <head>
