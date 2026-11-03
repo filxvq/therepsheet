@@ -489,6 +489,173 @@
     });
     var q = new URLSearchParams(location.search).get('url'); if (q) { convIn.value = q; draw(); }
   }
+
+  // ── small comforts, all added here so the page text itself stays as built ──
+  var toastEl, toastTimer;
+  function toast(msg) {
+    if (!toastEl) { toastEl = document.createElement('div'); toastEl.className = 'ux-toast'; toastEl.setAttribute('role', 'status'); document.body.appendChild(toastEl); }
+    toastEl.textContent = msg; void toastEl.offsetWidth; toastEl.classList.add('on');
+    clearTimeout(toastTimer); toastTimer = setTimeout(function () { toastEl.classList.remove('on'); }, 2200);
+  }
+  $$('.agent-opt').forEach(function (b) { b.addEventListener('click', function () {
+    var a = byId[b.getAttribute('data-agent')]; if (a) toast('Links and prices now use ' + a.name);
+  }); });
+
+  // the top button and the toast sit above the phone's tab bar and the buy bar
+  function lift() {
+    var bar = $('.tabbar'), buy = $('.ux-buybar.on');
+    var h = (bar && bar.offsetHeight ? bar.offsetHeight : 0) + (buy ? buy.offsetHeight : 0);
+    document.documentElement.style.setProperty('--ux-bottom', h + 'px');
+  }
+  var upBtn = document.createElement('button');
+  upBtn.type = 'button'; upBtn.className = 'ux-top'; upBtn.setAttribute('aria-label', 'Back to top'); upBtn.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>';
+  upBtn.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+  document.body.appendChild(upBtn);
+  function onScroll() { upBtn.classList.toggle('on', window.scrollY > 900); }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', lift);
+  onScroll(); lift();
+
+  // item page: the buy button stays in reach once it has scrolled away, and the page can be shared
+  var mainBuy = $('main .btn-xl[data-wd]');
+  if (mainBuy) {
+    var priceEl = $('.big-price [data-cny]');
+    if (priceEl && window.IntersectionObserver) {
+      var bb = document.createElement('div');
+      bb.className = 'ux-buybar';
+      bb.innerHTML = '<span class="price" data-cny="' + priceEl.getAttribute('data-cny') + '"></span>';
+      var bbLink = mainBuy.cloneNode(true); bbLink.classList.remove('btn-xl'); bb.appendChild(bbLink);
+      document.body.appendChild(bb);
+      new IntersectionObserver(function (es) {
+        var gone = !es[0].isIntersecting && es[0].boundingClientRect.top < 0;
+        bb.classList.toggle('on', gone); lift();
+      }).observe(mainBuy);
+      apply();
+    }
+    var row = mainBuy.closest('.buy-row');
+    if (row) {
+      var sh = document.createElement('button');
+      sh.type = 'button'; sh.className = 'ux-share'; sh.setAttribute('aria-label', 'Share this item'); sh.innerHTML = '<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M16 7l-4-4-4 4"/><path d="M12 3v12"/></svg>';
+      sh.addEventListener('click', function () {
+        var u = location.origin + location.pathname, t = ($('main h1') || {}).textContent || document.title;
+        if (navigator.share) { navigator.share({ title: t, url: u }).catch(function () {}); return; }
+        if (navigator.clipboard) navigator.clipboard.writeText(u).then(function () { toast('Link copied'); });
+      });
+      row.appendChild(sh);
+    }
+  }
+
+  // items you opened come back on the home page and under other items
+  var RECENT = 'ux_recent', recent = [];
+  try { recent = JSON.parse(store.get(RECENT) || '[]'); } catch (e) {}
+  var hereId = mainBuy && mainBuy.getAttribute('data-wd');
+  var isHome = !!$('main > .hero');
+  if (hereId) store.set(RECENT, JSON.stringify([hereId].concat(recent.filter(function (x) { return x !== hereId; })).slice(0, 12)));
+  var showIds = recent.filter(function (x) { return x !== hereId; });
+  if (showIds.length && (isHome || hereId) && typeof cardHtml === 'function') {
+    load().then(function () {
+      var map = {}; data.forEach(function (x) { map[x.id] = x; });
+      var list = showIds.map(function (id) { return map[id]; }).filter(Boolean);
+      if (!list.length) return;
+      var s = document.createElement('section'); s.className = 'ux-recent';
+      s.innerHTML = '<div class="sec-head"><h2>Recently viewed</h2></div><div class="row-scroll">' + list.map(cardHtml).join('') + '</div>';
+      var after = isHome ? $('main > #categories') : null;
+      if (after) after.parentNode.insertBefore(s, after.nextSibling); else $('main').appendChild(s);
+      apply(); if (typeof syncFavs === 'function') syncFavs(); watch(s); arrows(s);
+    });
+  }
+
+  // listings: sort every item of the list by price, across all its pages
+  var countEl = $('main .head .count'), listGrid = $$('main .grid').pop();
+  if (countEl && listGrid && !$('#searchGrid') && $$('.card', listGrid).length > 1) {
+    var pagerEl = $('main .pager'), original = listGrid.innerHTML, all = null, shown = 0, moreBtn = null;
+    var sel = document.createElement('label'); sel.className = 'ux-sort';
+    sel.innerHTML = 'Sort <select aria-label="Sort items"><option value="">Recommended</option><option value="asc">Price: low to high</option><option value="desc">Price: high to low</option></select>';
+    countEl.parentNode.insertBefore(sel, countEl.nextSibling);
+    var base = location.pathname.replace(/page\/\d+\/$/, '');
+    var fetchAll = function () {
+      if (all) return Promise.resolve(all);
+      var last = 1;
+      $$('a', pagerEl || document.createElement('div')).forEach(function (a) { var m = a.getAttribute('href').match(/page\/(\d+)\/$/); if (m) last = Math.max(last, +m[1]); });
+      var jobs = [];
+      for (var k = 1; k <= last; k++) jobs.push(fetch(k === 1 ? base : base + 'page/' + k + '/').then(function (r) { return r.text(); }));
+      return Promise.all(jobs).then(function (pages) {
+        var seenIds = {}; all = [];
+        pages.forEach(function (html) {
+          var grids = new DOMParser().parseFromString(html, 'text/html').querySelectorAll('main .grid');
+          $$('.card', grids[grids.length - 1]).forEach(function (c) {
+            var key = ($('a', c) || {}).getAttribute ? $('a', c).getAttribute('href') : '';
+            if (!seenIds[key]) { seenIds[key] = 1; all.push(c); }
+          });
+        });
+        return all;
+      });
+    };
+    var cost = function (c) { var el = $('[data-cny]', c); return el ? +el.getAttribute('data-cny') : 0; };
+    var drawMore = function (list) {
+      var next = list.slice(shown, shown + 60);
+      next.forEach(function (c) { var n = document.importNode(c, true); n.classList.remove('in'); listGrid.appendChild(n); });
+      shown += next.length;
+      if (moreBtn) moreBtn.hidden = shown >= list.length;
+      apply(); if (typeof syncFavs === 'function') syncFavs(); watch(listGrid);
+    };
+    $('select', sel).addEventListener('change', function () {
+      var how = this.value;
+      if (moreBtn) moreBtn.hidden = true;
+      if (!how) { listGrid.innerHTML = original; if (pagerEl) pagerEl.hidden = false; apply(); if (typeof syncFavs === 'function') syncFavs(); watch(listGrid); return; }
+      listGrid.classList.add('ux-busy');
+      fetchAll().then(function (cards) {
+        var list = cards.slice().sort(function (a, b) { return how === 'asc' ? cost(a) - cost(b) : cost(b) - cost(a); });
+        listGrid.innerHTML = ''; shown = 0;
+        if (pagerEl) pagerEl.hidden = true;
+        if (!moreBtn) {
+          moreBtn = document.createElement('button'); moreBtn.type = 'button'; moreBtn.className = 'btn-ghost ux-more'; moreBtn.textContent = 'Show more';
+          listGrid.parentNode.insertBefore(moreBtn, listGrid.nextSibling);
+        }
+        moreBtn.onclick = function () { drawMore(list); };
+        drawMore(list);
+        listGrid.classList.remove('ux-busy');
+      }).catch(function () { listGrid.classList.remove('ux-busy'); toast('Could not sort, try again'); });
+    });
+  }
+
+  // QC photos: swipe sideways for the next one, down to close
+  var sx0 = 0, sy0 = 0;
+  document.addEventListener('touchstart', function (e) { if (lb && e.touches.length === 1) { sx0 = e.touches[0].clientX; sy0 = e.touches[0].clientY; } }, { passive: true });
+  document.addEventListener('touchend', function (e) {
+    if (!lb || !e.changedTouches.length) return;
+    var dx = e.changedTouches[0].clientX - sx0, dy = e.changedTouches[0].clientY - sy0;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) lbShow(lbAt + (dx < 0 ? 1 : -1));
+    else if (dy > 90 && dy > Math.abs(dx)) lbClose();
+  }, { passive: true });
+
+  // rows on a computer: arrows, since a mouse gives no hint that a row scrolls
+  function arrows(root) {
+    if (!window.matchMedia('(hover: hover) and (min-width: 821px)').matches) return;
+    $$('.row-scroll:not(.qc-row), .rail', root).forEach(function (r) {
+      if (r.parentNode.classList.contains('ux-row')) return;
+      var w = document.createElement('div'); w.className = 'ux-row';
+      r.parentNode.insertBefore(w, r); w.appendChild(r);
+      [['prev', '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>', -1], ['next', '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>', 1]].forEach(function (d) {
+        var b = document.createElement('button'); b.type = 'button'; b.className = 'ux-arrow ' + d[0]; b.setAttribute('aria-label', d[0] === 'prev' ? 'Scroll back' : 'Scroll forward'); b.innerHTML = d[1];
+        b.addEventListener('click', function () { r.scrollBy({ left: d[2] * r.clientWidth * .8, behavior: 'smooth' }); });
+        w.appendChild(b);
+      });
+      var state = function () {
+        w.classList.toggle('at-start', r.scrollLeft < 8);
+        w.classList.toggle('at-end', r.scrollLeft + r.clientWidth > r.scrollWidth - 8);
+      };
+      r.addEventListener('scroll', state, { passive: true }); window.addEventListener('resize', state); state();
+    });
+  }
+  arrows(document);
+
+  // pages open faster: the browser fetches a link while the pointer rests on it or a finger lands on it
+  if (window.HTMLScriptElement && HTMLScriptElement.supports && HTMLScriptElement.supports('speculationrules')) {
+    var rules = document.createElement('script'); rules.type = 'speculationrules';
+    rules.textContent = JSON.stringify({ prefetch: [{ source: 'document', where: { and: [{ href_matches: '/*' }, { not: { href_matches: '/api/*' } }] }, eagerness: 'moderate' }] });
+    document.head.appendChild(rules);
+  }
 })();
 
 // ── traffic beacon for the owner's private panel (vetereps.com/stats) ──
