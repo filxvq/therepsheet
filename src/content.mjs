@@ -2,6 +2,7 @@
 // The phrase people search is "rep spreadsheet" / "reps", so the copy says it plainly.
 
 export const HOME = {
+  short: 'A rep spreadsheet of {COUNT} Weidian reps with real prices, sizes and QC photos. Pick your agent once and every rep opens in it.',
   lead: 'TheRepSheet puts {COUNT} Weidian reps in one rep spreadsheet: sneakers, hoodies, jackets, bags and accessories, each with its real price, every colour and size the seller offers, and QC photos from real orders where they exist. Pick your shopping agent once and every rep on the site opens straight in it.',
   start: [
     { t: 'Pick a rep.', d: 'Browse a category, a brand or search by name. Colours, sizes and QC photos are on every rep page.' },

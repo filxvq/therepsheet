@@ -71,6 +71,7 @@ const n = (x) => x.toLocaleString('en-US');
 const COUNT = n(products.length);
 const ROUND = Math.floor(products.length / 100) * 100;   // "1800+" in titles
 
+const TAB = {"home":"<svg viewBox=\"0 0 24 24\" width=\"21\" height=\"21\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m3 11 9-8 9 8\"/><path d=\"M5 9.5V21h14V9.5\"/></svg>","search":"<svg viewBox=\"0 0 24 24\" width=\"21\" height=\"21\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"11\" cy=\"11\" r=\"7\"/><path d=\"m20 20-3.5-3.5\"/></svg>","gift":"<svg viewBox=\"0 0 24 24\" width=\"21\" height=\"21\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"3\" y=\"8\" width=\"18\" height=\"4\" rx=\"1\"/><path d=\"M5 12v9h14v-9M12 8v13M12 8S10.5 3 8 3a2.5 2.5 0 0 0 0 5zM12 8s1.500-5 4-5a2.500 2.500 0 0 1 0 5z\"/></svg>","heart":"<svg viewBox=\"0 0 24 24\" width=\"21\" height=\"21\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M19 14c1.500-1.500 3-3.300 3-5.500A5.500 5.500 0 0 0 12 5.200 5.500 5.500 0 0 0 2 8.500c0 2.300 1.500 4 3 5.500l7 7z\"/></svg>","grid":"<svg viewBox=\"0 0 24 24\" width=\"21\" height=\"21\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"3\" y=\"3\" width=\"7\" height=\"7\" rx=\"1.500\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\" rx=\"1.500\"/><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\" rx=\"1.500\"/><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\" rx=\"1.500\"/></svg>","camera":"<svg viewBox=\"0 0 24 24\" width=\"21\" height=\"21\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z\"/><circle cx=\"12\" cy=\"13.500\" r=\"3.500\"/></svg>","book":"<svg viewBox=\"0 0 24 24\" width=\"21\" height=\"21\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 5a2 2 0 0 1 2-2h14v16H6a2 2 0 0 0-2 2z\"/><path d=\"M4 19V5\"/></svg>"};
 const ICON = {
   heart: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7z"/></svg>',
   search: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',
@@ -111,7 +112,7 @@ function page({ title, desc, url, body, image, jsonld = [], noindex = false, act
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
 <link rel="canonical" href="${canonical}">
@@ -167,6 +168,13 @@ ${body}
     <p class="fine">© ${YEAR} therepsheet.com</p>
   </div>
 </footer>
+<nav class="tabbar" aria-label="Quick links">
+  <a class="tab" href="/"${url === '/' ? ' aria-current="page"' : ''}>${TAB.home}<span>Home</span></a>
+  <button type="button" class="tab" data-search-open>${TAB.search}<span>Search</span></button>
+  <a class="tab tab-main" data-signup href="${defAgent.signup}" rel="nofollow sponsored noopener" target="_blank"><i>${TAB.gift}</i><span>Sign up</span></a>
+  <a class="tab" href="/favorites/">${TAB.heart}<span class="fav-count" hidden></span><span>Favorites</span></a>
+  <a class="tab" href="/finds/"${active === 'finds' ? ' aria-current="page"' : ''}>${TAB.grid}<span>All reps</span></a>
+</nav>
 <script>window.TRS=${JSON.stringify({ agents: AGENTS.map(({ id, name, code, rate, signup, perk, logo, promo }) => ({ id, name, code, rate, signup, perk, logo, promo })), plane: ICO.plane, cny: CNY_FALLBACK, def: DEFAULT_AGENT, sv: searchVersion(), cats: Object.fromEntries(CATEGORIES.map((c) => [c.id, short(c)])) })}</script>
 <script src="/assets/site.js?v=${V.js}" defer></script>
 </body>
@@ -436,17 +444,16 @@ write('/favorites/', page({ title: `Your Favorite Reps | ${NAME}`, desc: 'The re
   const body = `<section class="hero">
   <div class="hero-text">
     <h1>Rep Spreadsheet ${YEAR} <span>${ROUND}+ Rep Links</span></h1>
-    <p>${esc(HOME.lead.replace('{COUNT}', COUNT)).replace('rep spreadsheet', '<strong>rep spreadsheet</strong>')}</p>
-    <div class="hero-cta"><span class="updated">${ICON.clock} Updated ${UPDATED}</span></div>
-
+    <p>${esc(HOME.short.replace('{COUNT}', COUNT)).replace('rep spreadsheet', '<strong>rep spreadsheet</strong>')}</p>
+    <div class="hero-cta"><a class="btn-buy hero-go" href="/finds/">Browse all ${COUNT} reps →</a><span class="updated">${ICON.clock} Updated ${UPDATED}</span></div>
   </div>
   ${promoCard()}
 </section>
 <section id="categories"><div class="sec-head"><h2>Shop Reps by Category</h2><a class="sec-link" href="/finds/">All reps →</a></div>${rail()}</section>
-<section><div class="sec-head"><h2>Best Reps Right Now</h2><a class="sec-link" href="/finds/">More →</a></div>${row(mix(24))}</section>
+<section class="home-first"><div class="sec-head"><h2>Best Reps Right Now</h2><a class="sec-link" href="/finds/">More →</a></div>${row(mix(24))}</section>
 ${withQc.length ? `<section><div class="sec-head"><h2>Reps With QC Photos</h2></div><p class="intro">Real warehouse photos from other buyers' orders, so you can see what actually arrives.</p>${row(withQc.slice(0, 16))}</section>` : ''}
 <section><div class="sec-head"><h2>Popular Rep Brands</h2><a class="sec-link" href="/brands/">All ${BRANDS.length} brands →</a></div><div class="chips">${BRANDS.slice(0, 24).map((b) => `<a href="/brands/${b.slug}/">${esc(b.name)} reps <b>${b.n}</b></a>`).join('')}</div></section>
-<section class="split"><div class="prose"><h2>New to Reps?</h2>${HOME.what.map((t) => `<p>${esc(t)}</p>`).join('')}</div>
+<section class="split"><div class="prose"><h2>New to Reps?</h2><p>${esc(HOME.lead.replace('{COUNT}', COUNT))}</p>${HOME.what.map((t) => `<p>${esc(t)}</p>`).join('')}</div>
 <div><h2>Three Steps to Your First Haul</h2><ol class="start">${HOME.start.map((s, i) => `<li><span class="num">${i + 1}</span><div><h3>${esc(s.t)}</h3><p>${esc(s.d)}</p></div></li>`).join('')}</ol></div></section>
 <section><h2>What Makes TheRepSheet Different</h2><div class="cards4">${HOME.why.map((s) => `<div><h3>${esc(s.t)}</h3><p>${esc(s.d)}</p></div>`).join('')}</div></section>
 <section><h2>Buying Reps, Step by Step</h2><ol class="steps">${GUIDE.steps.map((s) => `<li><h3>${esc(s.t)}</h3><p>${esc(s.d)}</p></li>`).join('')}</ol><p class="more"><a href="/how-to-buy/">The full guide to buying reps →</a></p></section>
