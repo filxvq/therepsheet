@@ -375,12 +375,18 @@
     return data.filter(function (x) { return words.every(function (w) { return x.k.indexOf(w) >= 0; }); });
   }
   function searchUrl(q) { return '/search/?q=' + encodeURIComponent(q.trim()); }
+  function trending() {
+    var cats = {}, order = [], out = [];
+    data.forEach(function (x) { if (!cats[x.cat]) { cats[x.cat] = []; order.push(x.cat); } cats[x.cat].push(x); });
+    for (var i = 0; out.length < 8 && i < 12; i++) order.forEach(function (c) { if (out.length < 8 && cats[c][i]) out.push(cats[c][i]); });
+    return out;
+  }
   function openSearch(initial) {
     if (overlay) return;
     overlay = document.createElement('div'); overlay.className = 'sx';
     overlay.innerHTML = '<div class="sx-panel" role="dialog" aria-label="Search products">'
-      + '<div class="sx-top">' + '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>'
-      + '<input class="sx-input" type="search" placeholder="Search products…" autocomplete="off" aria-label="Search products"></div>'
+      + '<div class="sx-top">'
+      + '<input class="sx-input" type="search" placeholder="Search products…" autocomplete="off" aria-label="Search products"><button type="button" class="sx-close" aria-label="Close search"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>'
       + '<div class="sx-list"></div>'
       + '<div class="sx-keys"><span><kbd>↑↓</kbd> Browse reps</span><span><kbd>Enter</kbd> Open rep</span><span><kbd>Esc</kbd> Close</span></div></div>';
     document.body.appendChild(overlay);
@@ -391,7 +397,9 @@
     function draw() {
       var q = input.value, hits = matches(q);
       pick = -1;
-      if (!q.trim()) { list.innerHTML = '<div class="sx-hint">Type a brand, an item or a colour: “nike”, “hoodie”, “jordan 4”.</div>'; return; }
+      if (!q.trim()) { list.innerHTML = '<p class="sx-head">Best Reps Right Now</p>' + trending().map(function (x) {
+        return '<a class="sx-item" href="' + x.u + '"><img src="' + x.i + '" alt="" width="44" height="44"><span class="sx-name">' + esc(x.n) + '</span><span class="sx-price">' + fmt(x.c) + '</span></a>';
+      }).join(''); return; }
       if (!hits.length) { list.innerHTML = '<div class="sx-hint">No reps match “' + esc(q) + '”.</div>'; return; }
       list.innerHTML = hits.slice(0, SHOW).map(function (x) {
         return '<a class="sx-item" href="' + x.u + '"><img src="' + x.i + '" alt="" width="44" height="44"><span class="sx-name">' + esc(x.n) + '</span><span class="sx-price">' + fmt(x.c) + '</span></a>';
@@ -412,6 +420,7 @@
       } else if (e.key === 'Escape') closeSearch();
     });
     overlay.addEventListener('click', function (e) { if (e.target === overlay) closeSearch(); });
+    $('.sx-close', overlay).addEventListener('click', closeSearch);
     setTimeout(function () { input.focus(); input.select(); }, 30);
   }
   function closeSearch() {
