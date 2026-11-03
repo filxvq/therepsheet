@@ -24,7 +24,7 @@
     switch (a.id) {
       case 'kakobuy': return 'https://www.kakobuy.com/item/details?url=' + encodeURIComponent(weidian(id)) + (c ? '&affcode=' + c : '');
       case 'usfans': return 'https://www.usfans.com/product/3/' + id + (c ? '?ref=' + c : '');
-      case 'sinabuy': return 'https://www.sinabuy.com/product/2/' + id + (c ? '?inviteCode=' + c : '');
+      case 'hipobuy': return 'https://hipobuy.com/product/weidian/' + id + '?source=SEARCH_LIST&keyword=' + encodeURIComponent(weidian(id)) + (c ? '&inviteCode=' + c : '');
       case 'litbuy': return 'https://litbuy.com/products/details?id=' + id + '&channel=WEIDIAN' + (c ? '&ref=' + c : '');
       case 'oopbuy': return 'https://www.oopbuy.com/product/weidian/' + id + (c ? '?inviteCode=' + c : '');
       case 'acbuy': return 'https://www.acbuy.com/product/?id=' + id + '&source=WD' + (c ? '&u=' + c : '');
@@ -460,7 +460,7 @@
       try { s = decodeURIComponent(s); } catch (e) {}
       var m = s.match(/weidian\.com\/[^\s]*?itemI[dD]=(\d{6,})/) || s.match(/[?&]itemI[dD]=(\d{6,})/)
         || s.match(/usfans\.com\/product\/3\/(\d{6,})/) || s.match(/sinabuy\.com\/product\/2\/(\d{6,})/)
-        || s.match(/oopbuy\.com\/product\/weidian\/(\d{6,})/)
+        || s.match(/(?:oopbuy|hipobuy)\.com\/product\/weidian\/(\d{6,})/)
         || (/channel=WEIDIAN/i.test(s) && s.match(/[?&]id=(\d{6,})/)) || (/source=WD/i.test(s) && s.match(/[?&]id=(\d{6,})/))
         || s.match(/^(\d{8,})$/);
       return m ? m[1] : null;

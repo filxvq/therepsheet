@@ -16,7 +16,7 @@ export const HOME = {
   why: [
     { t: 'QC photos from real orders', d: 'Warehouse photos of the actual items other buyers received, shown on the rep pages that have them.' },
     { t: 'Every colour and size', d: 'Each rep lists the options its seller offers, with a photo for every colourway.' },
-    { t: 'Six agents, one switch', d: 'Kakobuy, USFans, Sinabuy, Litbuy, Oopbuy or Acbuy: choose once and every link and price follows.' },
+    { t: 'Six agents, one switch', d: 'Kakobuy, USFans, Hipobuy, Litbuy, Oopbuy or Acbuy: choose once and every link and price follows.' },
     { t: 'Prices you will actually pay', d: 'The seller\'s yuan price at today\'s rate with your agent\'s own margin, not a rounded guess.' },
   ],
 };
@@ -25,7 +25,7 @@ export const GUIDE = {
   title: 'How to Buy Reps: Step by Step',
   intro: 'Weidian sellers do not ship abroad themselves, so you buy reps through a shopping agent: a company in China that orders the rep for you, photographs it in their warehouse and ships everything you bought in one parcel. The whole process takes about two to four weeks.',
   steps: [
-    { t: 'Make an agent account.', d: 'Kakobuy is the default on this rep spreadsheet; USFans, Sinabuy, Litbuy, Oopbuy and Acbuy work too. Switch at the top of any page and every buy link follows.',
+    { t: 'Make an agent account.', d: 'Kakobuy is the default on this rep spreadsheet; USFans, Hipobuy, Litbuy, Oopbuy and Acbuy work too. Switch at the top of any page and every buy link follows.',
       more: 'New accounts usually get shipping coupons, so sign up through an offer before your first rep order rather than after it.' },
     { t: 'Pick a rep and press Buy.', d: 'The button opens the same Weidian listing inside your agent, where you choose the size and colour and add the rep to the cart.',
       more: 'Read the listing\'s size chart there. Most rep sellers use Asian sizing, which runs about one size smaller than EU or US labels.' },

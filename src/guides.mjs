@@ -48,7 +48,7 @@ export const GUIDES = [
     slug: 'best-rep-agents',
     title: 'Best Agents for Reps Compared',
     seo: 'Best Rep Agents 2026: Kakobuy vs USFans vs Others',
-    desc: 'Kakobuy, USFans, Sinabuy, Litbuy, Oopbuy and Acbuy compared: exchange-rate margin, new-account coupons and what each is good for.',
+    desc: 'Kakobuy, USFans, Hipobuy, Litbuy, Oopbuy and Acbuy compared: exchange-rate margin, new-account coupons and what each is good for.',
     intro: 'Every agent on TheRepSheet can buy every rep we list. They differ in how much they add to the yuan price, in their shipping lines and in the coupons new accounts get.',
     agentsTable: true,
     sections: [

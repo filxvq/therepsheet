@@ -41,7 +41,7 @@ export const AGENTS = [
     signup: 'https://www.usfans.com/register?ref=CEP7GG', perk: '40% off shipping coupon',
     promo: { style: 'usf', title: '40% off shipping', sub: ['No minimum spend', 'Valid 1 year'],
       coupons: [{ big: '40% OFF', min: 'No min. fee required', typ: 'Shipping Coupon' }, { big: '40% OFF', min: 'No min. fee required', typ: 'Shipping Coupon' }] } },
-  { id: 'sinabuy', name: 'Sinabuy', logo: '/agents/sina.webp', code: 'vetemefan', rate: 1.0466, signup: 'https://www.sinabuy.com/?inviteCode=vetemefan' },
+  { id: 'hipobuy', name: 'Hipobuy', logo: '/agents/hipo.png', code: 'DSYJT4I0D', rate: 1, signup: 'https://hipobuy.com/register?inviteCode=DSYJT4I0D' },
   { id: 'litbuy', name: 'Litbuy', logo: '/agents/lit.avif', code: '', rate: 1.1793, signup: 'https://litbuy.com/' },
   { id: 'oopbuy', name: 'Oopbuy', logo: '/agents/oop.avif', code: '', rate: 1, signup: 'https://www.oopbuy.com/' },
   { id: 'acbuy', name: 'Acbuy', logo: '/agents/ac.avif', code: '', rate: 1, signup: 'https://www.acbuy.com/' },

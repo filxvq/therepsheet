@@ -57,7 +57,7 @@ const weidian = (id) => 'https://weidian.com/item.html?itemID=' + id;
 const buyUrl = (id, a = defAgent) => ({
   kakobuy: () => 'https://www.kakobuy.com/item/details?url=' + encodeURIComponent(weidian(id)) + (a.code ? '&affcode=' + a.code : ''),
   usfans: () => 'https://www.usfans.com/product/3/' + id + (a.code ? '?ref=' + a.code : ''),
-  sinabuy: () => 'https://www.sinabuy.com/product/2/' + id + (a.code ? '?inviteCode=' + a.code : ''),
+  hipobuy: () => 'https://hipobuy.com/product/weidian/' + id + '?source=SEARCH_LIST&keyword=' + encodeURIComponent(weidian(id)) + (a.code ? '&inviteCode=' + a.code : ''),
   litbuy: () => 'https://litbuy.com/products/details?id=' + id + '&channel=WEIDIAN' + (a.code ? '&ref=' + a.code : ''),
   oopbuy: () => 'https://www.oopbuy.com/product/weidian/' + id + (a.code ? '?inviteCode=' + a.code : ''),
   acbuy: () => 'https://www.acbuy.com/product/?id=' + id + '&source=WD' + (a.code ? '&u=' + a.code : ''),
@@ -160,7 +160,7 @@ ${body}
     <div class="foot-brands"><h3>Brands</h3><div class="brand-cols">${BRANDS.slice(0, 42).map((b) => `<a href="/brands/${b.slug}/">${esc(b.name)}</a>`).join('')}</div></div>
     <div class="foot-legal">
       <p><b>Who runs this.</b> TheRepSheet is kept by a small group of buyers who order through these agents themselves. Finds are added by hand, prices follow the sellers' yuan prices at the live rate, and listings that go dead are taken off.</p>
-      <p><b>Disclaimer.</b> TheRepSheet is an independent catalog. It is not endorsed by or connected to Kakobuy, USFans, Sinabuy, Litbuy, Oopbuy, Acbuy, Weidian or any brand shown. Its only purpose is to help you find listings on third-party marketplaces.</p>
+      <p><b>Disclaimer.</b> TheRepSheet is an independent catalog. It is not endorsed by or connected to Kakobuy, USFans, Hipobuy, Litbuy, Oopbuy, Acbuy, Weidian or any brand shown. Its only purpose is to help you find listings on third-party marketplaces.</p>
       <p>We sell nothing, hold no stock, take no payments and are not part of any transaction. Every purchase is made by you, with the agent you choose, at your own discretion. Brand and product names appear only to identify what a listing is.</p>
       <p><b>Affiliate disclosure.</b> Some agent and sign-up links carry a referral code. It costs you nothing and pays for keeping the catalog up to date; it never changes the price of an item.</p>
       <p><b>External content.</b> We do not control and are not responsible for the content, accuracy or quality of items on external sites. Check the details on the agent's page before you order.</p>
@@ -516,9 +516,9 @@ ${g.sections.map((x) => `<h2>${esc(x.h)}</h2>${x.p.map((t) => `<p>${esc(t).repla
 {
   const [bc, bcld] = crumbs([['Rep Spreadsheet', '/'], ['Link converter', '/tools/link-converter/']]);
   write('/tools/link-converter/', page({ title: `Weidian Link Converter for Kakobuy, USFans & More | ${NAME}`,
-    desc: 'Paste a Weidian link or an agent link and get the same item on Kakobuy, USFans, Sinabuy, Litbuy, Oopbuy and Acbuy. Free, no sign-up.',
+    desc: 'Paste a Weidian link or an agent link and get the same item on Kakobuy, USFans, Hipobuy, Litbuy, Oopbuy and Acbuy. Free, no sign-up.',
     url: '/tools/link-converter/', jsonld: [bcld, { '@context': 'https://schema.org', '@type': 'WebApplication', name: 'Weidian link converter', applicationCategory: 'UtilitiesApplication', operatingSystem: 'Any', offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' } }],
-    body: `${bc}<header class="head"><h1>Weidian Link Converter</h1><p class="intro">Paste a Weidian link, or a Kakobuy, USFans, Sinabuy, Litbuy, Oopbuy or Acbuy link to a Weidian item, and get the same item on every agent.</p></header>
+    body: `${bc}<header class="head"><h1>Weidian Link Converter</h1><p class="intro">Paste a Weidian link, or a Kakobuy, USFans, Hipobuy, Litbuy, Oopbuy or Acbuy link to a Weidian item, and get the same item on every agent.</p></header>
 <div class="conv"><input id="convIn" type="url" inputmode="url" placeholder="https://weidian.com/item.html?itemID=…" autocomplete="off"><p class="conv-msg" id="convMsg">Works with Weidian item links and agent links to Weidian items.</p><div id="convOut" class="conv-out"></div></div>
 <article class="prose"><h2>How it works</h2><p>Every Weidian item has a number, the itemID. Agents open the same item from that number, each with its own address. The converter reads the number from the link you paste and builds the address for each agent. If the item is in the rep spreadsheet, it also links to its page here, with colours, sizes and QC photos.</p>
 <h2>Which link should I use?</h2><p>Use the agent you already have an account with. If you have none yet, see the <a href="/guides/best-rep-agents/">agent comparison</a>; new accounts usually get shipping coupons.</p></article>` }));
@@ -557,7 +557,7 @@ fs.writeFileSync(path.join(DIST, 'robots.txt'), ['User-agent: *', ...['GPTBot', 
   const li = (nm, u, d) => `- [${nm}](${SITE}${u})${d ? ': ' + d : ''}`;
   fs.writeFileSync(path.join(DIST, 'llms.txt'), [
     `# ${NAME}`, '',
-    `> ${NAME} is a free rep spreadsheet: ${COUNT} replica ("rep") clothing, shoe and accessory listings from Weidian sellers, each with a USD price, every colour and size the seller offers, QC photos from real orders where they exist, and direct links for six shopping agents (Kakobuy, USFans, Sinabuy, Litbuy, Oopbuy, Acbuy). ${NAME} sells nothing and handles no payments; buyers order through the agent they choose. Some agent links carry a referral code. Prices are the seller's yuan price at a live exchange rate with the agent's margin; shipping is extra.`, '',
+    `> ${NAME} is a free rep spreadsheet: ${COUNT} replica ("rep") clothing, shoe and accessory listings from Weidian sellers, each with a USD price, every colour and size the seller offers, QC photos from real orders where they exist, and direct links for six shopping agents (Kakobuy, USFans, Hipobuy, Litbuy, Oopbuy, Acbuy). ${NAME} sells nothing and handles no payments; buyers order through the agent they choose. Some agent links carry a referral code. Prices are the seller's yuan price at a live exchange rate with the agent's margin; shipping is extra.`, '',
     '## Key pages', '',
     li('Home', '/', 'the spreadsheet: categories, popular finds, finds with QC photos'),
     li('All finds by category', '/finds/', 'every category and the most popular finds'),
