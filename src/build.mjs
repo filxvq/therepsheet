@@ -58,7 +58,7 @@ const buyUrl = (id, a = defAgent) => ({
   kakobuy: () => 'https://www.kakobuy.com/item/details?url=' + encodeURIComponent(weidian(id)) + (a.code ? '&affcode=' + a.code : ''),
   usfans: () => 'https://www.usfans.com/product/3/' + id + (a.code ? '?ref=' + a.code : ''),
   hipobuy: () => 'https://hipobuy.com/product/weidian/' + id + '?source=SEARCH_LIST&keyword=' + encodeURIComponent(weidian(id)) + (a.code ? '&inviteCode=' + a.code : ''),
-  litbuy: () => 'https://litbuy.com/products/details?id=' + id + '&channel=WEIDIAN' + (a.code ? '&ref=' + a.code : ''),
+  litbuy: () => 'https://litbuy.com/products/details?id=' + id + '&channel=WEIDIAN' + (a.code ? '&inviteCode=' + a.code : ''),
   oopbuy: () => 'https://www.oopbuy.com/product/weidian/' + id + (a.code ? '?inviteCode=' + a.code : ''),
   acbuy: () => 'https://www.acbuy.com/product/?id=' + id + '&source=WD' + (a.code ? '&u=' + a.code : ''),
 }[a.id])();

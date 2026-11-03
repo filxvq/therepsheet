@@ -25,7 +25,7 @@
       case 'kakobuy': return 'https://www.kakobuy.com/item/details?url=' + encodeURIComponent(weidian(id)) + (c ? '&affcode=' + c : '');
       case 'usfans': return 'https://www.usfans.com/product/3/' + id + (c ? '?ref=' + c : '');
       case 'hipobuy': return 'https://hipobuy.com/product/weidian/' + id + '?source=SEARCH_LIST&keyword=' + encodeURIComponent(weidian(id)) + (c ? '&inviteCode=' + c : '');
-      case 'litbuy': return 'https://litbuy.com/products/details?id=' + id + '&channel=WEIDIAN' + (c ? '&ref=' + c : '');
+      case 'litbuy': return 'https://litbuy.com/products/details?id=' + id + '&channel=WEIDIAN' + (c ? '&inviteCode=' + c : '');
       case 'oopbuy': return 'https://www.oopbuy.com/product/weidian/' + id + (c ? '?inviteCode=' + c : '');
       case 'acbuy': return 'https://www.acbuy.com/product/?id=' + id + '&source=WD' + (c ? '&u=' + c : '');
     }
