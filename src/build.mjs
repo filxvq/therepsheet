@@ -446,7 +446,7 @@ write('/favorites/', page({ title: `Your Favorite Reps | ${NAME}`, desc: 'The re
   <div class="hero-text">
     <h1>Rep Spreadsheet ${YEAR} <span>${ROUND}+ Rep Links</span></h1>
     <p>${esc(HOME.short.replace('{COUNT}', COUNT)).replace('rep spreadsheet', '<strong>rep spreadsheet</strong>')}</p>
-    <div class="hero-cta"><a class="btn-buy hero-go" href="/finds/">Browse all ${COUNT} reps →</a><span class="updated">${ICON.clock} Updated ${UPDATED}</span></div>
+    <div class="hero-cta"><span class="updated">${ICON.clock} Updated ${UPDATED}</span></div>
   </div>
   ${promoCard()}
 </section>
