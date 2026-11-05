@@ -22,6 +22,7 @@ import { SITE, NAME, CATEGORIES, AGENTS, DEFAULT_AGENT, CNY_FALLBACK, BRAND_PAGE
 import { GUIDES } from './guides.mjs';
 import { HOME, FAQ, GUIDE, ABOUT } from './content.mjs';
 import { describe } from './describe.mjs';
+import { homeRow, extraPages } from './extras.mjs';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = path.join(ROOT, 'dist');
@@ -144,7 +145,7 @@ ${jsonld.map((j) => `<script type="application/ld+json">${JSON.stringify(j).repl
     </div>
     <a class="signup" data-signup href="${defAgent.signup}" rel="nofollow sponsored noopener" target="_blank">Sign up to <span class="agent-name">${esc(defAgent.name)}</span> →</a>
   </div>
-  <nav class="wrap cats" aria-label="Categories"><a href="/finds/"${active === 'finds' ? ' aria-current="page"' : ''}>All</a>${nav}<a href="/brands/"${active === 'brands' ? ' aria-current="page"' : ''}>Brands</a><a href="/qc-check/"${active === 'qc-check' ? ' aria-current="page"' : ''}>QC Check</a></nav>
+  <nav class="wrap cats" aria-label="Categories"><a href="/finds/"${active === 'finds' ? ' aria-current="page"' : ''}>All</a>${nav}<a href="/brands/"${active === 'brands' ? ' aria-current="page"' : ''}>Brands</a><a href="/qc-check/"${active === 'qc-check' ? ' aria-current="page"' : ''}>QC Check</a><a href="/sellers/"${active === 'sellers' ? ' aria-current="page"' : ''}>Sellers</a></nav>
 </header>
 <main class="wrap">
 ${body}
@@ -155,7 +156,7 @@ ${body}
       <div><a class="logo" href="/"><b>TheRep</b>Sheet<span>.com</span></a>
         <p>The rep spreadsheet for Weidian finds: ${COUNT} reps with live prices and direct links for six shopping agents. Updated ${UPDATED}.</p></div>
       <div><h3>Categories</h3>${CATEGORIES.map((c) => `<a href="/${c.id}/">${esc(c.reps)}</a>`).join('')}</div>
-      <div><h3>Quick links</h3><a href="/">Home</a><a href="/finds/">All reps</a><a href="/brands/">Reps by brand</a><a href="/how-to-buy/">How to buy reps</a><a href="/guides/">Rep guides</a><a href="/tools/link-converter/">Link converter</a><a href="/faq/">Rep FAQ</a><a href="/favorites/">Your favorites</a><a href="/about/">About</a><a data-signup href="${defAgent.signup}" rel="nofollow sponsored noopener" target="_blank">Sign up to <span class="agent-name">${esc(defAgent.name)}</span></a></div>
+      <div><h3>Quick links</h3><a href="/">Home</a><a href="/finds/">All reps</a><a href="/brands/">Reps by brand</a><a href="/how-to-buy/">How to buy reps</a><a href="/guides/">Rep guides</a><a href="/tools/link-converter/">Link converter</a><a href="/tools/shipping-calculator/">Shipping calculator</a><a href="/sellers/">Rep sellers</a><a href="/faq/">Rep FAQ</a><a href="/favorites/">Your favorites</a><a href="/about/">About</a><a data-signup href="${defAgent.signup}" rel="nofollow sponsored noopener" target="_blank">Sign up to <span class="agent-name">${esc(defAgent.name)}</span></a></div>
     </div>
     <div class="foot-brands"><h3>Brands</h3><div class="brand-cols">${BRANDS.slice(0, 42).map((b) => `<a href="/brands/${b.slug}/">${esc(b.name)}</a>`).join('')}</div></div>
     <div class="foot-legal">
@@ -451,6 +452,7 @@ write('/favorites/', page({ title: `Your Favorite Reps | ${NAME}`, desc: 'The re
 </section>
 <section id="categories"><div class="sec-head"><h2>Shop Reps by Category</h2><a class="sec-link" href="/finds/">All reps →</a></div>${rail()}</section>
 <section class="home-first"><div class="sec-head"><h2>Best Reps Right Now</h2><a class="sec-link" href="/finds/">More →</a></div>${row(mix(24))}</section>
+${homeRow(NAME)}
 ${withQc.length ? `<section><div class="sec-head"><h2>Reps With QC Photos</h2></div><p class="intro">Real warehouse photos from other buyers' orders, so you can see what actually arrives.</p>${row(withQc.slice(0, 16))}</section>` : ''}
 <section><div class="sec-head"><h2>Popular Rep Brands</h2><a class="sec-link" href="/brands/">All ${BRANDS.length} brands →</a></div><div class="chips">${BRANDS.slice(0, 24).map((b) => `<a href="/brands/${b.slug}/">${esc(b.name)} reps <b>${b.n}</b></a>`).join('')}</div></section>
 <section class="split"><div class="prose"><h2>New to Reps?</h2><p>${esc(HOME.lead.replace('{COUNT}', COUNT))}</p>${HOME.what.map((t) => `<p>${esc(t)}</p>`).join('')}</div>
@@ -538,6 +540,9 @@ for (const a of AGENTS.filter((x) => !['kakobuy', 'usfans'].includes(x.id))) {
     url, body, jsonld: [bcld], image: imgOf(list[0]) }));
 }
 
+// ── sellers and the shipping calculator (src/extras.mjs) ──
+extraPages({ NAME, page, crumbs, write, price, buyUrl, AGENTS });
+
 // ── machine files ────────────────────────────────────────────────────────────
 fs.writeFileSync(path.join(DIST, 'search.json'), searchJson());
 fs.writeFileSync(path.join(DIST, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
@@ -564,6 +569,8 @@ fs.writeFileSync(path.join(DIST, 'robots.txt'), ['User-agent: *', ...['GPTBot', 
     li('How to buy', '/how-to-buy/', 'ordering through a shopping agent, from sign-up to shipping'),
     li('Rep guides', '/guides/', 'QC photos, GL/RL, sizing, batches, shipping and agents compared'),
     li('Weidian link converter', '/tools/link-converter/', 'turns a Weidian or agent link into links for all six agents'),
+    li('Shipping calculator', '/tools/shipping-calculator/', 'estimates shipping to Poland or the US on six agents'),
+    li('Rep sellers', '/sellers/', 'independent Weidian shops with their items and prices'),
     li('FAQ', '/faq/', 'agents, prices, QC photos and shipping'),
     li('All brands', '/brands/', 'every brand with its own page'), '',
     '## Categories', '', ...CATEGORIES.map((c) => li(c.reps, `/${c.id}/`, `${byCat.get(c.id).length} items`)), '',

@@ -654,3 +654,74 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var
   .buy-row .others-btn{height:100%;padding-left:8px;padding-right:8px;white-space:nowrap}
   .ux-share{height:auto;min-height:46px}
 }
+
+/* sellers and shipping calculator (src/extras.mjs) */
+[hidden]{display:none!important}
+.sx-okno{position:relative}
+.sx-tor{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none}
+.sx-tor::-webkit-scrollbar{display:none}
+.sx-nav{position:absolute;z-index:2;top:calc(50% - 34px);width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--panel2);color:var(--ink);display:grid;place-items:center;cursor:pointer;padding:0}
+.sx-l{left:-4px}.sx-r{right:-4px}
+.sx-logo{width:44px;height:44px;border-radius:50%;object-fit:cover;background:var(--panel2);flex:none;display:block}
+.sx-karta{flex:0 0 230px;scroll-snap-align:start;display:flex;flex-direction:column;align-items:center;gap:2px;padding:18px 12px 12px;background:var(--panel);border:1px solid var(--line);border-radius:18px;color:var(--ink);text-decoration:none;text-align:center;min-width:0}
+.sx-karta:hover{border-color:var(--muted)}
+.sx-karta .sx-logo{width:52px;height:52px;margin-bottom:8px}
+.sx-karta b{font-size:16px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sx-karta small{color:var(--muted);font-size:12px}
+.sx-mini{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:100%;margin-top:12px}
+.sx-mini img{width:100%;height:auto;aspect-ratio:1;object-fit:cover;border-radius:10px;background:var(--panel2);display:block}
+.sx-szukaj{display:block;max-width:420px;margin:0 0 20px}
+.sx-szukaj input{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:99px;color:var(--ink);font:inherit;font-size:14px;padding:12px 18px;outline:0}
+.sx-lista{display:flex;flex-direction:column;gap:20px}
+.sx-wiersz{background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:18px;min-width:0}
+.sx-glowa{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.sx-glowa>a:first-child{display:flex;align-items:center;gap:12px;min-width:0;color:var(--ink);text-decoration:none}
+.sx-glowa b{display:block;font-size:17px;line-height:1.3}
+.sx-glowa small{display:block;color:var(--muted);font-size:13px;line-height:1.4}
+.sx-pill{margin-left:auto;flex:none;background:var(--ink);color:var(--bg);border-radius:99px;padding:8px 15px;font-size:13px;font-weight:600;text-decoration:none;white-space:nowrap}
+.sx-item{flex:0 0 calc((100% - 56px)/4.6);min-width:0;scroll-snap-align:start;color:var(--ink);text-decoration:none;display:block}
+.sx-item img,.sx-reszta{width:100%;height:auto;aspect-ratio:1;border-radius:13px;background:var(--panel2);display:block}
+.sx-item img{object-fit:cover}
+.sx-item:hover img{opacity:.88}
+.sx-item h3{font-size:13px;font-weight:500;line-height:1.35;margin:8px 3px 2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sx-item p{margin:0 3px;font-size:13px;line-height:1.4;color:var(--muted)}
+.sx-item p b{color:var(--ink);font-weight:600}
+.sx-reszta{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:14px;font-weight:600;border:1px solid var(--line)}
+.sx-reszta small{color:var(--muted);font-weight:400;font-size:13px}
+.sx-siatka{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:14px}
+.sx-sklep{display:flex;align-items:center;gap:14px}
+.sx-sklep .sx-logo{width:64px;height:64px}
+.sx-brak,.sx-uwaga{color:var(--muted);font-size:13px}
+.sx-uwaga{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-top:22px}
+.sx-uklad{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:16px;align-items:start;margin-bottom:24px}
+.sx-panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;min-width:0}
+.sx-et{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:600}
+.sx-wybor{display:flex;gap:4px;margin-bottom:16px}
+.sx-wybor button{flex:1;background:var(--bg);border:1px solid var(--line);color:var(--muted);font:inherit;font-size:13px;font-weight:600;padding:10px 6px;border-radius:8px;cursor:pointer}
+.sx-wybor button[aria-pressed="true"]{border-color:var(--ink);color:var(--ink)}
+.sx-nag{display:flex;justify-content:space-between;align-items:center}
+.sx-nag button{background:none;border:0;color:var(--muted);font:inherit;font-size:12px;cursor:pointer;text-decoration:underline;padding:0;margin-bottom:6px}
+.sx-rzecz{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid var(--line);font-size:14px}
+.sx-rzecz small{color:var(--muted);font-size:12px;margin-left:6px}
+.sx-licz{display:flex;align-items:center;gap:4px;flex:none}
+.sx-licz button{width:32px;height:32px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:17px;line-height:1;cursor:pointer;padding:0}
+.sx-licz output{width:26px;text-align:center;font-weight:700}
+.sx-waga{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.sx-waga b{font-size:22px}
+.sx-wlasna{display:block;margin-top:12px}
+.sx-wlasna input{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--ink);font:inherit;font-weight:600;padding:9px 10px;border-radius:8px}
+.sx-kupon{display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;font-weight:600;margin-top:14px}
+.sx-kupon input{width:18px;height:18px;margin:0;flex:none}
+#sxWyniki{display:flex;flex-direction:column;gap:10px}
+.sx-wynik{display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:4px 12px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
+.sx-wynik.on{border-color:var(--ink)}
+.sx-wynik img{width:36px;height:36px;border-radius:9px;object-fit:contain}
+.sx-kto{min-width:0}
+.sx-kto span{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:99px;padding:1px 8px;margin-left:8px;white-space:nowrap}
+.sx-kto small{display:block;color:var(--muted);font-size:12px;line-height:1.4}
+.sx-ile{font-size:20px;font-weight:800;text-align:right;white-space:nowrap}
+.sx-ile s{display:block;color:var(--muted);font-size:12px;font-weight:400}
+.sx-akcje{grid-column:1/-1;display:flex;gap:8px;margin-top:8px}
+.sx-akcje a{flex:1;text-align:center;text-decoration:none;font-weight:700;font-size:13px;padding:9px 6px;border-radius:9px;border:1px solid var(--line);color:var(--ink)}
+.sx-akcje a.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+@media (max-width:760px){.sx-uklad{grid-template-columns:1fr}.sx-nav{display:none}.sx-wiersz{padding:14px}.sx-tor{gap:10px}.sx-item{flex-basis:42%}.sx-pill{display:none}.sx-siatka{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.sx-karta{flex-basis:200px}}
