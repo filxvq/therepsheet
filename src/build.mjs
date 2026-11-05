@@ -145,7 +145,7 @@ ${jsonld.map((j) => `<script type="application/ld+json">${JSON.stringify(j).repl
     </div>
     <a class="signup" data-signup href="${defAgent.signup}" rel="nofollow sponsored noopener" target="_blank">Sign up to <span class="agent-name">${esc(defAgent.name)}</span> →</a>
   </div>
-  <nav class="wrap cats" aria-label="Categories"><a href="/finds/"${active === 'finds' ? ' aria-current="page"' : ''}>All</a>${nav}<a href="/brands/"${active === 'brands' ? ' aria-current="page"' : ''}>Brands</a><a href="/qc-check/"${active === 'qc-check' ? ' aria-current="page"' : ''}>QC Check</a><a href="/sellers/"${active === 'sellers' ? ' aria-current="page"' : ''}>Sellers</a></nav>
+  <nav class="wrap cats" aria-label="Categories"><a href="/"${url === '/' ? ' aria-current="page"' : ''}>All</a>${nav}<a href="/brands/"${active === 'brands' ? ' aria-current="page"' : ''}>Brands</a><a href="/qc-check/"${active === 'qc-check' ? ' aria-current="page"' : ''}>QC Check</a><a href="/sellers/"${active === 'sellers' ? ' aria-current="page"' : ''}>Sellers</a></nav>
 </header>
 <main class="wrap">
 ${body}
