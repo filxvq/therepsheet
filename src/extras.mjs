@@ -55,6 +55,18 @@ const COPY = {
     calcDesc: 'How much does a Weidian order cost to ship? Pick the items or enter the weight and compare six agents, to Poland or the US.',
     calcH1: 'Weidian Shipping Calculator', calcIntro: 'Weidian sellers ship to your agent in China, and the agent ships to you. Add your items to estimate that second price.',
   },
+  TheLitbuySpreadsheets: {
+    root: 'Litbuy Spreadsheet', rowTitle: 'Trending Weidian Sellers on Litbuy', crumb: 'Sellers', calcCrumb: 'Shipping calculator',
+    listTitle: (n) => `${n} Weidian Sellers to Shop on Litbuy | TheLitbuySpreadsheets`,
+    listDesc: (n) => `${n} Weidian sellers with every item's price in the Litbuy spreadsheet, their followers and repeat buyers. Open any item on Litbuy.`,
+    h1: 'Weidian Sellers on Litbuy', intro: 'Independent Weidian shops, most followed first. Every item opens on Litbuy, or on another agent if you switch at the top.',
+    shopTitle: (s, n) => `${s} on Litbuy: ${n} Items From This Weidian Seller`,
+    shopDesc: (s, n, a) => `${n} items from the Weidian seller ${s}, from $${a}, each with its price and a direct Litbuy link.`,
+    shopH1: (s) => `${s} on Litbuy`, itemAlt: (t) => t,
+    calcTitle: 'Litbuy Shipping Calculator: Cost to Poland & the US',
+    calcDesc: 'Estimate what your Litbuy haul costs to ship to Poland or the US, and compare it with five other agents. Pick the items or type the weight.',
+    calcH1: 'Litbuy Shipping Calculator', calcIntro: 'Add what is in your parcel to see roughly what Litbuy charges to ship it, next to five other agents.',
+  },
   TheQCFinder: {
     root: 'TheQCFinder', rowTitle: 'Trending Sellers With QC', crumb: 'Sellers', calcCrumb: 'Shipping calculator',
     listTitle: (n) => `${n} Weidian Sellers: Items & QC Counts | TheQCFinder`,
