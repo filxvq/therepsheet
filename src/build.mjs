@@ -459,6 +459,7 @@ ${withQc.length ? `<section><div class="sec-head"><h2>Reps With QC Photos</h2></
 <div><h2>Three Steps to Your First Haul</h2><ol class="start">${HOME.start.map((s, i) => `<li><span class="num">${i + 1}</span><div><h3>${esc(s.t)}</h3><p>${esc(s.d)}</p></div></li>`).join('')}</ol></div></section>
 <section><h2>What Makes TheRepSheet Different</h2><div class="cards4">${HOME.why.map((s) => `<div><h3>${esc(s.t)}</h3><p>${esc(s.d)}</p></div>`).join('')}</div></section>
 <section><h2>Buying Reps, Step by Step</h2><ol class="steps">${GUIDE.steps.map((s) => `<li><h3>${esc(s.t)}</h3><p>${esc(s.d)}</p></li>`).join('')}</ol><p class="more"><a href="/how-to-buy/">The full guide to buying reps →</a></p></section>
+<section><div class="sec-head"><h2>Rep Spreadsheet Guides</h2><a class="sec-link" href="/guides/">All guides →</a></div><ul class="guide-list">${GUIDES.slice(0, 6).map((g) => `<li><a href="/guides/${g.slug}/"><b>${esc(g.title)}</b><span>${esc(g.desc.slice(0, 110))}…</span></a></li>`).join('')}</ul></section>
 <section class="faq"><h2>Rep FAQ</h2>${FAQ.map((f) => `<details><summary>${esc(f.q)}</summary><div><p>${esc(f.a)}</p></div></details>`).join('')}</section>`;
   const ld = [{ '@context': 'https://schema.org', '@type': 'WebSite', name: NAME, url: SITE + '/',
       potentialAction: { '@type': 'SearchAction', target: SITE + '/search/?q={search_term_string}', 'query-input': 'required name=search_term_string' } },

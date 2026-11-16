@@ -4,6 +4,53 @@
 
 export const GUIDES = [
   {
+    slug: 'what-is-a-rep-spreadsheet',
+    title: 'What Is a Rep Spreadsheet? How to Use One',
+    seo: 'What Is a Rep Spreadsheet? How to Use One (2026 Guide)',
+    desc: 'A rep spreadsheet is a list of rep finds with links, prices and QC photos. What is in one, how to use it with a shopping agent and what to check.',
+    intro: 'A rep spreadsheet is a shared list of rep finds from Chinese marketplaces such as Weidian, Taobao and 1688. Instead of searching Chinese shops yourself, you open the list, pick an item and buy it through a shopping agent.',
+    sections: [
+      { h: 'What is in a rep spreadsheet', p: ['Each row is one find: a name, a photo, a price, a category and a link to the listing. Better lists add QC photos from real orders, the sizes the seller offers and the date the link was last checked.', 'The items are usually sorted by category (shoes, hoodies, jackets, bags) or by brand, so you can browse the way you would in a normal shop.'] },
+      { h: 'Why people use one', p: ['The marketplaces behind reps are built for buyers in China. Shops are in Chinese, search is hard to use from abroad and sellers do not ship internationally. A spreadsheet does that digging for you and gives you a link that already works with an agent.'] },
+      { h: 'Google Sheet or website', p: ['A Google Sheet is easy to share, but it is slow on a phone, hard to search and fills up with dead links over time. A website holds the same kind of list with search, filters, photos and a price in your currency, and can be updated item by item.'] },
+      { h: 'How to use one in four steps', p: ['1. Find the item by category, brand or search. 2. Look at the photos, the price and any QC photos from other buyers. 3. Press the buy button for the agent you use: the listing opens inside the agent. 4. Choose the version and size, pay the agent, and wait for your QC photos before the parcel ships.', 'If you have a link from somewhere else, a link converter turns it into the same item on your agent.'] },
+      { h: 'What makes a spreadsheet good', p: ['Look for QC photos from real orders, working links, a clear update date and a price you can compare. A list that is not maintained fills up with listings that are sold out or gone.'] },
+    ],
+  },
+  {
+    slug: 'best-rep-spreadsheet',
+    title: 'The Best Rep Spreadsheet: What to Look For',
+    seo: 'Best Rep Spreadsheet: What to Look For in 2026',
+    desc: 'How to pick a good rep spreadsheet: working links, QC photos, search, fresh updates and agent buttons. A checklist instead of a ranking.',
+    intro: 'Every rep spreadsheet says it is the best one. A better question is what separates a useful list from a dead one. Here is a checklist you can run in two minutes.',
+    sections: [
+      { h: 'Size is not quality', p: ['A list with ten thousand items sounds better than one with two thousand, but many of those links are old or duplicated. What matters is how many of the listings still work and how many have real QC photos behind them.'] },
+      { h: 'Check that the links work', p: ['Open five random items. If more than one is sold out or leads to an empty page, the list is not being maintained. Look for an update date and for a way to report a broken link.'] },
+      { h: 'QC photos are the real test', p: ['Photos from the seller show the best case. QC photos from real orders show what arrives. A spreadsheet that shows them next to the item saves you the hunt through Reddit and Discord.'] },
+      { h: 'Search, filters and prices', p: ['You should be able to search by name, filter by category and brand, and see the price in your own currency. A plain list with no search is a list you will give up on.'] },
+      { h: 'Your agent should be supported', p: ['A good list lets you choose your agent and opens each listing there, or gives you a link converter. If it only supports one agent, you may have to rebuild links by hand.'] },
+      { h: 'Red flags', p: ['No update date, no QC photos, items without a clear price, and pop-ups that push you to pay on an unknown site. You should only ever pay the shopping agent you chose yourself.'] },
+    ],
+  },
+  {
+    slug: 'rep-slang-glossary',
+    title: 'Rep Slang Explained: W2C, GL, RL, QC, Batch and More',
+    seo: 'Rep Slang Explained: W2C, GL, RL, QC, Batch & More',
+    desc: 'A plain glossary of rep terms: W2C, QC, GL, RL, batch, haul, agent, find, line and more, with one clear sentence each.',
+    intro: 'Rep communities use a lot of short terms. Here are the ones you meet most often, each in one plain sentence.',
+    sections: [
+      { h: 'W2C', p: ['"Where to cop": a request for, or a post with, the link to buy an item.'] },
+      { h: 'QC', p: ['Quality check: the photos an agent takes of your item in its warehouse before shipping.'] },
+      { h: 'GL and RL', p: ['Green light means you accept the item. Red light means you want to return or exchange it before it ships.'] },
+      { h: 'Batch', p: ['One production run of an item. The same name can come from different batches with different quality, which is why QC photos of a specific listing matter.'] },
+      { h: 'Find', p: ['A listing someone recommends: a good item at a fair price from a seller worth trusting.'] },
+      { h: 'Agent', p: ['A shopping agent buys from the Chinese marketplace for you, stores the item in its warehouse, takes the QC photos and ships it abroad.'] },
+      { h: 'Haul', p: ['Everything you ordered, shipped together in one parcel. Also the name of the post or video where you show it.'] },
+      { h: 'Line', p: ['A shipping line: the route and carrier your parcel travels with, which sets the price and the delivery time.'] },
+      { h: 'Spreadsheet', p: ['A list of finds with links, prices and often QC photos. See the guide on what a rep spreadsheet is.'] },
+    ],
+  },
+  {
     slug: 'how-to-check-qc-photos',
     title: 'How to Check QC Photos Before You Ship',
     seo: 'How to Check QC Photos for Reps (Step-by-Step Guide)',
