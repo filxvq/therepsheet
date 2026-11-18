@@ -730,3 +730,6 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var
 /* the coupon banner exactly as on vetereps.com: the same line heights, and on a wide screen the same 530px column */
 .kupon-baner{line-height:normal}
 @media(min-width:1100px){.hero:has(.kupon-baner){grid-template-columns:minmax(0,1fr) 530px}.hero .kupon-baner{max-width:none;margin-inline:0;width:100%}}
+
+/* no sticky "Buy on" bar with the price on a phone */
+.ux-buybar{display:none!important}
