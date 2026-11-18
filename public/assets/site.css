@@ -458,7 +458,8 @@ a,button{-webkit-tap-highlight-color:transparent}
 .kupon-baner{margin-top:0}
 /* the same banner as on theqcfinder.com: the title wraps on its own, and on an item page the card is
    no wider than theqcfinder's info column, so text and coupons stay together */
-.hero .kupon-baner{min-height:270px}
+.hero .kupon-baner{min-height:243px;max-width:530px;margin-inline:auto}
+@media(min-width:961px){.hero .kupon-baner.kako .kb-tytul{max-width:9.3em}}
 .info .kupon-baner{margin:18px 0 6px;max-width:540px}
 @media(max-width:560px){
   .hero .kupon-baner,.kupon-baner{min-height:0;padding:18px 12px 18px 18px}
@@ -725,3 +726,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var
 .sx-akcje a{flex:1;text-align:center;text-decoration:none;font-weight:700;font-size:13px;padding:9px 6px;border-radius:9px;border:1px solid var(--line);color:var(--ink)}
 .sx-akcje a.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 @media (max-width:760px){.sx-uklad{grid-template-columns:1fr}.sx-nav{display:none}.sx-wiersz{padding:14px}.sx-tor{gap:10px}.sx-item{flex-basis:42%}.sx-pill{display:none}.sx-siatka{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.sx-karta{flex-basis:200px}}
+
+/* the coupon banner exactly as on vetereps.com: the same line heights, and on a wide screen the same 530px column */
+.kupon-baner{line-height:normal}
+@media(min-width:1100px){.hero:has(.kupon-baner){grid-template-columns:minmax(0,1fr) 530px}.hero .kupon-baner{max-width:none;margin-inline:0;width:100%}}
