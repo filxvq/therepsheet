@@ -49,7 +49,7 @@ async function fromGoodsqc(id) {
       let size = '', weight = 0, dims = null;
       const images = [];
       for (const x of g.list || []) {
-        const u = x.origin_image || x.image;
+        const u = x.image || x.origin_image;   // GoodsQC's own copy (CloudFront); the agent's original address (hahbuy) answers 403 to other sites
         if (!u || seen.has(x.origin_image_md5 || u)) continue;
         seen.add(x.origin_image_md5 || u);
         images.push(photo(u));
@@ -78,7 +78,7 @@ export async function qcOwn(request, env, ctx) {
   const plat = ['weidian', 'taobao', '1688'].includes(q.get('plat')) ? q.get('plat') : 'weidian';
   if (!/^\d{6,20}$/.test(id)) return json({ sets: [], error: 'bad id' }, 400);
   const cache = caches.default;
-  const key = new Request(new URL('/api/w2c?v=7&plat=' + plat + '&id=' + id, request.url).toString());
+  const key = new Request(new URL('/api/w2c?v=8&plat=' + plat + '&id=' + id, request.url).toString());
   const hit = await cache.match(key);
   if (hit) { const h = new Response(hit.body, hit); h.headers.set('cache-control', 'public, max-age=300'); return h; }
 
