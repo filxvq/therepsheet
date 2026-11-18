@@ -28,7 +28,7 @@ async function rates(request, ctx) {
 }
 
 import { track } from './stats-d1.mjs';
-import { w2c } from './w2c.mjs';
+import { qcOwn } from './qc-own.mjs';   // our own lookup (QCItems + GoodsQC), no third party's key
 
 export default {
   async fetch(request, env, ctx) {
@@ -37,7 +37,7 @@ export default {
     // visits go into the owner's shared stats database, read at vetereps.com/stats
     if (pathname === '/api/track') return track(request, env.STATS);
     // every QC set of any listing, from the W2C QC API (worker/w2c.mjs), for /qc-check/
-    if (pathname === '/api/w2c') return w2c(request, env, ctx);
+    if (pathname === '/api/w2c') return qcOwn(request, env, ctx);
     return env.ASSETS.fetch(request);
   },
 };
