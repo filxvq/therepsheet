@@ -372,10 +372,58 @@
 
   // ── search: a window over the page (header button, Ctrl/⌘ K), and /search/?q= for all results ──
   var SHOW = 5, overlay = null, pick = -1;
+  // search with a tolerance for typos: every word of the query must match something in the item name
+  // (exact part of a word, start of a word, or a word within 1-2 letters off); best matches come first
+  function lev(a, b, max) {
+    var la = a.length, lb = b.length;
+    if (Math.abs(la - lb) > max) return max + 1;
+    var p2 = null, p1 = [], i, j;
+    for (j = 0; j <= lb; j++) p1[j] = j;
+    for (i = 1; i <= la; i++) {
+      var cur = [i], best = i;
+      for (j = 1; j <= lb; j++) {
+        var v = Math.min(p1[j] + 1, cur[j - 1] + 1, p1[j - 1] + (a.charCodeAt(i - 1) === b.charCodeAt(j - 1) ? 0 : 1));
+        if (p2 && i > 1 && j > 1 && a.charCodeAt(i - 1) === b.charCodeAt(j - 2) && a.charCodeAt(i - 2) === b.charCodeAt(j - 1)) v = Math.min(v, p2[j - 2] + 1);
+        cur[j] = v; if (v < best) best = v;
+      }
+      if (best > max) return max + 1;
+      p2 = p1; p1 = cur;
+    }
+    return p1[lb];
+  }
+  function wordScore(w, x) {
+    var toks = x.tk || (x.tk = x.k.split(/[^a-z0-9]+/).filter(Boolean));
+    var best = 0, t, d, max = w.length <= 3 ? 0 : w.length <= 5 ? 1 : 2;
+    for (var i = 0; i < toks.length; i++) {
+      t = toks[i];
+      if (t === w) return 10;
+      if (t.indexOf(w) === 0) best = Math.max(best, 8);
+      else if (t.indexOf(w) > 0) best = Math.max(best, 5);
+    }
+    if (best) return best;
+    if ((x.ks || (x.ks = x.k.replace(/[^a-z0-9]/g, ''))).indexOf(w) >= 0) return 4;
+    if (!max) return 0;
+    for (i = 0; i < toks.length; i++) {
+      t = toks[i];
+      d = lev(w, t, max);
+      if (d <= max) best = Math.max(best, 3 - d * 0.5);
+      else if (t.length > w.length) { d = lev(w, t.slice(0, w.length), max); if (d <= max) best = Math.max(best, 2.5 - d * 0.5); }
+    }
+    return best;
+  }
   function matches(q) {
     var words = q.trim().toLowerCase().split(/\s+/).filter(Boolean);
     if (!words.length) return [];
-    return data.filter(function (x) { return words.every(function (w) { return x.k.indexOf(w) >= 0; }); });
+    var phrase = words.join(' '), out = [];
+    data.forEach(function (x, idx) {
+      var s = 0;
+      for (var i = 0; i < words.length; i++) { var w = wordScore(words[i], x); if (!w) return; s += w; }
+      if (x.k.indexOf(phrase) >= 0) s += 6;
+      if (x.k.indexOf(phrase) === 0) s += 3;
+      out.push({ x: x, s: s, i: idx });
+    });
+    out.sort(function (a, b) { return b.s - a.s || a.i - b.i; });
+    return out.map(function (o) { return o.x; });
   }
   function searchUrl(q) { return '/search/?q=' + encodeURIComponent(q.trim()); }
   function trending() {
