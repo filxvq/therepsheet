@@ -386,32 +386,32 @@
   }
   function openSearch(initial) {
     if (overlay) return;
-    overlay = document.createElement('div'); overlay.className = 'sx';
-    overlay.innerHTML = '<div class="sx-panel" role="dialog" aria-label="Search products">'
-      + '<div class="sx-top">'
-      + '<input class="sx-input" type="search" placeholder="Search products…" autocomplete="off" aria-label="Search products"><button type="button" class="sx-close" aria-label="Close search"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>'
-      + '<div class="sx-list"></div>'
-      + '<div class="sx-keys"><span><kbd>↑↓</kbd> Browse reps</span><span><kbd>Enter</kbd> Open rep</span><span><kbd>Esc</kbd> Close</span></div></div>';
+    overlay = document.createElement('div'); overlay.className = 'so';
+    overlay.innerHTML = '<div class="so-panel" role="dialog" aria-label="Search products">'
+      + '<div class="so-top">'
+      + '<input class="so-input" type="search" placeholder="Search products…" autocomplete="off" aria-label="Search products"><button type="button" class="so-close" aria-label="Close search"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>'
+      + '<div class="so-list"></div>'
+      + '<div class="so-keys"><span><kbd>↑↓</kbd> Browse reps</span><span><kbd>Enter</kbd> Open rep</span><span><kbd>Esc</kbd> Close</span></div></div>';
     document.body.appendChild(overlay);
-    document.documentElement.classList.add('sx-lock');
+    document.documentElement.classList.add('so-lock');
     void overlay.offsetWidth; overlay.classList.add('open');
-    var input = $('.sx-input', overlay), list = $('.sx-list', overlay);
+    var input = $('.so-input', overlay), list = $('.so-list', overlay);
     input.value = initial || '';
     function draw() {
       var q = input.value, hits = matches(q);
       pick = -1;
-      if (!q.trim()) { list.innerHTML = '<p class="sx-head">Best Reps Right Now</p>' + trending().map(function (x) {
-        return '<a class="sx-item" href="' + x.u + '"><img src="' + x.i + '" alt="" width="44" height="44"><span class="sx-name">' + esc(x.n) + '</span><span class="sx-price">' + fmt(x.c) + '</span></a>';
+      if (!q.trim()) { list.innerHTML = '<p class="so-head">Best Reps Right Now</p>' + trending().map(function (x) {
+        return '<a class="so-item" href="' + x.u + '"><img src="' + x.i + '" alt="" width="44" height="44"><span class="so-name">' + esc(x.n) + '</span><span class="so-price">' + fmt(x.c) + '</span></a>';
       }).join(''); return; }
-      if (!hits.length) { list.innerHTML = '<div class="sx-hint">No reps match “' + esc(q) + '”.</div>'; return; }
+      if (!hits.length) { list.innerHTML = '<div class="so-hint">No reps match “' + esc(q) + '”.</div>'; return; }
       list.innerHTML = hits.slice(0, SHOW).map(function (x) {
-        return '<a class="sx-item" href="' + x.u + '"><img src="' + x.i + '" alt="" width="44" height="44"><span class="sx-name">' + esc(x.n) + '</span><span class="sx-price">' + fmt(x.c) + '</span></a>';
-      }).join('') + (hits.length > SHOW ? '<a class="sx-all" href="' + searchUrl(q) + '"><b>See all ' + hits.length + ' results</b><span>+' + (hits.length - SHOW) + ' more</span></a>' : '');
+        return '<a class="so-item" href="' + x.u + '"><img src="' + x.i + '" alt="" width="44" height="44"><span class="so-name">' + esc(x.n) + '</span><span class="so-price">' + fmt(x.c) + '</span></a>';
+      }).join('') + (hits.length > SHOW ? '<a class="so-all" href="' + searchUrl(q) + '"><b>See all ' + hits.length + ' results</b><span>+' + (hits.length - SHOW) + ' more</span></a>' : '');
     }
     load().then(draw);
     input.addEventListener('input', function () { load().then(draw); });
     input.addEventListener('keydown', function (e) {
-      var items = $$('.sx-item, .sx-all', list);
+      var items = $$('.so-item, .so-all', list);
       if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
         e.preventDefault(); if (!items.length) return;
         pick = (pick + (e.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length;
@@ -423,13 +423,13 @@
       } else if (e.key === 'Escape') closeSearch();
     });
     overlay.addEventListener('click', function (e) { if (e.target === overlay) closeSearch(); });
-    $('.sx-close', overlay).addEventListener('click', closeSearch);
+    $('.so-close', overlay).addEventListener('click', closeSearch);
     setTimeout(function () { input.focus(); input.select(); }, 30);
   }
   function closeSearch() {
     if (!overlay) return;
     var o = overlay; overlay = null;
-    o.classList.remove('open'); document.documentElement.classList.remove('sx-lock');
+    o.classList.remove('open'); document.documentElement.classList.remove('so-lock');
     setTimeout(function () { o.remove(); }, 200);
   }
   $$('[data-search-open]').forEach(function (b) { b.addEventListener('click', function () { openSearch(); }); });
